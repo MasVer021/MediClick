@@ -9,7 +9,8 @@ public class Medico implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public enum StatoVerifica {
+    public enum StatoVerifica 
+    {
         IN_ATTESA("In attesa"),
         APPROVATO("Approvato"),
         RIFIUTATO("Rifiutato"),
@@ -18,6 +19,22 @@ public class Medico implements Serializable {
         private final String label;
         StatoVerifica(String label) { this.label = label; }
         public String getLabel() { return label; }
+        
+        public static StatoVerifica fromString(String statoStr)
+        {
+        	if(statoStr == null)
+        		return null;
+        	
+	        for (Medico.StatoVerifica s : Medico.StatoVerifica.values()) 
+	        {
+	            if (s.getLabel().equalsIgnoreCase(statoStr) || s.name().equalsIgnoreCase(statoStr)) 
+	            {
+	               return s;
+	            }
+	        }
+	        
+	        return null;
+        }  
     }
 
     private int id;          // FK -> Utente(ID)

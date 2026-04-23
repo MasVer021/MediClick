@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 public class Contex 
 {
     private String url;
@@ -27,21 +28,46 @@ public class Contex
             e.printStackTrace();
         }
     }
-
-    public void eseguiUpdate(String sql, Object... params) throws SQLException 
+    
+    public int eseguiUpdate(String sql, Object... params) throws SQLException
     {
-        try 
+        try
         (
             Connection conn = DriverManager.getConnection(this.url, this.userName, this.password);
-            PreparedStatement pstmt = conn.prepareStatement(sql);
-        ) 
+            PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+        )
         {
-            for (int i = 0; i < params.length; i++) 
+            for (int i = 0; i < params.length; i++)
             {
                 pstmt.setObject(i + 1, params[i]);
             }
             pstmt.executeUpdate();
+            return pstmt.getGeneratedKeys().getInt(1);
         }
+    }
+
+    public int eseguiUpdate(String sql, Connection conn, Object... params) throws SQLException
+    {
+        try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
+        {
+            for (int i = 0; i < params.length; i++)
+            {
+                pstmt.setObject(i + 1, params[i]);
+            }
+            pstmt.executeUpdate();
+
+            ResultSet keys = pstmt.getGeneratedKeys();
+            if (keys.next()) 
+            {
+                return keys.getInt(1);
+            }
+            return -1; 
+        }
+    }
+    
+    public Connection getConnection() throws SQLException 
+    {
+        return DriverManager.getConnection(this.url, this.userName, this.password);
     }
 
     public List<Map<String, Object>> eseguiSelect(String sql, Object... params) throws SQLException 

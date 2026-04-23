@@ -7,13 +7,31 @@ public class Disponibilita implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public enum Stato {
+    public enum Stato 
+    {
         DISPONIBILE("Disponibile"),
         PRENOTATA("Prenotata"),
         BLOCCATA("Bloccata"),
         COMPLETATA("Completata"),
         CANCELLATA("Cancellata");
 
+    	 public static Stato fromString(String statoStr)
+         {
+         	if(statoStr == null)
+         		return null;
+         	
+ 	        for (Disponibilita.Stato s : Disponibilita.Stato.values()) 
+ 	        {
+ 	            if (s.getLabel().equalsIgnoreCase(statoStr) || s.name().equalsIgnoreCase(statoStr)) 
+ 	            {
+ 	               return s;
+ 	            }
+ 	        }
+ 	        
+ 	        return null;
+         } 
+    	
+    	
         private final String label;
         Stato(String label) { this.label = label; }
         public String getLabel() { return label; }
@@ -75,7 +93,6 @@ public class Disponibilita implements Serializable {
 
     @Override
     public String toString() {
-        return "Disponibilita{id=" + id + ", medicoId=" + medicoId +
-               ", inizio=" + dataOraInizio + ", stato=" + stato + "}";
+        return "Disponibilita{id=" + id + ", medicoId=" + medicoId +", inizio=" + dataOraInizio + ", fine=" + dataOraFine+", stato=" + stato + "}";
     }
 }

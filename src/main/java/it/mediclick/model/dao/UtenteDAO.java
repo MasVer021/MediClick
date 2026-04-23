@@ -2,6 +2,8 @@ package it.mediclick.model.dao;
 
 import it.mediclick.model.bean.Utente;
 import it.mediclick.util.*;
+
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
@@ -56,21 +58,31 @@ public class UtenteDAO
 		    }
 	}
 	
-	public void insert(Utente u) throws SQLException
+	public int insert(Connection conn,String email, String password, LocalDate dataIscrizione, boolean accountAttivo, Integer ruoloId) throws SQLException
+	{
+		return insert(conn,new Utente(-1,email,password,dataIscrizione,accountAttivo,ruoloId));
+	}
+	
+	public int insert(Connection conn,Utente u) throws SQLException
 	{
 		String sql = """
 					INSERT INTO Utente(Email,Password,Data_Iscrizione,Account_attivo,Ruolo_ID)
 					VALUES (?,?,?,?,?);
 					""";
+		
+		int ID = -1;
+		
 		try
 		{
-			_contex.eseguiUpdate(sql,u.getEmail(),PasswordUtils.hashPassword(u.getPassword()),u.getDataIscrizione(),u.isAccountAttivo(),u.getRuoloId());
+			ID = _contex.eseguiUpdate(sql,conn,u.getEmail(),PasswordUtils.hashPassword(u.getPassword()),u.getDataIscrizione(),u.isAccountAttivo(),u.getRuoloId());
 		}
 		catch(SQLException e)
 		{
 			 System.err.println("Errore nell'inserimento dell'utente: " + e.getMessage());
-		     throw e;
+		     throw e;  
 		}
+		
+		return ID;
 	}
 	
 	public void updatePassword(int id,String password) throws SQLException

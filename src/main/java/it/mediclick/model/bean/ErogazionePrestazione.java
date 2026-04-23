@@ -1,7 +1,6 @@
 package it.mediclick.model.bean;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 
 public class ErogazionePrestazione implements Serializable {
 
@@ -10,6 +9,24 @@ public class ErogazionePrestazione implements Serializable {
     public enum Stato {
         ATTIVA("Attiva"),
         SOSPESA("Sospesa");
+    	
+    	
+    	
+    	 public static Stato fromString(String statoStr)
+         {
+         	if(statoStr == null)
+         		return null;
+         	
+ 	        for (ErogazionePrestazione.Stato s : ErogazionePrestazione.Stato.values()) 
+ 	        {
+ 	            if (s.getLabel().equalsIgnoreCase(statoStr) || s.name().equalsIgnoreCase(statoStr)) 
+ 	            {
+ 	               return s;
+ 	            }
+ 	        }
+ 	        
+ 	        return null;
+         } 
 
         private final String label;
         Stato(String label) { this.label = label; }
@@ -20,7 +37,7 @@ public class ErogazionePrestazione implements Serializable {
     private int medicoId;
     private int catalogoPrestazioniId;
     private Integer studioId;
-    private BigDecimal prezzoLordoListino;
+    private double prezzoLordoListino;
     /** Durata in minuti, approssimata alla mezz'ora successiva (es. 31 min → 60 min) */
     private Integer durata;
     private Stato stato;
@@ -35,7 +52,7 @@ public class ErogazionePrestazione implements Serializable {
     }
 
     public ErogazionePrestazione(int id, int medicoId, int catalogoPrestazioniId,
-                                  Integer studioId, BigDecimal prezzoLordoListino,
+                                  Integer studioId, double prezzoLordoListino,
                                   Integer durata, Stato stato) {
         this.id = id;
         this.medicoId = medicoId;
@@ -58,8 +75,8 @@ public class ErogazionePrestazione implements Serializable {
     public Integer getStudioId() { return studioId; }
     public void setStudioId(Integer studioId) { this.studioId = studioId; }
 
-    public BigDecimal getPrezzoLordoListino() { return prezzoLordoListino; }
-    public void setPrezzoLordoListino(BigDecimal prezzoLordoListino) { this.prezzoLordoListino = prezzoLordoListino; }
+    public double getPrezzoLordoListino() { return prezzoLordoListino; }
+    public void setPrezzoLordoListino(double prezzoLordoListino) { this.prezzoLordoListino = prezzoLordoListino; }
 
     public Integer getDurata() { return durata; }
     public void setDurata(Integer durata) { this.durata = durata; }
