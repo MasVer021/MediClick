@@ -143,7 +143,10 @@ public class PazienteDAO
         try 
         {
             Paziente p = new Paziente();
-            p.setId(Integer.parseInt(String.valueOf(map.get("ID"))));
+            
+            int id = Integer.parseInt(String.valueOf(map.get("ID")));
+            
+            p.setId(id);
             p.setCognome((String) map.get("Cognome"));
             p.setNome((String) map.get("Nome"));
             p.setCodiceFiscale((String) map.get("Codice_Fiscale"));
@@ -153,6 +156,8 @@ public class PazienteDAO
             {
                 p.setDataNascita(LocalDate.parse(String.valueOf(map.get("Data_Nascita"))));
             }
+            
+            p.setUtente(utente.findById(id));
             return p;
         } 
         catch (Exception e) 

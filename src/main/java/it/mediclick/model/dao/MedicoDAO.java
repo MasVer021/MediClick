@@ -1,6 +1,7 @@
 package it.mediclick.model.dao;
 
 import it.mediclick.model.bean.Medico;
+import it.mediclick.model.bean.Utente;
 import it.mediclick.util.Contex;
 
 import java.sql.Connection;
@@ -210,7 +211,10 @@ public class MedicoDAO
         try 
         {
             Medico m = new Medico();
-            m.setId(Integer.parseInt(String.valueOf(map.get("ID"))));
+            int id = Integer.parseInt(String.valueOf(map.get("ID")));
+            
+            
+            m.setId(id);
             m.setCognome((String) map.get("Cognome"));
             m.setNome((String) map.get("Nome"));
             m.setBio((String) map.get("Bio"));
@@ -225,6 +229,9 @@ public class MedicoDAO
             {
                 m.setRegimeFiscaleId(Integer.parseInt(String.valueOf(map.get("Regime_fiscale"))));
             }
+            
+            m.setUtente(utente.findById(id));
+            
             return m;
         } 
         catch (Exception e) 
