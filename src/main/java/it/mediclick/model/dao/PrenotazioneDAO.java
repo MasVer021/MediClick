@@ -1,11 +1,13 @@
 package it.mediclick.model.dao;
 
+
 import it.mediclick.model.bean.Prenotazione;
 import it.mediclick.util.Contex;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -199,20 +201,9 @@ public class PrenotazioneDAO
             {
                 p.setCodiceScontoId(Integer.parseInt(String.valueOf(map.get("CodiceSconto_ID"))));
             }
-
-            String statoStr = (String) map.get("Stato");
-            if (statoStr != null) 
-            {
-                for (Prenotazione.Stato s : Prenotazione.Stato.values()) 
-                {
-                    if (s.getLabel().equalsIgnoreCase(statoStr) || s.name().equalsIgnoreCase(statoStr)) 
-                    {
-                        p.setStato(s);
-                        break;
-                    }
-                }
-            }
-
+        
+            p.setStato(Prenotazione.Stato.fromString(String.valueOf(map.get("Stato"))));
+            
             p.setMetodoPagamento((String) map.get("Metodo_Pagamento"));
             p.setIdTransazioneEsterno((String) map.get("ID_Transazione_Esterno"));
 
@@ -230,8 +221,7 @@ public class PrenotazioneDAO
 
             if (map.get("Data_Pagamento") != null) 
             {
-                Timestamp ts = (Timestamp) map.get("Data_Pagamento");
-                p.setDataPagamento(ts.toLocalDateTime());
+                p.setDataPagamento(LocalDateTime.parse(String.valueOf(map.get("Data_Pagamento"))));
             }
 
             return p;

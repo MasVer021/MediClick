@@ -123,11 +123,15 @@ public class AmministratoreDAO
         try 
         {
             Amministratore a = new Amministratore();
-            a.setId(Integer.parseInt(String.valueOf(map.get("ID"))));
+            int id = Integer.parseInt(String.valueOf(map.get("ID")));
+            
+            a.setId(id);
             if (map.get("Dipartimento_ID") != null) 
             {
                 a.setDipartimentoId(Integer.parseInt(String.valueOf(map.get("Dipartimento_ID"))));
             }
+            
+            a.setUtente(utente.findById(id));
             return a;
         } 
         catch (Exception e) 

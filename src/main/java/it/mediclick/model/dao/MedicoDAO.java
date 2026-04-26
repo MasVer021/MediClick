@@ -1,7 +1,6 @@
 package it.mediclick.model.dao;
 
 import it.mediclick.model.bean.Medico;
-import it.mediclick.model.bean.Utente;
 import it.mediclick.util.Contex;
 
 import java.sql.Connection;

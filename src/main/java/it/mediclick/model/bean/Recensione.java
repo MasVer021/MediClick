@@ -9,7 +9,7 @@ public class Recensione implements Serializable {
 
     private int id;
     private int prenotazioneId;
-    private byte voto;             // 1-5
+    private int voto;             // 1-5
     private String commento;
     private boolean isVisible;
     private LocalDateTime dataPubblicazione;
@@ -38,8 +38,8 @@ public class Recensione implements Serializable {
     public int getPrenotazioneId() { return prenotazioneId; }
     public void setPrenotazioneId(int prenotazioneId) { this.prenotazioneId = prenotazioneId; }
 
-    public byte getVoto() { return voto; }
-    public void setVoto(byte voto) {
+    public int getVoto() { return voto; }
+    public void setVoto(int voto) {
         if (voto < 1 || voto > 5) throw new IllegalArgumentException("Voto deve essere tra 1 e 5");
         this.voto = voto;
     }

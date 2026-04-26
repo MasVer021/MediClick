@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+
+
 public class Prenotazione implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -13,6 +15,22 @@ public class Prenotazione implements Serializable {
         COMPLETATA("Completata"),
         CANCELLATA("Cancellata"),
         RIMBORSATA("Rimborsata");
+    	
+    	public static Stato fromString(String statoStr)
+        {
+        	if(statoStr == null)
+        		return null;
+        	
+	        for (Prenotazione.Stato s : Prenotazione.Stato.values()) 
+	        {
+	            if (s.getLabel().equalsIgnoreCase(statoStr) || s.name().equalsIgnoreCase(statoStr)) 
+	            {
+	               return s;
+	            }
+	        }
+	        
+	        return null;
+        }  
 
         private final String label;
         Stato(String label) { this.label = label; }

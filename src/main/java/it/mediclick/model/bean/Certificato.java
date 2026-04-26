@@ -3,6 +3,8 @@ package it.mediclick.model.bean;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+
+
 public class Certificato implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -12,6 +14,24 @@ public class Certificato implements Serializable {
         APPROVATO("Approvato"),
         RIFIUTATO("Rifiutato"),
         SCADUTO("Scaduto");
+    	
+    	
+    	public static Stato fromString(String statoStr)
+        {
+        	if(statoStr == null)
+        		return null;
+        	
+	        for (Certificato.Stato s : Certificato.Stato.values()) 
+	        {
+	            if (s.getLabel().equalsIgnoreCase(statoStr) || s.name().equalsIgnoreCase(statoStr)) 
+	            {
+	               return s;
+	            }
+	        }
+	        
+	        return null;
+        }  
+    	
 
         private final String label;
         Stato(String label) { this.label = label; }
