@@ -31,37 +31,59 @@ public class Contex
     
     public int eseguiUpdate(String sql, Object... params) throws SQLException
     {
+        boolean isInsert = sql.trim().toUpperCase().startsWith("INSERT");
         try
         (
             Connection conn = DriverManager.getConnection(this.url, this.userName, this.password);
-            PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement pstmt = isInsert ? 
+                conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) : 
+                conn.prepareStatement(sql);
         )
         {
             for (int i = 0; i < params.length; i++)
             {
                 pstmt.setObject(i + 1, params[i]);
             }
-            pstmt.executeUpdate();
-            return pstmt.getGeneratedKeys().getInt(1);
+            int rows = pstmt.executeUpdate();
+
+            if (isInsert) 
+            {
+                try (ResultSet keys = pstmt.getGeneratedKeys()) 
+                {
+                    if (keys.next()) 
+                    {
+                        return keys.getInt(1);
+                    }
+                }
+            }
+            return rows; 
         }
     }
 
     public int eseguiUpdate(String sql, Connection conn, Object... params) throws SQLException
     {
-        try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
+        boolean isInsert = sql.trim().toUpperCase().startsWith("INSERT");
+        try (PreparedStatement pstmt = isInsert ? 
+                conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) : 
+                conn.prepareStatement(sql))
         {
             for (int i = 0; i < params.length; i++)
             {
                 pstmt.setObject(i + 1, params[i]);
             }
-            pstmt.executeUpdate();
+            int rows = pstmt.executeUpdate();
 
-            ResultSet keys = pstmt.getGeneratedKeys();
-            if (keys.next()) 
+            if (isInsert) 
             {
-                return keys.getInt(1);
+                try (ResultSet keys = pstmt.getGeneratedKeys()) 
+                {
+                    if (keys.next()) 
+                    {
+                        return keys.getInt(1);
+                    }
+                }
             }
-            return -1; 
+            return rows; 
         }
     }
     
