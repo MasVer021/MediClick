@@ -42,7 +42,6 @@ public class ErogazionePrestazione implements Serializable {
     private Integer durata;
     private Stato stato;
 
-    // Relazioni opzionali
     private Medico medico;
     private CatalogoPrestazioni catalogoPrestazioni;
     private Studio studio;

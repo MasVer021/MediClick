@@ -160,10 +160,12 @@ CREATE TABLE Disponibilita (
     Data_Ora_Fine    DATETIME        NOT NULL,
     Stato            ENUM('Disponibile', 'Prenotata', 'Bloccata', 'Completata', 'Cancellata') NOT NULL DEFAULT 'Disponibile',
     Timestamp_Blocco DATETIME,
+    Paziente_ID_Blocco INT,
 
     PRIMARY KEY (ID),
     CONSTRAINT fk_disp_medico FOREIGN KEY (Medico_ID) REFERENCES Medico(ID)  ON DELETE CASCADE,
-    CONSTRAINT fk_disp_studio FOREIGN KEY (Studio_ID) REFERENCES Studio(ID)  ON DELETE CASCADE
+    CONSTRAINT fk_disp_studio FOREIGN KEY (Studio_ID) REFERENCES Studio(ID)  ON DELETE CASCADE,
+    CONSTRAINT fk_disp_paziente_blocco FOREIGN KEY (Paziente_ID_Blocco) REFERENCES Paziente(ID) ON DELETE SET NULL
 );
 
 CREATE TABLE ErogazionePrestazione (

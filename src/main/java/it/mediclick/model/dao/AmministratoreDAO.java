@@ -72,7 +72,7 @@ public class AmministratoreDAO
         }
     }
 
-    public void insert(Amministratore a) throws SQLException 
+    public int insert(Amministratore a) throws SQLException 
     {
         
                            
@@ -97,6 +97,7 @@ public class AmministratoreDAO
 	        
 	        a.getUtente().setId(utenteId);
 	        conn.commit();
+	        return utenteId;
         } 
 	    catch (SQLException e) 
 	    {

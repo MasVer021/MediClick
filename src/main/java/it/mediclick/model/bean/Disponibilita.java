@@ -44,6 +44,7 @@ public class Disponibilita implements Serializable {
     private LocalDateTime dataOraFine;
     private Stato stato;
     private LocalDateTime timestampBlocco;
+    private Integer pazienteIdBlocco;
 
     // Relazioni opzionali
     private Medico medico;
@@ -54,7 +55,7 @@ public class Disponibilita implements Serializable {
     }
 
     public Disponibilita(int id, int medicoId, Integer studioId, LocalDateTime dataOraInizio,
-                         LocalDateTime dataOraFine, Stato stato, LocalDateTime timestampBlocco) {
+                         LocalDateTime dataOraFine, Stato stato, LocalDateTime timestampBlocco, Integer pazienteIdBlocco) {
         this.id = id;
         this.medicoId = medicoId;
         this.studioId = studioId;
@@ -62,6 +63,7 @@ public class Disponibilita implements Serializable {
         this.dataOraFine = dataOraFine;
         this.stato = stato;
         this.timestampBlocco = timestampBlocco;
+        this.pazienteIdBlocco = pazienteIdBlocco;
     }
 
     public int getId() { return id; }
@@ -84,6 +86,9 @@ public class Disponibilita implements Serializable {
 
     public LocalDateTime getTimestampBlocco() { return timestampBlocco; }
     public void setTimestampBlocco(LocalDateTime timestampBlocco) { this.timestampBlocco = timestampBlocco; }
+
+    public Integer getPazienteIdBlocco() { return pazienteIdBlocco; }
+    public void setPazienteIdBlocco(Integer pazienteIdBlocco) { this.pazienteIdBlocco = pazienteIdBlocco; }
 
     public Medico getMedico() { return medico; }
     public void setMedico(Medico medico) { this.medico = medico; }

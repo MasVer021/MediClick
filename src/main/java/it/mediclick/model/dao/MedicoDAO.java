@@ -44,14 +44,43 @@ public class MedicoDAO
         }
     }
 
-    public List<Medico> findAll() throws SQLException 
+    public List<Medico> findAll(String query, Integer categoriaId, String citta) throws SQLException 
     {
-        String sql = """
-                        SELECT * 
-                        FROM Medico
-                     """;
-                     
-        List<Map<String, Object>> result = _contex.eseguiSelect(sql);
+        StringBuilder sql = new StringBuilder("SELECT DISTINCT M.* FROM Medico M ");
+        
+        if (categoriaId != null) {
+            sql.append("JOIN ErogazionePrestazione EP ON M.ID = EP.Medico_ID ");
+            sql.append("JOIN CatalogoPrestazioni CP ON EP.CatalogoPrestazioni_ID = CP.ID ");
+        }
+        
+        if (citta != null && !citta.isEmpty()) {
+            if (categoriaId == null) 
+            {
+                sql.append("JOIN ErogazionePrestazione EP ON M.ID = EP.Medico_ID ");
+            }
+            sql.append("JOIN Studio S ON EP.Studio_ID = S.ID ");
+        }
+
+        sql.append("WHERE M.Stato_verifica = 'Approvato' ");
+        List<Object> params = new ArrayList<>();
+
+        if (query != null && !query.isEmpty()) {
+            sql.append("AND (M.Cognome LIKE ? OR M.Nome LIKE ?) ");
+            params.add("%" + query + "%");
+            params.add("%" + query + "%");
+        }
+
+        if (categoriaId != null) {
+            sql.append("AND CP.Categoria_ID = ? ");
+            params.add(categoriaId);
+        }
+
+        if (citta != null && !citta.isEmpty()) {
+            sql.append("AND S.Citta = ? ");
+            params.add(citta);
+        }
+
+        List<Map<String, Object>> result = _contex.eseguiSelect(sql.toString(), params.toArray());
         List<Medico> medici = new ArrayList<>();
         
         if (result == null || result.isEmpty())
@@ -67,9 +96,14 @@ public class MedicoDAO
         }
         catch(SQLException e)
         {
-             System.err.println("Errore nella ricerca di tutti i medici: " + e.getMessage());
+             System.err.println("Errore nella ricerca filtrata dei medici: " + e.getMessage());
              throw e;
         }
+    }
+
+    public List<Medico> findAll() throws SQLException 
+    {
+        return findAll(null, null, null);
     }
 
     public List<Medico> findByStato(Medico.StatoVerifica stato) throws SQLException 
@@ -152,7 +186,7 @@ public class MedicoDAO
     				""";
     	try 
     	{
-			_contex.eseguiUpdate(sql, m.getCognome(),m.getNome(),m.getBio(),m.getpIva());
+			_contex.eseguiUpdate(sql, m.getCognome(), m.getNome(), m.getBio(), m.getpIva(), m.getId());
 		} 
     	catch (SQLException e) 
     	{
