@@ -1,6 +1,7 @@
 package it.mediclick.service;
 
 import it.mediclick.model.bean.CatalogoPrestazioni;
+import it.mediclick.model.bean.ImpostazioniSistema;
 import it.mediclick.model.bean.Medico;
 import it.mediclick.model.dao.CatalogoPrestazioniDAO;
 import it.mediclick.model.dao.MedicoDAO;
@@ -8,6 +9,8 @@ import it.mediclick.model.dao.UtenteDAO;
 import it.mediclick.util.Contex;
 
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
 
 public class AmministrazioneService 
 {
@@ -46,5 +49,10 @@ public class AmministrazioneService
     public void bloccaUtente(int utenteId, boolean bloccato) throws SQLException 
     {
         utenteDAO.setAccountAttivo(utenteId, !bloccato);
+    }
+    
+    public List<Medico> getMediciInAttesa() throws SQLException
+    {
+    	return  medicoDAO.findByStato(Medico.StatoVerifica.IN_ATTESA);
     }
 }

@@ -1,7 +1,7 @@
 package it.mediclick.model.bean;
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class ImpostazioniSistema implements Serializable {
 
@@ -10,8 +10,8 @@ public class ImpostazioniSistema implements Serializable {
     private int id;
     private String chiave;
     private String valore;
-    private LocalDate dataInizio;
-    private LocalDate dataFine;
+    private LocalDateTime dataInizio;
+    private LocalDateTime dataFine;
     private int updatedBy;   // FK -> Amministratore(ID)
 
     // Relazione opzionale
@@ -20,7 +20,7 @@ public class ImpostazioniSistema implements Serializable {
     public ImpostazioniSistema() {}
 
     public ImpostazioniSistema(int id, String chiave, String valore,
-                                LocalDate dataInizio, LocalDate dataFine, int updatedBy) {
+                                LocalDateTime dataInizio, LocalDateTime dataFine, int updatedBy) {
         this.id = id;
         this.chiave = chiave;
         this.valore = valore;
@@ -38,11 +38,11 @@ public class ImpostazioniSistema implements Serializable {
     public String getValore() { return valore; }
     public void setValore(String valore) { this.valore = valore; }
 
-    public LocalDate getDataInizio() { return dataInizio; }
-    public void setDataInizio(LocalDate dataInizio) { this.dataInizio = dataInizio; }
+    public LocalDateTime getDataInizio() { return dataInizio; }
+    public void setDataInizio(LocalDateTime dataInizio) { this.dataInizio = dataInizio; }
 
-    public LocalDate getDataFine() { return dataFine; }
-    public void setDataFine(LocalDate dataFine) { this.dataFine = dataFine; }
+    public LocalDateTime getDataFine() { return dataFine; }
+    public void setDataFine(LocalDateTime dataFine) { this.dataFine = dataFine; }
 
     public int getUpdatedBy() { return updatedBy; }
     public void setUpdatedBy(int updatedBy) { this.updatedBy = updatedBy; }
