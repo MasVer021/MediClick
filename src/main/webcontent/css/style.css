@@ -1,0 +1,162 @@
+@charset "UTF-8";
+
+:root
+{
+  --colore-primario: #6C5DD3;
+  --colore-secondario: #FF754C;
+  --sfondo-principale: #F4F7F6;
+  --sfondo-alternativo: #CAC4D0;
+  --testo-principale: #2D3748;
+  --testo-alternativo: #6C757D;
+  --radius: 15px;
+   --font-xs:   0.875rem;   /* 14px — copyright, note */
+    --font-sm:   1rem;       /* 16px — link nav, link footer */
+    --font-base: 1.125rem;   /* 18px — testo paragrafi */
+    --font-md:   1.25rem;    /* 20px — sottotitoli */
+    /* titoli — clamp */
+    --font-lg:  clamp(1.5rem, 2.5vw, 2rem);     /* titoli sezione */
+    --font-xl:  clamp(2rem, 4vw, 3rem);          /* h1 pagina */
+}
+
+
+html 
+{
+    font-size: 18px; 
+}
+
+body
+{
+	font-family: 'Inter', sans-serif;
+	background-color: var(--sfondo-principale);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+}
+
+main
+{
+	flex:1;
+}
+
+#main-menu
+{
+	display: flex;
+    align-items: center;
+
+    margin: 5px 5px 20px 5px ;
+    padding : 10px;
+  	font-size: var(--font-sm);
+}
+
+
+#main-menu a
+{
+	text-decoration: none;
+	color : var( --testo-principale);
+}
+
+
+
+
+#main-menu a img
+{
+	height: clamp(2rem, 6vw, 7rem);  
+    width: auto; 
+    display: block;
+    margin-right:auto;
+    
+}
+
+.nav-left, 
+.nav-center, 
+.nav-right 
+{
+    flex: 1;   
+}
+
+.nav-center 
+{
+    display: flex;
+    justify-content: center; 
+    gap: 5rem;
+}
+
+.nav-right 
+{
+    display: flex;
+    justify-content: flex-end; 
+    gap: 1rem;
+}
+
+footer
+{
+	
+	background-color: var(--colore-primario);
+	color : white;
+	display: flex;
+    align-items: stretch;
+    font-size: var(--font-xs);
+    border-radius: var(--radius) var(--radius) 0 0;
+    
+    
+    
+}
+
+footer a
+{
+	text-decoration: none;
+	color:white;
+}
+
+.footer-left, 
+.footer-center-left, 
+.footer-center-right, 
+.footer-right
+{
+	flex: 1;
+	display: flex;
+    flex-direction: column;
+    align-items: center; 
+    justify-content: space-evenly;             
+    padding: 1.5rem;
+}
+
+.footer-center-left,
+.footer-center-right,
+.footer-right {
+    border-left: 1px solid var(--testo-principale) ; 
+}
+
+footer > span:first-child 
+{
+    border-radius: var(--radius) 0 0 0;
+}
+
+footer > span:last-child 
+{
+    border-radius: 0 var(--radius) 0 0; 
+}
+
+.footer-left img
+{
+	height: clamp(1rem, 4vw, 5rem);  
+    width: auto; 
+}
+
+
+.social-links 
+{
+    display: flex;
+    flex-direction: row;   
+    gap: 2rem;
+}
+
+.social-icon 
+{
+    height: 2.5rem;
+    width: auto ;
+    max-height: 2.5rem;
+}
+
+
