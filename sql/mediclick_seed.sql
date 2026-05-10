@@ -150,12 +150,12 @@ INSERT INTO ImpostazioniSistema (Chiave, Valore, Data_Inizio, Data_Fine, Updated
 -- ============================================================
 -- 12. MEDICI  (ID = ID Utente corrispondente)
 -- ============================================================
-INSERT INTO Medico (ID, Cognome, Nome, Bio, P_Iva, Stato_verifica, Regime_fiscale) VALUES
-(3, 'Bianchi',  'Marco',    'Cardiologo con 15 anni di esperienza. Specializzato in ecocardiografia.',  '12345678901', 'Approvato',  1),
-(4, 'Verdi',    'Laura',    'Dermatologa e chirurga della pelle. Esperta in dermatoscopia digitale.',    '23456789012', 'Approvato',  4),
-(5, 'Esposito', 'Giovanni', 'Psicologo clinico e psicoterapeuta cognitivo-comportamentale.',             '34567890123', 'Approvato',  2),
-(6, 'Romano',   'Alessia',  'Fisioterapista specializzata in riabilitazione post-chirurgica.',           '45678901234', 'In attesa',  2),
-(7, 'Conti',    'Filippo',  'Medico di base. Account sospeso per verifica documentazione.',              '56789012345', 'Sospeso',    1);
+INSERT INTO Medico (ID, Cognome, Nome, Fotoprofilo, Bio, P_Iva, Stato_verifica, Regime_fiscale) VALUES
+(3, 'Bianchi',  'Marco',    NULL, 'Cardiologo con 15 anni di esperienza. Specializzato in ecocardiografia.',  '12345678901', 'Approvato',  1),
+(4, 'Verdi',    'Laura',    NULL, 'Dermatologa e chirurga della pelle. Esperta in dermatoscopia digitale.',    '23456789012', 'Approvato',  4),
+(5, 'Esposito', 'Giovanni', NULL, 'Psicologo clinico e psicoterapeuta cognitivo-comportamentale.',             '34567890123', 'Approvato',  2),
+(6, 'Romano',   'Alessia',  NULL, 'Fisioterapista specializzata in riabilitazione post-chirurgica.',           '45678901234', 'In attesa',  2),
+(7, 'Conti',    'Filippo',  NULL, 'Medico di base. Account sospeso per verifica documentazione.',              '56789012345', 'Sospeso',    1);
 
 -- ============================================================
 -- 13. PAZIENTI  (ID = ID Utente corrispondente)
