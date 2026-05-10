@@ -1,5 +1,6 @@
 package it.mediclick.model.dao;
 
+import it.mediclick.model.bean.Ruolo;
 import it.mediclick.model.bean.Utente;
 import it.mediclick.util.*;
 
@@ -60,7 +61,7 @@ public class UtenteDAO
 	
 	public int insert(Connection conn,String email, String password, LocalDate dataIscrizione, boolean accountAttivo, Integer ruoloId) throws SQLException
 	{
-		return insert(conn,new Utente(-1,email,password,dataIscrizione,accountAttivo,ruoloId));
+		return insert(conn,new Utente(-1,email,password,dataIscrizione,accountAttivo,ruoloId, new RuoloDAO(_contex).findById(ruoloId)));
 	}
 	
 	public int insert(Connection conn,Utente u) throws SQLException
@@ -128,14 +129,28 @@ public class UtenteDAO
 
 	    try 
 	    {
-	        return new Utente(
-	            Integer.parseInt(String.valueOf(u.get("ID"))),
-	            (String) u.get("Email"),
-	            (String) u.get("Password"),
-	            LocalDate.parse(String.valueOf(u.get("Data_Iscrizione"))),
-	            Boolean.parseBoolean(String.valueOf(u.get("Account_attivo"))),
-	            Integer.parseInt(String.valueOf(u.get("Ruolo_ID")))
-	        );
+	    	Utente utente = new Utente();
+	    	
+	    	
+	    	int id =  Integer.parseInt(String.valueOf(u.get("ID")));
+	    	String email =  (String) u.get("Email");
+	    	String password =   (String) u.get("Password");
+	    	LocalDate data_iscrizione =  LocalDate.parse(String.valueOf(u.get("Data_Iscrizione")));
+	    	Boolean isAttivo =  Boolean.parseBoolean(String.valueOf(u.get("Account_attivo")));
+	    	int ruolo_id =   Integer.parseInt(String.valueOf(u.get("Ruolo_ID")));
+	    	Ruolo ruolo = new RuoloDAO(_contex).findById(ruolo_id);
+	    	
+	    	
+	    	
+	    	utente.setId(0);
+	    	utente.setEmail(email);
+	    	utente.setPassword(password);
+	    	utente.setDataIscrizione(data_iscrizione);
+	    	utente.setAccountAttivo(isAttivo);
+	    	utente.setRuoloId(ruolo_id);
+	    	utente.setRuolo(ruolo);
+	    
+	        return utente;
 	    } 
 	    catch (Exception e) 
 	    {

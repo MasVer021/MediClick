@@ -5,9 +5,14 @@ import it.mediclick.util.Contex;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import it.mediclick.model.DTO.MedicoCardDTO;
+import it.mediclick.model.bean.Categoria;
 
 public class MedicoDAO 
 {
@@ -106,6 +111,67 @@ public class MedicoDAO
         return findAll(null, null, null);
     }
 
+    public List<MedicoCardDTO> findCards(String query, Integer categoriaId, String citta) throws SQLException 
+    {
+        StringBuilder sql = new StringBuilder("""
+            SELECT 
+                M.*, 
+                MIN(C.ID) as Cat_ID, MIN(C.Nome) as Categoria_Nome,
+        		MIN(S.Indirizzo_Maps) as Indirizzo_Studio, MIN(S.Citta) as Citta_Studio,
+        		MIN(EP.Prezzo_Lordo_Listino) as Costo,
+                (SELECT AVG(Voto) FROM Recensione WHERE Medico_ID = M.ID) as Media_Recensioni,
+                (SELECT COUNT(*) FROM Recensione WHERE Medico_ID = M.ID) as Num_Recensioni,
+                (SELECT MIN(Data_Ora_Inizio) FROM Disponibilita D 
+                 WHERE D.Medico_ID = M.ID AND D.Stato = 'Disponibile' AND D.Data_Ora_Inizio > NOW()) as Prima_Disponibilita
+            FROM Medico M
+            JOIN ErogazionePrestazione EP ON M.ID = EP.Medico_ID
+            JOIN CatalogoPrestazioni CP ON EP.CatalogoPrestazioni_ID = CP.ID
+            JOIN Categoria C ON CP.Categoria_ID = C.ID
+            JOIN Studio S ON EP.Studio_ID = S.ID
+            WHERE M.Stato_verifica = 'Approvato' 
+        """);
+
+        List<Object> params = new ArrayList<>();
+
+        if (query != null && !query.isEmpty()) {
+            sql.append("AND (M.Cognome LIKE ? OR M.Nome LIKE ?) ");
+            params.add("%" + query + "%");
+            params.add("%" + query + "%");
+        }
+
+        if (categoriaId != null && categoriaId > 0) {
+            sql.append("AND CP.Categoria_ID = ? ");
+            params.add(categoriaId);
+        }
+
+        if (citta != null && !citta.isEmpty()) {
+            sql.append("AND S.Citta = ? ");
+            params.add(citta);
+        }
+        
+        sql.append("GROUP BY M.ID ");
+
+        List<Map<String, Object>> result = _contex.eseguiSelect(sql.toString(), params.toArray());
+        List<MedicoCardDTO> cards = new ArrayList<>();
+        
+        if (result == null || result.isEmpty())
+            return cards;
+            
+        try
+        {
+            for (Map<String, Object> map : result) 
+            {
+                cards.add(mappingCard(map));
+            }
+            return cards;
+        }
+        catch(SQLException e)
+        {
+             System.err.println("Errore nella ricerca delle card medici: " + e.getMessage());
+             throw e;
+        }
+    }
+
     public List<Medico> findByStato(Medico.StatoVerifica stato) throws SQLException 
     {
         String sql = """
@@ -138,8 +204,8 @@ public class MedicoDAO
     public int insert(Medico m) throws SQLException 
     {                          
         String sqlMedico = """
-                            INSERT INTO Medico(ID,Cognome,Nome,Bio,P_Iva,Stato_verifica,Regime_fiscale) 
-                            VALUES (?,?,?,?,?,?,?)
+                            INSERT INTO Medico(ID,Cognome,Nome,Fotoprofilo,Bio,P_Iva,Stato_verifica,Regime_fiscale) 
+                            VALUES (?,?,?,?,?,?,?,?)
                            """;
         
         Connection conn = _contex.getConnection();
@@ -153,6 +219,7 @@ public class MedicoDAO
                 utenteId,
                 m.getCognome(),
                 m.getNome(),
+                m.getFotoprofilo(),
                 m.getBio(),
                 m.getpIva(),
                 m.getStatoVerifica() != null ? m.getStatoVerifica().getLabel() : "In attesa",
@@ -181,12 +248,12 @@ public class MedicoDAO
     {
     	String sql = """
 		                UPDATE Medico 
-		                SET Cognome = ?, Nome = ?, Bio = ?,P_Iva = ?  
+		                SET Cognome = ?, Nome = ?, Fotoprofilo = ?, Bio = ?,P_Iva = ?  
 		                WHERE ID = ?
     				""";
     	try 
     	{
-			_contex.eseguiUpdate(sql, m.getCognome(), m.getNome(), m.getBio(), m.getpIva(), m.getId());
+			_contex.eseguiUpdate(sql, m.getCognome(), m.getNome(), m.getFotoprofilo(), m.getBio(), m.getpIva(), m.getId());
 		} 
     	catch (SQLException e) 
     	{
@@ -250,6 +317,7 @@ public class MedicoDAO
             m.setId(id);
             m.setCognome((String) map.get("Cognome"));
             m.setNome((String) map.get("Nome"));
+            m.setFotoprofilo((String) map.get("Fotoprofilo"));
             m.setBio((String) map.get("Bio"));
             m.setpIva((String) map.get("P_Iva"));
 
@@ -270,6 +338,67 @@ public class MedicoDAO
         catch (Exception e) 
         {
             throw new SQLException("Errore durante il mapping del Medico: " + e.getMessage(), e);
+        }
+    }
+
+    private MedicoCardDTO mappingCard(Map<String, Object> map) throws SQLException 
+    {
+        if (map == null) 
+            return null;
+            
+        try 
+        {
+            MedicoCardDTO dto = new MedicoCardDTO();
+            
+           
+            Medico m = mapping(map); 
+            dto.setMedico(m);
+            
+           
+            Categoria c = new Categoria();
+            if (map.get("Cat_ID") != null) 
+            {
+                c.setId(Integer.parseInt(String.valueOf(map.get("Cat_ID"))));
+                c.setNome((String) map.get("Categoria_Nome"));
+            }
+            dto.setCategoria(c);
+            
+           
+            String indirizzo = (String) map.get("Indirizzo_Studio");
+            String citta = (String) map.get("Citta_Studio");
+            if (indirizzo != null && citta != null) 
+            {
+                dto.setIndirizzo(indirizzo + ", " + citta);
+            }
+            
+            if (map.get("Costo") != null) 
+            {
+                dto.setCosto(Double.parseDouble(String.valueOf(map.get("Costo"))));
+            }
+            
+           
+            if (map.get("Media_Recensioni") != null) 
+            {
+ 
+                dto.setValoreRecensioni((int) Math.round(Double.parseDouble(String.valueOf(map.get("Media_Recensioni")))));
+            }
+            if (map.get("Num_Recensioni") != null) 
+            {
+                dto.setNumeroRecensioni(Integer.parseInt(String.valueOf(map.get("Num_Recensioni"))));
+            }
+            
+            
+            if (map.get("Prima_Disponibilita") != null) 
+            {
+                Timestamp ts = Timestamp.valueOf(String.valueOf(map.get("Prima_Disponibilita")));
+                dto.setPrimaDisponibilita(ts.toLocalDateTime());
+            }
+            
+            return dto;
+        } 
+        catch (Exception e) 
+        {
+            throw new SQLException("Errore durante il mapping di MedicoCardDTO: " + e.getMessage(), e);
         }
     }
 }

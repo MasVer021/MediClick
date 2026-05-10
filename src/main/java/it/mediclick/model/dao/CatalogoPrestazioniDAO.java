@@ -155,6 +155,34 @@ public class CatalogoPrestazioniDAO
              throw e;
         }
     }
+    
+    
+    
+    
+    public Categoria findCategoriaById(int id) throws SQLException 
+    {
+        String sql = """
+                        SELECT * 
+                        FROM Categoria
+                        WHERE ID = ?
+                     """;
+                     
+        List<Map<String, Object>> result = _contex.eseguiSelect(sql,id);
+        
+        if (result == null || result.isEmpty())
+            return null;
+            
+        try
+        {
+            
+            return mappingCat(result.get(0));
+        }
+        catch(SQLException e)
+        {
+             System.err.println("Errore nella ricerca di tutte le categorie: " + e.getMessage());
+             throw e;
+        }
+    }
 
     public void insert(CatalogoPrestazioni cp) throws SQLException 
     {
