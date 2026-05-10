@@ -10,19 +10,19 @@
 	
 </span>
 <span class="footer-center-left">
-	<a href="">Cerca un medico</a>
-	<a href="">Come funziona</a>
-	<a href="">Tutte le specializzazioni</a>	
+	<a href="${pageContext.request.contextPath}/search">Cerca un medico</a>
+	<a href="${pageContext.request.contextPath}/index.jsp#come-funziona">Come funziona</a>
+	<a href="${pageContext.request.contextPath}/search">Tutte le specializzazioni</a>	
 </span>
 <span class="footer-center-right">
-	<a href="">Sei un medico?</a>
-	<a href="">Accreditamento</a>
-	<a href="">Centro assistenza medici</a>
+	<a href="${pageContext.request.contextPath}/index.jsp#sei-un-medico">Sei un medico?</a>
+	<a href="${pageContext.request.contextPath}/index.jsp#accreditamento">Accreditamento</a>
+	<a href="${pageContext.request.contextPath}/index.jsp#centro-assistenza">Centro assistenza medici</a>
 </span>
 <span class="footer-right">
-	<a href="">Privacy Policy & Cookie</a>
-	<a href="">Termini e condizioni</a>
-	<a href="">Contattaci : supporto@mediclick.it</a>
+	<a href="${pageContext.request.contextPath}/index.jsp#privacy">Privacy Policy & Cookie</a>
+	<a href="${pageContext.request.contextPath}/index.jsp#termini">Termini e condizioni</a>
+	<a href="${pageContext.request.contextPath}/index.jsp#contattaci">Contattaci : supporto@mediclick.it</a>
     <p>&copy; 2026 MediClick - Prog ShadowMonarcDev </p>
 </span>
 </footer>

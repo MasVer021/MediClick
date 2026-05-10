@@ -16,13 +16,13 @@
 	
 	<div class="nav-center">
     <!-- Utente NON loggato -->
-	    <c:if test="${empty sessionScope.utenteLoggato}">
-	        <a href="${pageContext.request.contextPath}/login">Home</a>
-	        <a href="${pageContext.request.contextPath}/registrazione">Medico</a>
+	    <c:if test="${empty sessionScope.utente}">
+	        <a href="${pageContext.request.contextPath}/">Home</a>
+	        <a href="${pageContext.request.contextPath}/search">Trova medico</a>
 	    </c:if>
 	
 	    <!-- PAZIENTE -->
-	    <c:if test="${sessionScope.utenteLoggato.ruolo.codice == 'PAZIENTE'}">
+	    <c:if test="${sessionScope.utente.ruolo.codice == 'PAZIENTE'}">
 	        <a href="${pageContext.request.contextPath}/paziente/profilo">Home</a>
 	        <a href="${pageContext.request.contextPath}/ricerca">Prenotazioni</a>
 	        <a href="${pageContext.request.contextPath}/ricerca">Sconti</a>
@@ -30,7 +30,7 @@
 	    </c:if>
 	
 	    <!-- MEDICO -->
-	    <c:if test="${sessionScope.utenteLoggato.ruolo.codice == 'MEDICO'}">
+	    <c:if test="${sessionScope.utente.ruolo.codice == 'MEDICO'}">
 	        <a href="${pageContext.request.contextPath}/medico/agenda">Home</a>
 	        <a href="${pageContext.request.contextPath}/medico/disponibilita">Documenti</a>
 	        <a href="${pageContext.request.contextPath}/medico/disponibilita">Prenotazioni</a>
@@ -39,7 +39,7 @@
 	    </c:if>
 	
 	    <!-- ADMIN -->
-	    <c:if test="${sessionScope.utenteLoggato.ruolo.codice == 'ADMIN'}">
+	    <c:if test="${sessionScope.utente.ruolo.codice == 'ADMIN'}">
 	        <a href="${pageContext.request.contextPath}/admin/dashboard">Home</a>
 	        <a href="${pageContext.request.contextPath}/admin/medici">Contabilità</a>
 	        <a href="${pageContext.request.contextPath}/admin/catalogo">Approvazione</a>
@@ -48,25 +48,25 @@
     </div>
     
     <div class="nav-right">
-	    <c:if test="${empty sessionScope.utenteLoggato}">
+	    <c:if test="${empty sessionScope.utente}">
 	        <a href="${pageContext.request.contextPath}/login">Accedi</a>
 	        <a href="${pageContext.request.contextPath}/singin">Registrati</a>
 	    </c:if>
 	
 	    <!-- PAZIENTE -->
-	    <c:if test="${sessionScope.utenteLoggato.ruolo.codice == 'PAZIENTE'}">
+	    <c:if test="${sessionScope.utente.ruolo.codice == 'PAZIENTE'}">
 	        <a href="${pageContext.request.contextPath}/paziente/profilo">Il mio profilo</a>
 	        <a href="${pageContext.request.contextPath}/logout">Esci</a>
 	    </c:if>
 	
 	    <!-- MEDICO -->
-	    <c:if test="${sessionScope.utenteLoggato.ruolo.codice == 'MEDICO'}">
+	    <c:if test="${sessionScope.utente.ruolo.codice == 'MEDICO'}">
 	        <a href="${pageContext.request.contextPath}/paziente/profilo">Il mio profilo</a>
 	        <a href="${pageContext.request.contextPath}/logout">Esci</a>
 	    </c:if>
 	
 	    <!-- ADMIN -->
-	    <c:if test="${sessionScope.utenteLoggato.ruolo.codice == 'ADMIN'}">
+	    <c:if test="${sessionScope.utente.ruolo.codice == 'ADMIN'}">
 	        <a href="${pageContext.request.contextPath}/paziente/profilo">Il mio profilo</a>
 	        <a href="${pageContext.request.contextPath}/logout">Esci</a>
 	    </c:if>
