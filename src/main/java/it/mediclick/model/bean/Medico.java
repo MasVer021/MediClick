@@ -40,6 +40,7 @@ public class Medico implements Serializable {
     private int id;          // FK -> Utente(ID)
     private String cognome;
     private String nome;
+    private String fotoprofilo;
     private String bio;
     private String pIva;
     private StatoVerifica statoVerifica;
@@ -72,6 +73,9 @@ public class Medico implements Serializable {
 
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }
+
+    public String getFotoprofilo() { return fotoprofilo; }
+    public void setFotoprofilo(String fotoprofilo) { this.fotoprofilo = fotoprofilo; }
 
     public String getBio() { return bio; }
     public void setBio(String bio) { this.bio = bio; }

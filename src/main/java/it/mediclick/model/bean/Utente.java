@@ -3,6 +3,8 @@ package it.mediclick.model.bean;
 import java.io.Serializable;
 import java.time.LocalDate;
 
+import it.mediclick.model.dao.RuoloDAO;
+
 public class Utente implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -17,17 +19,19 @@ public class Utente implements Serializable {
     
     private Ruolo ruolo;
 
-    public Utente() {
+    public Utente() 
+    {
         this.accountAttivo = true;
     }
 
-    public Utente(int id, String email, String password, LocalDate dataIscrizione, boolean accountAttivo, Integer ruoloId) {
+    public Utente(int id, String email, String password, LocalDate dataIscrizione, boolean accountAttivo, Integer ruoloId,Ruolo ruolo) {
         this.id = id;
         this.email = email;
         this.password = password;
         this.dataIscrizione = dataIscrizione;
         this.accountAttivo = accountAttivo;
         this.ruoloId = ruoloId;
+        this.ruolo = ruolo;
     }
 
     public int getId() { return id; }

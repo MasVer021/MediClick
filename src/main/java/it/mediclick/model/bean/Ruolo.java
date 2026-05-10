@@ -11,7 +11,7 @@ public class Ruolo implements Serializable {
     private String codice;
     private String descrizione;
 
-    // Relazione N:N con Permesso (opzionale, per uso con ORM/DAO)
+   
     private List<Permesso> permessi;
 
     public Ruolo() {}
