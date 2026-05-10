@@ -1,12 +1,24 @@
 package it.mediclick.service;
 
+import it.mediclick.model.DTO.MedicoCardDTO;
+import it.mediclick.model.bean.Categoria;
+import it.mediclick.model.bean.Disponibilita;
+import it.mediclick.model.bean.ErogazionePrestazione;
 import it.mediclick.model.bean.Medico;
+import it.mediclick.model.bean.Recensione;
+import it.mediclick.model.dao.CatalogoPrestazioniDAO;
+import it.mediclick.model.dao.DisponibilitaDAO;
+import it.mediclick.model.dao.ErogazionePrestazioneDAO;
 import it.mediclick.model.dao.MedicoDAO;
+import it.mediclick.model.dao.RecensioneDAO;
 import it.mediclick.util.Contex;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.apache.jasper.tagplugins.jstl.core.ForEach;
 
 public class RicercaService {
 
@@ -19,15 +31,14 @@ public class RicercaService {
     }
 
     
-    public List<Medico> cercaMedici(String query, Integer categoriaId, String citta) throws SQLException 
+    public List<MedicoCardDTO> cercaMedici(String query, Integer categoriaId, String citta) throws SQLException 
     {
-        // La ricerca ora avviene direttamente sul database per performance ottimali
-        return medicoDAO.findAll(query, categoriaId, citta);
+        return medicoDAO.findCards(query, categoriaId, citta);
     }
+    
+    
+   
 
-    /**
-     * Recupera il dettaglio completo di un medico.
-     */
     public Medico getDettaglioMedico(int medicoId) throws SQLException 
     {
         return medicoDAO.findById(medicoId);
@@ -38,5 +49,11 @@ public class RicercaService {
         return medicoDAO.findByStato(Medico.StatoVerifica.APPROVATO).stream()
                 .limit(5)
                 .collect(Collectors.toList());
+    }
+
+    public List<Categoria> getCategorie() throws SQLException 
+    {
+        CatalogoPrestazioniDAO catalogoDAO = new CatalogoPrestazioniDAO(_contex);
+        return catalogoDAO.findAllCategorie();
     }
 }
