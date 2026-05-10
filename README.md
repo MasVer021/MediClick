@@ -45,7 +45,7 @@ MediClick/
 
 1. **Clona il repository**:
    ```bash
-   git clone https://github.com/TuoUsername/MediClick.git
+   git clone https://github.com/MasVer021/MediClick.git
    ```
 
 2. **Configura il Database**:
