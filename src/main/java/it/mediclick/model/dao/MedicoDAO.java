@@ -1,6 +1,7 @@
 package it.mediclick.model.dao;
 
 import it.mediclick.model.bean.Medico;
+import it.mediclick.model.bean.RegimeFiscale;
 import it.mediclick.util.Contex;
 
 import java.sql.Connection;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import it.mediclick.model.DTO.MedicoCardDTO;
 import it.mediclick.model.bean.Categoria;
@@ -25,7 +27,7 @@ public class MedicoDAO
         utente = new UtenteDAO(contex);
     }
 
-    public Medico findById(int id) throws SQLException 
+    public Optional<Medico> findById(int id) throws SQLException 
     {
         String sql = """
                         SELECT * 
@@ -58,7 +60,8 @@ public class MedicoDAO
             sql.append("JOIN CatalogoPrestazioni CP ON EP.CatalogoPrestazioni_ID = CP.ID ");
         }
         
-        if (citta != null && !citta.isEmpty()) {
+        if (citta != null && !citta.isEmpty()) 
+        {
             if (categoriaId == null) 
             {
                 sql.append("JOIN ErogazionePrestazione EP ON M.ID = EP.Medico_ID ");
@@ -69,18 +72,21 @@ public class MedicoDAO
         sql.append("WHERE M.Stato_verifica = 'Approvato' ");
         List<Object> params = new ArrayList<>();
 
-        if (query != null && !query.isEmpty()) {
+        if (query != null && !query.isEmpty()) 
+        {
             sql.append("AND (M.Cognome LIKE ? OR M.Nome LIKE ?) ");
             params.add("%" + query + "%");
             params.add("%" + query + "%");
         }
 
-        if (categoriaId != null) {
+        if (categoriaId != null) 
+        {
             sql.append("AND CP.Categoria_ID = ? ");
             params.add(categoriaId);
         }
 
-        if (citta != null && !citta.isEmpty()) {
+        if (citta != null && !citta.isEmpty()) 
+        {
             sql.append("AND S.Citta = ? ");
             params.add(citta);
         }
@@ -133,18 +139,21 @@ public class MedicoDAO
 
         List<Object> params = new ArrayList<>();
 
-        if (query != null && !query.isEmpty()) {
+        if (query != null && !query.isEmpty()) 
+        {
             sql.append("AND (M.Cognome LIKE ? OR M.Nome LIKE ?) ");
             params.add("%" + query + "%");
             params.add("%" + query + "%");
         }
 
-        if (categoriaId != null && categoriaId > 0) {
+        if (categoriaId != null && categoriaId > 0) 
+        {
             sql.append("AND CP.Categoria_ID = ? ");
             params.add(categoriaId);
         }
 
-        if (citta != null && !citta.isEmpty()) {
+        if (citta != null && !citta.isEmpty()) 
+        {
             sql.append("AND S.Citta = ? ");
             params.add(citta);
         }
@@ -313,6 +322,19 @@ public class MedicoDAO
             Medico m = new Medico();
             int id = Integer.parseInt(String.valueOf(map.get("ID")));
             
+            String SQLregimeFiscale = 	"""
+            						SELECT *
+            						FROM regime_fiscale
+            						WHERE ID = ?
+            						""";
+            
+           RegimeFiscale regimeFiscale = mappingRegimeFiscale(_contex.eseguiSelect(SQLregimeFiscale, map.get("regime_fiscale")).getFirst());
+           
+           
+          
+            
+            
+            
             
             m.setId(id);
             m.setCognome((String) map.get("Cognome"));
@@ -320,6 +342,7 @@ public class MedicoDAO
             m.setFotoprofilo((String) map.get("Fotoprofilo"));
             m.setBio((String) map.get("Bio"));
             m.setpIva((String) map.get("P_Iva"));
+            m.setRegimeFiscale(regimeFiscale);
 
             String statoStr = (String) map.get("Stato_verifica");
             
@@ -340,6 +363,28 @@ public class MedicoDAO
             throw new SQLException("Errore durante il mapping del Medico: " + e.getMessage(), e);
         }
     }
+    
+    
+    private RegimeFiscale mappingRegimeFiscale(Map<String, Object> map) throws SQLException
+	{
+		RegimeFiscale regimeFiscale = new RegimeFiscale();
+		
+		int id =Integer.parseInt(String.valueOf(map.get("id")));
+		int aliquota = Integer.parseInt(String.valueOf(map.get("Aliquota_Default")));
+		String descrizione = String.valueOf(map.get("Descrizione"));
+		String nome = String.valueOf(map.get("Nome"));
+		
+		regimeFiscale.setId(id);
+		regimeFiscale.setAliquotaDefault(aliquota);
+		regimeFiscale.setDescrizione(descrizione);
+		regimeFiscale.setNome(nome);
+		
+		return regimeFiscale;
+	}
+    
+    
+    
+    
 
     private MedicoCardDTO mappingCard(Map<String, Object> map) throws SQLException 
     {

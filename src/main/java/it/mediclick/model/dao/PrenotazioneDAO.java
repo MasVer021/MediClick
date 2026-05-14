@@ -202,16 +202,16 @@ public class PrenotazioneDAO {
             p.setIdTransazioneEsterno((String) map.get("ID_Transazione_Esterno"));
 
             if (map.get("Importo_Pagato") != null)
-                p.setImportoPagato((BigDecimal) map.get("Importo_Pagato"));
+                p.setImportoPagato(Double.parseDouble(String.valueOf(map.get("Importo_Pagato"))));
 
             if (map.get("Ricavo_Netto_Medico_Euro") != null)
-                p.setRicavoNettoMedicoEuro((BigDecimal) map.get("Ricavo_Netto_Medico_Euro"));
+                p.setRicavoNettoMedicoEuro(Double.parseDouble(String.valueOf(map.get("Ricavo_Netto_Medico_Euro"))));
 
             if (map.get("Trattenuta_Piattaforma_Euro") != null)
-                p.setTrattenutaPiattaformaEuro((BigDecimal) map.get("Trattenuta_Piattaforma_Euro"));
+                p.setTrattenutaPiattaformaEuro(Double.parseDouble(String.valueOf(map.get("Trattenuta_Piattaforma_Euro"))));
 
             if (map.get("Tasse_Stimate_Euro") != null)
-                p.setTasseStimateEuro((BigDecimal) map.get("Tasse_Stimate_Euro"));
+                p.setTasseStimateEuro(Double.parseDouble(String.valueOf(map.get("Tasse_Stimate_Euro"))));
 
             if (map.get("Data_Pagamento") != null) {
                 p.setDataPagamento(LocalDateTime.parse(String.valueOf(map.get("Data_Pagamento"))));

@@ -2,9 +2,6 @@ package it.mediclick.model.bean;
 
 import java.io.Serializable;
 
-/**
- * Specializzazione di Utente - condivide lo stesso ID (PK = FK su Utente).
- */
 public class Medico implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -37,71 +34,118 @@ public class Medico implements Serializable {
         }  
     }
 
-    private int id;          // FK -> Utente(ID)
+    private int id;
     private String cognome;
     private String nome;
     private String fotoprofilo;
     private String bio;
     private String pIva;
     private StatoVerifica statoVerifica;
-    private Integer regimeFiscaleId;
-
-    // Relazioni opzionali
+   
     private Utente utente;
     private RegimeFiscale regimeFiscale;
 
-    public Medico() {
+    public Medico()
+    {
         this.statoVerifica = StatoVerifica.IN_ATTESA;
     }
 
-    public Medico(int id, String cognome, String nome, String bio, String pIva,
-                  StatoVerifica statoVerifica, Integer regimeFiscaleId) {
-        this.id = id;
-        this.cognome = cognome;
-        this.nome = nome;
-        this.bio = bio;
-        this.pIva = pIva;
-        this.statoVerifica = statoVerifica;
-        this.regimeFiscaleId = regimeFiscaleId;
+    public int getId() 
+    { 
+    	return id; 
+    }
+    public void setId(int id) 
+    { 
+    	this.id = id; 
     }
 
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public String getCognome() 
+    { 
+    	return cognome; 
+    }
+    public void setCognome(String cognome) 
+    {
+    	this.cognome = cognome;
+	}
 
-    public String getCognome() { return cognome; }
-    public void setCognome(String cognome) { this.cognome = cognome; }
+    public String getNome()
+    { 
+    	return nome; 
+    }
+    
+    public void setNome(String nome)
+    { 
+    	this.nome = nome; 
+    }
 
-    public String getNome() { return nome; }
-    public void setNome(String nome) { this.nome = nome; }
+    public String getFotoprofilo() 
+    { 
+    	return fotoprofilo; 
+    }
+    
+    public void setFotoprofilo(String fotoprofilo) 
+    { 
+    	this.fotoprofilo = fotoprofilo;
+    }
 
-    public String getFotoprofilo() { return fotoprofilo; }
-    public void setFotoprofilo(String fotoprofilo) { this.fotoprofilo = fotoprofilo; }
+    public String getBio() 
+    { 
+    	return bio; 
+    }
+    
+    public void setBio(String bio) 
+    { 
+    	this.bio = bio;
+    }
 
-    public String getBio() { return bio; }
-    public void setBio(String bio) { this.bio = bio; }
+    public String getpIva() 
+    { 
+    	return pIva; 
+    }
+    
+    public void setpIva(String pIva) 
+    { 
+    	this.pIva = pIva; 
+    }
 
-    public String getpIva() { return pIva; }
-    public void setpIva(String pIva) { this.pIva = pIva; }
+    public StatoVerifica getStatoVerifica() 
+    { 
+    	return statoVerifica; 
+    }
+    
+    public void setStatoVerifica(StatoVerifica statoVerifica) 
+    { 
+    	this.statoVerifica = statoVerifica; 
+    }
 
-    public StatoVerifica getStatoVerifica() { return statoVerifica; }
-    public void setStatoVerifica(StatoVerifica statoVerifica) { this.statoVerifica = statoVerifica; }
+    public Utente getUtente() 
+    { 
+    	return utente; 
+    }
+    public void setUtente(Utente utente) 
+    { 
+    	this.utente = utente; 
+    }
 
-    public Integer getRegimeFiscaleId() { return regimeFiscaleId; }
-    public void setRegimeFiscaleId(Integer regimeFiscaleId) { this.regimeFiscaleId = regimeFiscaleId; }
+    public RegimeFiscale getRegimeFiscale() 
+    { 
+    	return regimeFiscale; 
+    }
+    
+    public void setRegimeFiscale(RegimeFiscale regimeFiscale) 
+    { 
+    	this.regimeFiscale = regimeFiscale; 
+    }
 
-    public Utente getUtente() { return utente; }
-    public void setUtente(Utente utente) { this.utente = utente; }
-
-    public RegimeFiscale getRegimeFiscale() { return regimeFiscale; }
-    public void setRegimeFiscale(RegimeFiscale regimeFiscale) { this.regimeFiscale = regimeFiscale; }
-
-    /** Nome completo: Cognome Nome */
-    public String getNomeCompleto() {
+    
+    public String getNomeCompleto() 
+    {
         return cognome + " " + nome;
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return "Medico{id=" + id + ", nome='" + getNomeCompleto() + "', stato=" + statoVerifica + "}";
     }
 }

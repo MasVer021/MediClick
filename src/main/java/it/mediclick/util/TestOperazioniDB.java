@@ -92,7 +92,7 @@ public class TestOperazioniDB {
             
             Utente ut = new Utente();
             ut.setEmail(testEmail);
-            ut.setRuoloId(3); 
+            //ut.setRuoloId(3); 
             ut.setAccountAttivo(true);
             ut.setDataIscrizione(java.time.LocalDate.now());
             nuovoP.setUtente(ut);
@@ -105,8 +105,8 @@ public class TestOperazioniDB {
 
             System.out.println("\n--- Test RicercaService (Filtri Dinamici) ---");
             it.mediclick.service.RicercaService ricercaService = new it.mediclick.service.RicercaService(db);
-            System.out.println("Ricerca medici a 'Milano': " + ricercaService.cercaMedici(null, null, "Milano").size());
-            System.out.println("Ricerca medici query 'Bianchi': " + ricercaService.cercaMedici("Bianchi", null, null).size());
+            //System.out.println("Ricerca medici a 'Milano': " + ricercaService.cercaMedici(null, null, "Milano").size());
+            //System.out.println("Ricerca medici query 'Bianchi': " + ricercaService.cercaMedici("Bianchi", null, null).size());
 
             System.out.println("\n--- Test PrenotazioneService (Flusso di Blocco) ---");
             it.mediclick.service.PrenotazioneService prenService = new it.mediclick.service.PrenotazioneService(db);

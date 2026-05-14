@@ -1,75 +1,83 @@
 package it.mediclick.model.dao;
 
 import it.mediclick.model.bean.Amministratore;
-import it.mediclick.util.Contex;
+import it.mediclick.model.bean.Dipartimento;
+import it.mediclick.model.bean.Utente;
+import it.mediclick.util.*;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 public class AmministratoreDAO 
 {
     private Contex _contex;
     private UtenteDAO utente;
-
+    
     public AmministratoreDAO(Contex contex) 
     {
         _contex = contex;
         utente = new UtenteDAO(contex);
     }
 
-    public Amministratore findById(int id) throws SQLException 
+    public Optional<Amministratore> findById(int id) throws SQLException 
     {
-        String sql = """
-                        SELECT * 
-                        FROM Amministratore 
-                        WHERE ID = ?
-                     """;
+        try 
+        {
+			String sqlAmmnistratore = 	"""
+				                        SELECT * 
+				                        FROM Amministratore 
+				                        WHERE ID = ?
+					                     """;
+			
+			return  _contex.eseguiSelectSingolo(sqlAmmnistratore,amministratoreMapper,id);
+		} 
+        catch (SQLException e)
+        {
+        	 throw new SQLException("Errore nel recupero dell'amministratore con ID " + id, e);
+		}
                      
-        List<Map<String, Object>> result = _contex.eseguiSelect(sql, id);
         
-        if (result == null || result.isEmpty()) 
-            return null;
-            
-        try
+    }
+    
+    public Optional<Dipartimento> dipartimentoFindById(int id) throws SQLException 
+    {
+        try 
         {
-            return mapping(result.get(0));
-        }
-        catch(SQLException e)
+			String sqlAmmnistratore = 	"""
+				                        SELECT *
+										FROM dipartimento
+										WHERE id = ?
+					                     """;
+			
+			return  _contex.eseguiSelectSingolo(sqlAmmnistratore,dipartimentoMapper,id);
+		} 
+        catch (SQLException e)
         {
-             System.err.println("Errore nella ricerca dell'amministratore by id: " + e.getMessage());
-             throw e;
-        }
+        	 throw new SQLException("Errore nel recupero del dipartimento con ID " + id, e);
+		}
+                     
+        
     }
 
     public List<Amministratore> findAll() throws SQLException 
     {
-        String sql = """
-                        SELECT * 
-                        FROM Amministratore
-                     """;
-                     
-        List<Map<String, Object>> result = _contex.eseguiSelect(sql);
-        List<Amministratore> amms = new ArrayList<>();
+        try 
+        {
+			String sqlAmmnistratoreAll = 	"""
+					                        SELECT * 
+					                        FROM Amministratore
+						                     """;
+			
+			return _contex.eseguiSelect(sqlAmmnistratoreAll, amministratoreMapper);
+		} 
+        catch (SQLException e) 
+        {
+			 throw new SQLException("Errore nel recupero di tutti gli amministratori", e);
+		}
         
-        if (result == null || result.isEmpty())
-            return amms;
-            
-        try
-        {
-            for (Map<String, Object> map : result) 
-            {
-                amms.add(mapping(map));
-            }
-            return amms;
-        }
-        catch(SQLException e)
-        {
-             System.err.println("Errore nella ricerca di tutti gli amministratori: " + e.getMessage());
-             throw e;
-        }
+        
     }
 
     public int insert(Amministratore a) throws SQLException 
@@ -80,30 +88,31 @@ public class AmministratoreDAO
                                     INSERT INTO Amministratore(ID,Dipartimento_ID) 
                                     VALUES (?,?)
                                    """;
+        
         Connection conn = _contex.getConnection();
         conn.setAutoCommit(false);
+        
         try
         {
+        	Utente u = a.getUtente();
         	
-	        int utenteId = utente.insert(conn,a.getUtente());
+	        int utenteId = utente.insert(conn,u);
+	        Dipartimento d = a.getDipartimento().orElse(null);
+	        
+	        Integer dipartimentoId = d==null ? null : d.getId();
 	
-	        _contex.eseguiUpdate(sqlAmministratore,
-	        	conn,
-	            utenteId,
-	            a.getDipartimentoId()
-	        );
+	        _contex.eseguiUpdate(sqlAmministratore,conn,utenteId,dipartimentoId);
 	
 	        a.setId(utenteId);
-	        
 	        a.getUtente().setId(utenteId);
+	        
 	        conn.commit();
 	        return utenteId;
         } 
 	    catch (SQLException e) 
 	    {
 	    	conn.rollback();
-	        System.err.println("Errore nell'inserimento dell'amministratore: " + e.getMessage());
-	        throw e;
+	    	throw new SQLException("Errore nell'inserimento dell'amministratore: " , e);
 	    }
         finally
         {
@@ -115,29 +124,36 @@ public class AmministratoreDAO
     {
     	utente.updatePassword(id, password);
     }
-
-    private Amministratore mapping(Map<String, Object> map) throws SQLException 
+    
+    private final ResultMapper <Dipartimento> dipartimentoMapper = rowDipartimento->
+   	{
+   		 Dipartimento dipartimento = new Dipartimento();
+   		 
+   		 dipartimento.setId(MapRow.getInt(rowDipartimento, "ID"));
+   		 dipartimento.setNome(MapRow.getString(rowDipartimento, "Nome"));
+   		 
+   		 return dipartimento;
+   	};
+ 
+    private final ResultMapper<Amministratore> amministratoreMapper = row ->
     {
-        if (map == null) 
-            return null;
-            
-        try 
-        {
-            Amministratore a = new Amministratore();
-            int id = Integer.parseInt(String.valueOf(map.get("ID")));
-            
-            a.setId(id);
-            if (map.get("Dipartimento_ID") != null) 
-            {
-                a.setDipartimentoId(Integer.parseInt(String.valueOf(map.get("Dipartimento_ID"))));
-            }
-            
-            a.setUtente(utente.findById(id));
-            return a;
-        } 
-        catch (Exception e) 
-        {
-            throw new SQLException("Errore durante il mapping dell'Amministratore: " + e.getMessage(), e);
-        }
-    }
+    	int id = MapRow.getInt(row, "ID");
+    	Integer idDipartimento = MapRow.getIntOrNull(row, "Dipartimento_ID");
+    	
+    	Amministratore a = new Amministratore();
+    	Utente u = utente.findById(id);
+    	
+    	a.setUtente(u);
+     	a.setId(id);
+    	
+    	
+    	if(idDipartimento!=null)
+    	{
+			a.setDipartimento(dipartimentoFindById(idDipartimento).orElseThrow(() -> new SQLException("Dipartimento " + idDipartimento + " non trovato")));
+    	}
+    	
+        return a;
+    };
+    
+   
 }

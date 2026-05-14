@@ -2,6 +2,8 @@ package it.mediclick.model.dao;
 
 import it.mediclick.model.bean.Disponibilita;
 import it.mediclick.util.Contex;
+import it.mediclick.util.MapRow;
+import it.mediclick.util.ResultMapper;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -12,14 +14,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class DisponibilitaDAO {
+public class DisponibilitaDAO 
+{
     private Contex _contex;
+    private MedicoDAO medicoDAO;
+    private PazienteDAO pazienteDAO;
 
-    public DisponibilitaDAO(Contex contex) {
+    public DisponibilitaDAO(Contex contex) 
+    {
         _contex = contex;
+        medicoDAO = new MedicoDAO(_contex);
+        pazienteDAO = new PazienteDAO(_contex);
     }
 
-    public Disponibilita findById(int id) throws SQLException {
+    public Disponibilita findById(int id) throws SQLException 
+    {
         String sql = """
                    SELECT *
                    FROM Disponibilita
@@ -76,12 +85,16 @@ public class DisponibilitaDAO {
         if (result == null || result.isEmpty())
             return list;
 
-        try {
-            for (Map<String, Object> map : result) {
+        try 
+        {
+            for (Map<String, Object> map : result) 
+            {
                 list.add(mapping(map));
             }
             return list;
-        } catch (SQLException e) {
+        } 
+        catch (SQLException e) 
+        {
             System.err.println("Errore nella ricerca disponibilita per medico e data: " + e.getMessage());
             throw e;
         }
@@ -239,8 +252,32 @@ public class DisponibilitaDAO {
             }
 
             return d;
-        } catch (Exception e) {
+        } 
+        catch (Exception e) 
+        {
             throw new SQLException("Errore durante il mapping della Disponibilita: " + e.getMessage(), e);
         }
     }
+    
+    private final ResultMapper<Disponibilita> disponibilitaMapper = row->
+    {
+    	Disponibilita d = new Disponibilita();
+    	int id = MapRow.getInt(row, "ID");
+
+    	d.setId(id);
+
+        Medico m = medicoDAO
+    	
+    	d.setMedico(null);
+    	d.setPaziente(null);
+    	d.setDataOraFine(null);
+    	d.setDataOraInizio(null);
+    	d.setStudio(null);
+    	d.setTimestampBlocco(null);
+    	d.setStato(null);
+    	
+    	
+    	
+    	return d;
+    };
 }

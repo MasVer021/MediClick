@@ -159,8 +159,6 @@ public class RuoloDAO
         }
     }
     
-    
-    
     private Permesso mappingPermesso(Map<String, Object> map) throws SQLException 
     {
         if (map == null) 
@@ -179,7 +177,6 @@ public class RuoloDAO
             throw new SQLException("Errore durante il mapping del permesso: " + e.getMessage(), e);
         }
     }
-    
 
     private Ruolo mapping(Map<String, Object> map) throws SQLException 
     {

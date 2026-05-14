@@ -77,7 +77,19 @@ public class LoginServlet extends HttpServlet
 	        
 	        HttpSession session = request.getSession(true);
 	        session.setAttribute("utente", utente);
-	        redirectByRole(utente, response,request);
+	        
+	        String redirectUrl = (String) session.getAttribute("redirectDopoLogin");
+	        
+	        if (redirectUrl != null) 
+	        {
+	            session.removeAttribute("redirectDopoLogin");
+	            response.sendRedirect(redirectUrl);
+	        } 
+	        else 
+	        {
+	           
+	            redirectByRole(utente, response, request);
+	        }
 	    } 
 	    catch (SQLException e) 
 	    {

@@ -1,40 +1,73 @@
 package it.mediclick.model.bean;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 
-public class RegimeFiscale implements Serializable {
+
+public class RegimeFiscale implements Serializable
+{
 
     private static final long serialVersionUID = 1L;
 
     private int id;
     private String nome;
-    private BigDecimal aliquotaDefault;
+    private int aliquotaDefault;
     private String descrizione;
 
-    public RegimeFiscale() {}
+    public RegimeFiscale()
+    {
+    }
 
-    public RegimeFiscale(int id, String nome, BigDecimal aliquotaDefault, String descrizione) {
+    public RegimeFiscale(int id, String nome, int aliquotaDefault, String descrizione)
+    {
         this.id = id;
         this.nome = nome;
         this.aliquotaDefault = aliquotaDefault;
         this.descrizione = descrizione;
     }
 
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public int getId()
+    {
+        return id;
+    }
 
-    public String getNome() { return nome; }
-    public void setNome(String nome) { this.nome = nome; }
+    public void setId(int id)
+    {
+        this.id = id;
+    }
 
-    public BigDecimal getAliquotaDefault() { return aliquotaDefault; }
-    public void setAliquotaDefault(BigDecimal aliquotaDefault) { this.aliquotaDefault = aliquotaDefault; }
+    public String getNome()
+    {
+        return nome;
+    }
 
-    public String getDescrizione() { return descrizione; }
-    public void setDescrizione(String descrizione) { this.descrizione = descrizione; }
+    public void setNome(String nome)
+    {
+        this.nome = nome;
+    }
+
+    public int getAliquotaDefault()
+    {
+        return aliquotaDefault;
+    }
+
+    public void setAliquotaDefault(int aliquotaDefault)
+    {
+        this.aliquotaDefault = aliquotaDefault;
+    }
+
+    public String getDescrizione()
+    {
+        return descrizione;
+    }
+
+    public void setDescrizione(String descrizione)
+    {
+        this.descrizione = descrizione;
+    }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return "RegimeFiscale{id=" + id + ", nome='" + nome + "', aliquotaDefault=" + aliquotaDefault + "}";
     }
 }

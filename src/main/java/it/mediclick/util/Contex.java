@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 
 public class Contex 
@@ -125,5 +126,23 @@ public class Contex
         }
 
         return risultati;
+    }
+    
+    
+    public <T> List<T> eseguiSelect(String sql, ResultMapper<T> mapper, Object... params) throws SQLException
+    {
+        List<Map<String, Object>> rows = eseguiSelect(sql, params);
+        List<T> result = new ArrayList<>();
+        for (Map<String, Object> row : rows)
+        {
+        	 result.add(mapper.map(row));
+        }
+        return result;
+    }
+    
+    public <T> Optional<T> eseguiSelectSingolo(String sql, ResultMapper<T> mapper, Object... params) throws SQLException
+    {
+        List<T> result = eseguiSelect(sql, mapper, params);
+        return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
     }
 }

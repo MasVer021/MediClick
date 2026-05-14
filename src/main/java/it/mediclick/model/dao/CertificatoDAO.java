@@ -1,99 +1,106 @@
 package it.mediclick.model.dao;
 
+import it.mediclick.model.bean.Amministratore;
+
 import it.mediclick.model.bean.Certificato;
+import it.mediclick.model.bean.Medico;
+import it.mediclick.model.bean.TipoCertificato;
 import it.mediclick.util.Contex;
+import it.mediclick.util.MapRow;
+import it.mediclick.util.ResultMapper;
+import java.nio.charset.StandardCharsets;
 
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 public class CertificatoDAO 
 {
     private Contex _contex;
+    private MedicoDAO medicoDAO;
+    private AmministratoreDAO amministratoreDAO;
 
     public CertificatoDAO(Contex contex) 
     {
         _contex = contex;
+        medicoDAO = new MedicoDAO(contex);
+        amministratoreDAO = new AmministratoreDAO(contex);
     }
 
-    public Certificato findById(int id) throws SQLException 
+    public Optional<Certificato> findById(int id) throws SQLException 
     {
-        String sql = """
-                        SELECT * 
-                        FROM Certificato 
-                        WHERE ID = ?
-                     """;
                      
-        List<Map<String, Object>> result = _contex.eseguiSelect(sql, id);
-        
-        if (result == null || result.isEmpty()) 
-            return null;
-            
         try
-        {
-            return mapping(result.get(0));
-        }
-        catch(SQLException e)
-        {
-             System.err.println("Errore nella ricerca del certificato by id: " + e.getMessage());
-             throw e;
-        }
+   	 	{
+        	 String sql = 	"""
+		                     SELECT * 
+		                     FROM Certificato 
+		                     WHERE ID = ?
+		        	 		""";
+        	 
+	        return  _contex.eseguiSelectSingolo(sql,certificatoMapper, id);  
+       }
+       catch(SQLException e)
+       {
+       	 throw new SQLException("Errore nel recupero del Certificato con ID " + id, e); 
+       }
+    }
+    
+    public Optional<TipoCertificato> tipoCertificatofindById(int id) throws SQLException 
+    {
+                     
+        try
+   	 	{
+        	 String sql = 	"""
+		                    SELECT * 
+						    FROM tipocertificato
+						   	WHERE ID = ?
+		        	 		""";
+        	 
+        	 return  _contex.eseguiSelectSingolo(sql,tipoCertificatoMapper, id);  
+       }
+       catch(SQLException e)
+       {
+       	 throw new SQLException("Errore nel recupero del tipo di certificato con ID " + id, e); 
+       }
     }
 
     public List<Certificato> findByMedico(int medicoId) throws SQLException 
     {
-        String sql = """
-                        SELECT * 
-                        FROM Certificato 
-                        WHERE Medico_ID = ?
-                     """;
                      
-        List<Map<String, Object>> result = _contex.eseguiSelect(sql, medicoId);
-        List<Certificato> list = new ArrayList<>();
-        
-        if (result == null || result.isEmpty())
-            return list;
-            
         try
-        {
-            for (Map<String, Object> map : result) 
-            {
-                list.add(mapping(map));
-            }
-            return list;
-        }
-        catch(SQLException e)
-        {
-             System.err.println("Errore nella ricerca certificati per medico: " + e.getMessage());
-             throw e;
-        }
+   	 	{
+        	 String sql = 	"""
+		                     SELECT * 
+		                     FROM Certificato 
+		                     WHERE Medico_ID = ?
+	                  		""";
+        	 
+	        return  _contex.eseguiSelect(sql,certificatoMapper, medicoId);  
+       }
+       catch(SQLException e)
+       {
+       	 throw new SQLException("Errore nel recupero dell Certificato con medico id " + medicoId, e); 
+       }
     }
 
-    public Certificato findByMedicoETipo(int medicoId, int tipoCertificatoId) throws SQLException 
+    public Optional <Certificato> findByMedicoETipo(int medicoId, int tipoCertificatoId) throws SQLException 
     {
-        String sql = """
-                        SELECT * 
-                        FROM Certificato 
-                        WHERE Medico_ID = ? AND TipoCertificato_ID = ?
-                     """;
-                     
-        List<Map<String, Object>> result = _contex.eseguiSelect(sql, medicoId, tipoCertificatoId);
-        
-        if (result == null || result.isEmpty()) 
-            return null;
-            
+                  
         try
-        {
-            return mapping(result.get(0));
-        }
-        catch(SQLException e)
-        {
-             System.err.println("Errore nella ricerca certificato per medico e tipo: " + e.getMessage());
-             throw e;
-        }
+   	 	{
+        	String sql = """
+                    SELECT * 
+                    FROM Certificato 
+                    WHERE Medico_ID = ? AND TipoCertificato_ID = ?
+                 """;
+        	 
+	        return  _contex.eseguiSelectSingolo(sql,certificatoMapper, medicoId,tipoCertificatoId);  
+       }
+       catch(SQLException e)
+       {
+       	 throw new SQLException("Errore nel recupero dell Certificato con medico id " + medicoId + " e ID tipo " + tipoCertificatoId, e); 
+       }
     }
 
     public void insert(Certificato c) throws SQLException 
@@ -104,22 +111,28 @@ public class CertificatoDAO
                      """;
         try
         {
+        	Integer medicoId = c.getMedico().getId();
+        	Integer tipoCertificatoId = c.getTipoCertificato().getId();
+        	
+        	Integer approvatoreId = c.getApprovatore() != null ? c.getApprovatore().getId() : null;
+        	
+        	String stato =  c.getStato() != null ? c.getStato().getLabel() : "In revisione";
+        	
             _contex.eseguiUpdate(sql, 
-                c.getMedicoId(),
-                c.getTipoCertificatoId(),
+            	medicoId,
+               	tipoCertificatoId,
                 c.getNomeFile(),
                 c.getDatiDocumento(),
-                c.getStato() != null ? c.getStato().getLabel() : "In revisione",
+                stato,
                 c.getMimeType(),
-                c.getDataCaricamento() != null ? Timestamp.valueOf(c.getDataCaricamento()) : null,
-                c.getDataScadenza() != null ? Timestamp.valueOf(c.getDataScadenza()) : null,
-                c.getApprovedBy()
+                c.getDataCaricamento(),
+                c.getDataScadenza(),
+                approvatoreId
             );
         }
         catch(SQLException e)
         {
-             System.err.println("Errore nell'inserimento del certificato: " + e.getMessage());
-             throw e;
+        	throw new SQLException("Errore nell'inserimento del certificato: " , e); 
         }
     }
 
@@ -136,53 +149,57 @@ public class CertificatoDAO
         }
         catch(SQLException e)
         {
-             System.err.println("Errore nell'aggiornamento stato certificato: " + e.getMessage());
-             throw e;
+        	throw new SQLException("Errore nell' aggiornamento dello stato del certificato: " , e); 
         }
     }
 
-    private Certificato mapping(Map<String, Object> map) throws SQLException 
+       
+    private final ResultMapper<TipoCertificato> tipoCertificatoMapper = row ->
     {
-        if (map == null) 
-            return null;
-            
-        try 
-        {
-            Certificato c = new Certificato();
-            c.setId(Integer.parseInt(String.valueOf(map.get("ID"))));
-            c.setMedicoId(Integer.parseInt(String.valueOf(map.get("Medico_ID"))));
-            c.setTipoCertificatoId(Integer.parseInt(String.valueOf(map.get("TipoCertificato_ID"))));
-            c.setNomeFile((String) map.get("Nome_File"));
-            
-            if (map.get("Dati_Documento") != null) 
-            {
-                c.setDatiDocumento((byte[]) map.get("Dati_Documento"));
-            }
-
-            c.setStato(Certificato.Stato.fromString(String.valueOf(map.get("Stato"))));
-            
-            c.setMimeType((String) map.get("Mime_Type"));
-
-            if (map.get("Data_Caricamento") != null) 
-            {
-                c.setDataCaricamento(LocalDateTime.parse(String.valueOf(map.get("Data_Caricamento"))));
-            }
-            
-            if (map.get("Data_Scadenza") != null) 
-            {
-                c.setDataScadenza(LocalDateTime.parse(String.valueOf(map.get("Data_Scadenza"))));
-            }
-
-            if (map.get("Approved_by") != null) 
-            {
-                c.setApprovedBy(Integer.parseInt(String.valueOf(map.get("Approved_by"))));
-            }
-
-            return c;
-        } 
-        catch (Exception e) 
-        {
-            throw new SQLException("Errore durante il mapping di Certificato: " + e.getMessage(), e);
-        }
-    }
+    	TipoCertificato tc = new TipoCertificato();
+    	
+    	tc.setId(MapRow.getInt(row, "ID"));
+    	tc.setNome(MapRow.getString(row, "Nome"));
+    	tc.setObbligatorio(MapRow.getBoolean(row, "Obbligatorio"));
+    	
+    	return tc;
+    };
+    
+    private final ResultMapper<Certificato> certificatoMapper = row ->
+    {
+    	Certificato c = new Certificato();
+    	
+    	int medicoId = MapRow.getInt(row,"Medico_ID"); 
+    	
+    	Integer amministratoreId = MapRow.getIntOrNull(row,"Approved_by"); 
+    	
+    	Medico m = medicoDAO.findById(medicoId).orElseThrow(() -> new SQLException("Medico " + medicoId + " non trovato"));
+    	Optional<Amministratore> a = Optional.empty();
+    	
+    	Integer tipoCertificatoId = MapRow.getInt(row, "TipoCertificato_ID");
+    		
+		TipoCertificato tc = tipoCertificatofindById(tipoCertificatoId).orElseThrow(() -> new SQLException("TipoCertificato " + tipoCertificatoId + " non trovato"));
+    		
+    	if(amministratoreId!=null)
+    	{
+    		a = amministratoreDAO.findById(amministratoreId);
+    	}
+    	
+    	c.setId(MapRow.getInt(row, "ID"));
+    	c.setNomeFile(MapRow.getString(row,"Nome_File"));
+    	
+    	
+    	String dati = MapRow.getString(row, "Dati_Documento");
+    	c.setDatiDocumento(dati != null ? dati.getBytes(StandardCharsets.UTF_8) : null);
+    	
+    	c.setStato(Certificato.Stato.fromString(MapRow.getString(row,"Stato")));
+    	c.setMimeType(MapRow.getString(row,"Mime_Type"));
+    	c.setDataCaricamento(MapRow.getLocalDateTime(row,"Data_Caricamento"));
+    	c.setDataScadenza(MapRow.getLocalDateTime(row,"Data_Scadenza"));
+    	c.setMedico(m);
+    	c.setTipoCertificato(tc);
+    	c.setApprovatore(a.orElse(null));
+    	
+    	return c;
+    };
 }

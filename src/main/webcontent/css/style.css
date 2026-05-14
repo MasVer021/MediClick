@@ -9,13 +9,13 @@
   --testo-principale: #2D3748;
   --testo-alternativo: #6C757D;
   --radius: 15px;
-   --font-xs:   0.875rem;   /* 14px — copyright, note */
-    --font-sm:   1rem;       /* 16px — link nav, link footer */
-    --font-base: 1.125rem;   /* 18px — testo paragrafi */
-    --font-md:   1.25rem;    /* 20px — sottotitoli */
-    /* titoli — clamp */
-    --font-lg:  clamp(1.5rem, 2.5vw, 2rem);     /* titoli sezione */
-    --font-xl:  clamp(2rem, 4vw, 3rem);          /* h1 pagina */
+  --font-xs:   0.875rem;  
+  --font-sm:   1rem;       
+  --font-base: 1.125rem;   
+  --font-md:   1.25rem;    
+    
+  --font-lg:  clamp(1.5rem, 2.5vw, 2rem);     
+  --font-xl:  clamp(2rem, 4vw, 3rem);          
 }
 
 
@@ -34,9 +34,75 @@ body
     margin: 0;
 }
 
+
+.card-login
+{
+	border: 2px solid black;
+	
+	background-color:var( --colore-primario);
+	opacity: 0.8;
+	
+	border-radius: var(--radius);
+	
+	aspect-ratio: 9/ 11;
+	width : 24vw;
+    height : auto;
+    
+    display: flex;
+   	flex-direction: column;
+    align-items: center; 
+    justify-content: space-evenly;
+    
+    margin: 10vh;
+}
+
+.card-login form
+{
+    width: 100%;
+    display: flex;
+   	flex-direction: column;
+    align-items: center; 
+    justify-content: space-evenly;
+    gap: 2rem;
+}
+
+.card-login form select,
+.card-login form input 
+{
+    width: 80%;               
+    padding: 1rem 3rem 1rem 1rem; 
+    font-size: var(--font-base); 
+    border-radius: 30px;
+    border: none;
+    box-sizing: border-box; 
+}
+
+.card-login form button 
+{
+    width: 80%;
+    padding: 1rem;
+    font-size: var(--font-md);
+    font-weight: bold;
+    color: white;
+    background-color: var(--colore-secondario); 
+    border: 2px solid black;
+    border-radius: var(--radius);
+    cursor: pointer;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
 main
 {
 	flex:1;
+	display: flex;
+	justify-content: center;
+    align-items: center;
+    
+    gap: 5vw;
 }
 
 #main-menu
@@ -91,16 +157,12 @@ main
 
 footer
 {
-	
 	background-color: var(--colore-primario);
 	color : white;
 	display: flex;
     align-items: stretch;
     font-size: var(--font-xs);
-    border-radius: var(--radius) var(--radius) 0 0;
-    
-    
-    
+    border-radius: var(--radius) var(--radius) 0 0; 
 }
 
 footer a
@@ -160,3 +222,97 @@ footer > span:last-child
 }
 
 
+
+/* card ricerca*/
+
+.card
+{
+	
+}
+
+/* card medico*/
+
+.risultati
+{
+	flex: 1;
+	background-color : var(--sfondo-alternativo);
+	border-radius: var(--radius);
+	
+	max-height:100vh;
+	
+	margin:20px;
+    padding: 20px;
+    
+    overflow: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  	gap: 20px; 
+    
+}
+
+.card-medico
+{
+	display: flex;
+	flex-direction: column;
+	background-color: trasparent; 
+	border-radius: var(--radius);
+	box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+	transition: transform 1s ease, box-shadow 1s ease;
+}
+
+.card-medico:hover 
+{
+	transform: translateY(-5px);
+	box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.card-body
+{
+	padding: 15px;
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	justify-content: space-between;
+}
+
+/* Stili per l'avatar del medico (immagine quadrata in alto) */
+.medico-avatar 
+{
+    width: 100%;             
+    aspect-ratio: 1 / 1;   
+    object-fit: cover;       
+    border: none;            
+    border-radius: var(--radius) var(--radius) 0 0;
+}
+
+.medico-avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: var(--colore-secondario);
+    
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: var(--font-lg);
+    font-weight: bold;
+    margin: 0 auto 15px auto;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    border: 3px solid white;
+}
+
+.btn-prenota
+{
+	text-decoration:none;
+	padding:10px;
+	
+	display:flex;
+	justify-content:center;
+	
+	color:white;
+	background-color: var(--colore-secondario);
+	
+	border-radius:var(--radius);
+	
+}
