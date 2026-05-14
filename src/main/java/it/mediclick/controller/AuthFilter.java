@@ -30,6 +30,17 @@ public class AuthFilter extends HttpFilter implements Filter {
 		    
 		    if (utente == null) 
 		    {
+		    	
+		    	HttpSession tempSession = _request.getSession(true);
+		    	
+		    	String urlRichiesto = _request.getRequestURI();
+		    	if (_request.getQueryString() != null) 
+		    	{
+		    	   urlRichiesto += "?" + _request.getQueryString();
+		    	}
+		    	
+		    	tempSession.setAttribute("redirectDopoLogin", urlRichiesto);
+		    	
 	            _response.sendRedirect(_request.getContextPath() + "/login");
 	            return;
 		    }

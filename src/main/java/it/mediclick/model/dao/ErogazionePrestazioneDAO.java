@@ -1,199 +1,192 @@
 package it.mediclick.model.dao;
 
+import it.mediclick.model.bean.CatalogoPrestazioni;
 import it.mediclick.model.bean.ErogazionePrestazione;
+import it.mediclick.model.bean.Medico;
+import it.mediclick.model.bean.Studio;
 import it.mediclick.util.Contex;
-
-
+import it.mediclick.util.MapRow;
+import it.mediclick.util.ResultMapper;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 public class ErogazionePrestazioneDAO 
 {
-    private Contex _contex;
+    private final Contex _contex;
+    private final MedicoDAO medicoDAO;
+    private final StudioDAO studioDAO;
+    private final CatalogoPrestazioniDAO catalogoPrestazioniDAO;
+
 
     public ErogazionePrestazioneDAO(Contex contex) 
     {
         _contex = contex;
+        medicoDAO = new MedicoDAO(contex);
+        studioDAO = new StudioDAO(contex);
+        catalogoPrestazioniDAO = new CatalogoPrestazioniDAO(contex); 
     }
 
-    public ErogazionePrestazione findById(int id) throws SQLException 
-    {
-        String sql = """
+    public Optional <ErogazionePrestazione> findById(int id) throws SQLException 
+    {              
+        try
+        {
+           String sql = """
                         SELECT * 
                         FROM ErogazionePrestazione 
                         WHERE ID = ?
                      """;
-                     
-        List<Map<String, Object>> result = _contex.eseguiSelect(sql, id);
-        
-        if (result == null || result.isEmpty()) 
-            return null;
-            
-        try
-        {
-            return mapping(result.get(0));
+
+            return _contex.eseguiSelectSingolo(sql, erogazionePrestazioneMapper, id);
         }
         catch(SQLException e)
         {
-             System.err.println("Errore nella ricerca dell'erogazione prestazione by id: " + e.getMessage());
-             throw e;
+            throw new SQLException("Errore nella ricerca dell'erogazione prestazione con ID " + id, e);
         }
     }
 
     public List<ErogazionePrestazione> findByMedico(int medicoId) throws SQLException 
-    {
-        String sql = """
+    {                     
+       try
+        {
+           String sql = """
                         SELECT * 
                         FROM ErogazionePrestazione 
                         WHERE Medico_ID = ?
                      """;
-                     
-        List<Map<String, Object>> result = _contex.eseguiSelect(sql, medicoId);
-        List<ErogazionePrestazione> list = new ArrayList<>();
-        
-        if (result == null || result.isEmpty())
-            return list;
-            
-        try
-        {
-            for (Map<String, Object> map : result) 
-            {
-                list.add(mapping(map));
-            }
-            return list;
+
+            return _contex.eseguiSelect(sql, erogazionePrestazioneMapper, medicoId);
         }
         catch(SQLException e)
         {
-             System.err.println("Errore nella ricerca erogazioni prestazioni per medico: " + e.getMessage());
-             throw e;
+            throw new SQLException("Errore nella ricerca dell'erogazione prestazione del medico con ID " + medicoId, e);
         }
     }
 
     public List<ErogazionePrestazione> findByMedicoEStudio(int medicoId, int studioId) throws SQLException 
-    {
-        String sql = """
+    {                   
+        try
+        {
+           String sql = """
                         SELECT * 
                         FROM ErogazionePrestazione 
                         WHERE Medico_ID = ? AND Studio_ID = ?
                      """;
-                     
-        List<Map<String, Object>> result = _contex.eseguiSelect(sql, medicoId, studioId);
-        List<ErogazionePrestazione> list = new ArrayList<>();
-        
-        if (result == null || result.isEmpty())
-            return list;
-            
-        try
-        {
-            for (Map<String, Object> map : result) 
-            {
-                list.add(mapping(map));
-            }
-            return list;
+
+            return _contex.eseguiSelect(sql, erogazionePrestazioneMapper, medicoId, studioId);
         }
         catch(SQLException e)
         {
-             System.err.println("Errore nella ricerca erogazioni per medico e studio: " + e.getMessage());
-             throw e;
+            throw new SQLException("Errore nella ricerca dell'erogazione prestazione del medico con ID " + medicoId + " e studio con ID " + studioId, e);
         }
     }
 
     public void insert(ErogazionePrestazione ep) throws SQLException 
     {
-        String sql = """
+        String sql =    """
                         INSERT INTO ErogazionePrestazione(Medico_ID, CatalogoPrestazioni_ID, Studio_ID, Prezzo_Lordo_Listino, Durata, Stato) 
                         VALUES (?,?,?,?,?,?)
-                     """;
+                        """;
         try
         {
-            _contex.eseguiUpdate(sql, 
-                ep.getMedicoId(),
-                ep.getCatalogoPrestazioniId(),
-                ep.getStudioId(),
-                ep.getPrezzoLordoListino(),
-                ep.getDurata(),
-                ep.getStato().getLabel()
-            );
+            Integer medicoId = ep.getMedicoId() > 0 ? ep.getMedicoId() : null;
+            Integer catalogoPrestazioniId = ep.getCatalogoPrestazioniId() > 0 ? ep.getCatalogoPrestazioniId() : null;
+            Integer studioId = ep.getStudioId() > 0 ? ep.getStudioId() : null;
+
+            Double prezzoLordoListino = ep.getPrezzoLordoListino();
+            Integer durata = ep.getDurata();
+            String stato = ep.getStato().getLabel();
+
+            _contex.eseguiUpdate(sql, medicoId, catalogoPrestazioniId, studioId, prezzoLordoListino, durata, stato);
+        }
+        catch(NullPointerException ne)
+        {
+            throw new SQLException("Errore nell'inserimento dell'erogazione prestazione campi non presenti: " + ne.getMessage(), ne);
         }
         catch(SQLException e)
         {
-             System.err.println("Errore nell'inserimento erogazione prestazione: " + e.getMessage());
-             throw e;
+            throw new SQLException("Errore nell'inserimento dell'erogazione prestazione: " + e.getMessage(), e);
         }
     }
 
     public void updateStato(int id, ErogazionePrestazione.Stato stato) throws SQLException 
     {
-        String sql = """
+        String sql =    """
                         UPDATE ErogazionePrestazione 
                         SET Stato = ? 
                         WHERE ID = ?
-                     """;
+                        """;
         try
         {
             _contex.eseguiUpdate(sql, stato.getLabel(), id);
         }
         catch(SQLException e)
         {
-             System.err.println("Errore nell'aggiornamento stato erogazione prestazione: " + e.getMessage());
-             throw e;
+            throw new SQLException("Errore nell'aggiornamento stato erogazione prestazione: " + e.getMessage(), e);
         }
     }
 
     public void updatePrezzo(int id, Double prezzo) throws SQLException 
     {
-        String sql = """
+        String sql =    """
                         UPDATE ErogazionePrestazione 
                         SET Prezzo_Lordo_Listino = ? 
                         WHERE ID = ?
-                     """;
+                        """;
         try
         {
             _contex.eseguiUpdate(sql, prezzo, id);
         }
         catch(SQLException e)
         {
-             System.err.println("Errore nell'aggiornamento prezzo erogazione prestazione: " + e.getMessage());
-             throw e;
+            throw new SQLException("Errore nell'aggiornamento prezzo erogazione prestazione: " + e.getMessage(), e);
         }
     }
 
-    private ErogazionePrestazione mapping(Map<String, Object> map) throws SQLException 
+    public void getCompleto(ErogazionePrestazione ep) throws SQLException
+	{
+        int medicoId = ep.getMedicoId();
+        int studioId = ep.getStudioId();
+        int catalogoPrestazioniId = ep.getCatalogoPrestazioniId();
+
+        Medico m = medicoDAO.findById(medicoId).orElseThrow(()-> new SQLException("Medico non trovato per erogazione prestazione id: " + ep.getId()));
+        Studio s = studioDAO.findById(studioId).orElseThrow(()-> new SQLException("Studio non trovato per erogazione prestazione id: " + ep.getId()));
+    	CatalogoPrestazioni c = catalogoPrestazioniDAO.findById(catalogoPrestazioniId).orElseThrow(()-> new SQLException("Catalogo prestazioni non trovato per erogazione prestazione id: " + ep.getId()));
+
+        ep.setCatalogoPrestazioni(c);
+        ep.setMedico(m);
+        ep.setStudio(s);
+    }
+
+    private final ResultMapper<ErogazionePrestazione> erogazionePrestazioneMapper = row ->
     {
-        if (map == null) 
-            return null;
-            
-        try 
-        {
-            ErogazionePrestazione ep = new ErogazionePrestazione();
-            ep.setId(Integer.parseInt(String.valueOf(map.get("ID"))));
-            ep.setMedicoId(Integer.parseInt(String.valueOf(map.get("Medico_ID"))));
-            ep.setCatalogoPrestazioniId(Integer.parseInt(String.valueOf(map.get("CatalogoPrestazioni_ID"))));
-            
-            if (map.get("Studio_ID") != null) 
-            {
-                ep.setStudioId(Integer.parseInt(String.valueOf(map.get("Studio_ID"))));
-            }
+    	ErogazionePrestazione ep = new ErogazionePrestazione();
 
-            if (map.get("Prezzo_Lordo_Listino") != null) 
-            {
-                ep.setPrezzoLordoListino(Double.parseDouble(String.valueOf(map.get("Prezzo_Lordo_Listino"))));
-            }
+        int prestazioneId = MapRow.getInt(row, "ID");
 
-            if (map.get("Durata") != null) 
-            {
-                ep.setDurata(Integer.parseInt(String.valueOf(map.get("Durata"))));
-            }
-           
-            ep.setStato(ErogazionePrestazione.Stato.fromString(String.valueOf(map.get("Stato"))));
-           
-            return ep;
-        } 
-        catch (Exception e) 
-        {
-            throw new SQLException("Errore durante il mapping di ErogazionePrestazione: " + e.getMessage(), e);
-        }
-    }
+        Integer medicoId = MapRow.getIntOrNull(row, "Medico_ID") ;
+        medicoId = medicoId != null ? medicoId : -1;
+
+        Integer studioId = MapRow.getIntOrNull(row, "Studio_ID");
+        studioId = studioId != null ? studioId : -1;
+
+        Integer catalogoPrestazioniId = MapRow.getIntOrNull(row, "CatalogoPrestazioni_ID");
+        catalogoPrestazioniId = catalogoPrestazioniId != null ? catalogoPrestazioniId : -1;
+
+    	Double prezzo = MapRow.getDouble(row, "Prezzo_Lordo_Listino");
+    	Integer durata = MapRow.getInt(row, "Durata");
+    	
+    	ep.setId(prestazioneId);
+       
+        ep.setPrezzoLordoListino(prezzo);
+       
+        ep.setDurata(durata);
+    	ep.setStato(ErogazionePrestazione.Stato.fromString(MapRow.getString(row, "Stato")));
+
+        ep.setCatalogoPrestazioniId(catalogoPrestazioniId);
+        ep.setMedicoId(medicoId);
+        ep.setStudioId(studioId);
+    	
+        return ep;
+    };
 }

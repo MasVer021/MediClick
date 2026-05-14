@@ -3,7 +3,8 @@ package it.mediclick.model.bean;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class ImpostazioniSistema implements Serializable {
+public class ImpostazioniSistema implements Serializable
+{
 
     private static final long serialVersionUID = 1L;
 
@@ -11,47 +12,89 @@ public class ImpostazioniSistema implements Serializable {
     private String chiave;
     private String valore;
     private LocalDateTime dataInizio;
-    private LocalDateTime dataFine;
-    private int updatedBy;   // FK -> Amministratore(ID)
+    private LocalDateTime dataFine;  
 
-    // Relazione opzionale
+    private int amministratoreId = -1;
     private Amministratore amministratore;
 
-    public ImpostazioniSistema() {}
-
-    public ImpostazioniSistema(int id, String chiave, String valore,
-                                LocalDateTime dataInizio, LocalDateTime dataFine, int updatedBy) {
-        this.id = id;
-        this.chiave = chiave;
-        this.valore = valore;
-        this.dataInizio = dataInizio;
-        this.dataFine = dataFine;
-        this.updatedBy = updatedBy;
+    public int getAmministratoreId()
+    {
+        return amministratoreId;
     }
 
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public void setAmministratoreId(int amministratoreId) 
+    {
+        this.amministratoreId = amministratoreId;
+    }
 
-    public String getChiave() { return chiave; }
-    public void setChiave(String chiave) { this.chiave = chiave; }
+    public ImpostazioniSistema()
+    {
+    	
+    }
 
-    public String getValore() { return valore; }
-    public void setValore(String valore) { this.valore = valore; }
+    public int getId()
+    {
+        return id;
+    }
 
-    public LocalDateTime getDataInizio() { return dataInizio; }
-    public void setDataInizio(LocalDateTime dataInizio) { this.dataInizio = dataInizio; }
+    public void setId(int id)
+    {
+        this.id = id;
+    }
 
-    public LocalDateTime getDataFine() { return dataFine; }
-    public void setDataFine(LocalDateTime dataFine) { this.dataFine = dataFine; }
+    public String getChiave()
+    {
+        return chiave;
+    }
 
-    public int getUpdatedBy() { return updatedBy; }
-    public void setUpdatedBy(int updatedBy) { this.updatedBy = updatedBy; }
+    public void setChiave(String chiave)
+    {
+        this.chiave = chiave;
+    }
 
-    public Amministratore getAmministratore() { return amministratore; }
-    public void setAmministratore(Amministratore amministratore) { this.amministratore = amministratore; }
+    public String getValore()
+    {
+        return valore;
+    }
+
+    public void setValore(String valore)
+    {
+        this.valore = valore;
+    }
+
+    public LocalDateTime getDataInizio()
+    {
+        return dataInizio;
+    }
+
+    public void setDataInizio(LocalDateTime dataInizio)
+    {
+        this.dataInizio = dataInizio;
+    }
+
+    public LocalDateTime getDataFine()
+    {
+        return dataFine;
+    }
+
+    public void setDataFine(LocalDateTime dataFine)
+    {
+        this.dataFine = dataFine;
+    }
+
+    public Amministratore getAmministratore()
+    {
+        return amministratore;
+    }
+
+    public void setAmministratore(Amministratore amministratore)
+    {
+        this.amministratore = amministratore;
+    }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return "ImpostazioniSistema{id=" + id + ", chiave='" + chiave + "', valore='" + valore + "'}";
     }
 }

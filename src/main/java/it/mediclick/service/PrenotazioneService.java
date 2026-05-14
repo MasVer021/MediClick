@@ -1,26 +1,93 @@
 package it.mediclick.service;
 
-import it.mediclick.model.bean.Disponibilita;
-import it.mediclick.model.bean.Prenotazione;
-import it.mediclick.model.dao.DisponibilitaDAO;
-import it.mediclick.model.dao.PrenotazioneDAO;
-import it.mediclick.util.Contex;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import it.mediclick.model.DTO.RiepilogoPrenotazioneDTO;
+import it.mediclick.model.bean.CatalogoPrestazioni;
+import it.mediclick.model.bean.CodiceSconto;
+import it.mediclick.model.bean.Disponibilita;
+import it.mediclick.model.bean.ErogazionePrestazione;
+import it.mediclick.model.bean.Medico;
+import it.mediclick.model.bean.Prenotazione;
+import it.mediclick.model.bean.Studio;
+import it.mediclick.model.dao.CatalogoPrestazioniDAO;
+import it.mediclick.model.dao.CodiceScontoDAO;
+import it.mediclick.model.dao.DisponibilitaDAO;
+import it.mediclick.model.dao.ErogazionePrestazioneDAO;
+import it.mediclick.model.dao.ImpostazioniSistemaDAO;
+import it.mediclick.model.dao.MedicoDAO;
+import it.mediclick.model.dao.PrenotazioneDAO;
+import it.mediclick.model.dao.StudioDAO;
+import it.mediclick.util.Contex;
+
 public class PrenotazioneService {
 
     private PrenotazioneDAO prenotazioneDAO;
     private DisponibilitaDAO disponibilitaDAO;
+    private ErogazionePrestazioneDAO erogazionePrestazioneDAO;
+    private MedicoDAO medicoDAO;
+    private StudioDAO studioDAO;
+    private CatalogoPrestazioniDAO catalogoPrestazioniDAO;
+    private CodiceScontoDAO codiceScontoDAO;
+    private ImpostazioniSistemaDAO impostazioniSistemaDAO;
     private Contex _contex;
 
-    public PrenotazioneService(Contex contex) {
+    public PrenotazioneService(Contex contex) 
+    {
         this._contex = contex;
         this.prenotazioneDAO = new PrenotazioneDAO(contex);
         this.disponibilitaDAO = new DisponibilitaDAO(contex);
+        this.erogazionePrestazioneDAO = new ErogazionePrestazioneDAO(contex);
+        this.medicoDAO = new MedicoDAO(contex);
+        this.studioDAO = new StudioDAO(contex);
+        this.catalogoPrestazioniDAO = new CatalogoPrestazioniDAO(contex);
+        this.codiceScontoDAO = new CodiceScontoDAO(contex);
+        this.impostazioniSistemaDAO = new ImpostazioniSistemaDAO(contex);
+    }
+       
+    public int getTrattenuta()
+    {
+    	try 
+    	{
+			return impostazioniSistemaDAO.getIDImpByKey("COMMISSIONE_PIATTAFORMA_PCT");
+		} 
+    	catch (SQLException e) 
+    	{
+    		e.printStackTrace();
+			return -1;	
+    	}
+    }
+    
+    
+    public boolean isValid(CodiceSconto sconto)
+    {
+    	try 
+    	{
+			return codiceScontoDAO.isValid(sconto);
+		} 
+    	catch (SQLException e) 
+    	{
+			
+			e.printStackTrace();
+			return false;
+		}
+    }
+    
+    public CodiceSconto findSconto(String codice)
+    {
+    	try 
+    	{
+			return codiceScontoDAO.findByCodice(codice);
+		} 
+    	catch (SQLException e) 
+    	{
+			System.err.println("Errore validazione codice sconto: " + e.getMessage());
+			e.printStackTrace();
+			return null;
+		}
     }
 
     public boolean bloccaDisponibilita(int disponibilitaId, int pazienteId) {
@@ -47,9 +114,39 @@ public class PrenotazioneService {
         }
     }
 
+    public RiepilogoPrenotazioneDTO getRiepilogoPrenotazione(int idStudio, int idPrestazione, int idDisponibilita) 
+    {
+        try {
+            RiepilogoPrenotazioneDTO dto = new RiepilogoPrenotazioneDTO();
+            
+            Disponibilita disponibilita = disponibilitaDAO.findById(idDisponibilita);
+            ErogazionePrestazione prestazione = erogazionePrestazioneDAO.findById(idPrestazione);
+            Studio studio = studioDAO.findById(idStudio);
+            
+            if (prestazione != null) {
+                CatalogoPrestazioni catalogo = catalogoPrestazioniDAO.findById(prestazione.getCatalogoPrestazioniId());
+                dto.setCatalogoPrestazioni(catalogo);
+                
+                Medico medico = medicoDAO.findById(prestazione.getMedicoId());
+                dto.setMedico(medico);
+            }
+            
+            dto.setDisponibilita(disponibilita);
+            dto.setPrestazione(prestazione);
+            dto.setStudio(studio);
+            
+            return dto;
+        } catch (SQLException e) {
+            System.err.println("Errore durante il recupero del riepilogo prenotazione: " + e.getMessage());
+            return null;
+        }
+    }
+
     
-    public boolean creaPrenotazione(int pazienteId, int disponibilitaId) {
-        try (Connection conn = _contex.getConnection()) 
+    public boolean creaPrenotazione(int pazienteId, int disponibilitaId,int idErogazione,double prezzo_pagato,double prezzo_trattenuta,double prezzo_netto,double prezzo_tasse,int idSconto,String metodoPagamento) 
+    {
+        System.out.println("Ciao");
+    	try (Connection conn = _contex.getConnection()) 
         {
             conn.setAutoCommit(false);
             try 
@@ -78,8 +175,23 @@ public class PrenotazioneService {
                 Prenotazione p = new Prenotazione();
                 p.setPazienteId(pazienteId);
                 p.setDisponibilitaId(disponibilitaId);
+                p.setErogazionePrestazioneId(idErogazione);
+                
+                
                 p.setDataPagamento(LocalDateTime.now());
                 p.setStato(Prenotazione.Stato.CONFERMATA);
+                
+                
+                if(idSconto>0)
+                	p.setCodiceScontoId(idSconto);
+                
+                p.setImportoPagato(prezzo_pagato);
+                p.setMetodoPagamento(metodoPagamento);
+                p.setRicavoNettoMedicoEuro(prezzo_netto);
+                p.setTasseStimateEuro(prezzo_tasse);
+                p.setTrattenutaPiattaformaEuro(prezzo_trattenuta);
+                
+               
                 
                 prenotazioneDAO.insert(p,conn);
 

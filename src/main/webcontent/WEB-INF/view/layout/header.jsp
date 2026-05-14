@@ -26,7 +26,7 @@
 	        <a href="${pageContext.request.contextPath}/paziente/profilo">Home</a>
 	        <a href="${pageContext.request.contextPath}/ricerca">Prenotazioni</a>
 	        <a href="${pageContext.request.contextPath}/ricerca">Sconti</a>
-	        <a href="${pageContext.request.contextPath}/logout">Medico</a>
+	        <a href="${pageContext.request.contextPath}/ricerca">Medico</a>
 	    </c:if>
 	
 	    <!-- MEDICO -->
@@ -43,7 +43,7 @@
 	        <a href="${pageContext.request.contextPath}/admin/dashboard">Home</a>
 	        <a href="${pageContext.request.contextPath}/admin/medici">Contabilità</a>
 	        <a href="${pageContext.request.contextPath}/admin/catalogo">Approvazione</a>
-	        <a href="${pageContext.request.contextPath}/logout">Impostazioni</a>
+	        <a href="${pageContext.request.contextPath}/settings">Impostazioni</a>
 	    </c:if>
     </div>
     
@@ -61,13 +61,13 @@
 	
 	    <!-- MEDICO -->
 	    <c:if test="${sessionScope.utente.ruolo.codice == 'MEDICO'}">
-	        <a href="${pageContext.request.contextPath}/paziente/profilo">Il mio profilo</a>
+	        <a href="${pageContext.request.contextPath}/medico/profilo">Il mio profilo</a>
 	        <a href="${pageContext.request.contextPath}/logout">Esci</a>
 	    </c:if>
 	
 	    <!-- ADMIN -->
 	    <c:if test="${sessionScope.utente.ruolo.codice == 'ADMIN'}">
-	        <a href="${pageContext.request.contextPath}/paziente/profilo">Il mio profilo</a>
+	        <a href="${pageContext.request.contextPath}/admin/profilo">Il mio profilo</a>
 	        <a href="${pageContext.request.contextPath}/logout">Esci</a>
 	    </c:if>
     </div>

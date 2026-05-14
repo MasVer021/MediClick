@@ -1,169 +1,157 @@
 package it.mediclick.model.dao;
 
 
+import it.mediclick.model.bean.Amministratore;
+import it.mediclick.model.bean.ImpostazioniSistema;
+import it.mediclick.util.Contex;
+import it.mediclick.util.MapRow;
+import it.mediclick.util.ResultMapper;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
-import it.mediclick.model.bean.ImpostazioniSistema;
-import it.mediclick.util.Contex;
+import java.util.Optional;
 
 public class ImpostazioniSistemaDAO 
 {
-    private Contex _contex;
+    private final Contex _contex;
+    private final AmministratoreDAO amministratoreDAO;
     
     public ImpostazioniSistemaDAO(Contex contex) 
     {
         _contex = contex;
+        amministratoreDAO = new AmministratoreDAO(_contex);
     }
     
-    public ImpostazioniSistema getImpByID(int id) throws SQLException
+    public Optional<ImpostazioniSistema> findByID(int id) throws SQLException
     {
-    	   String sql = """
+    	     
+           try
+           {
+            String sql = """
 		                   SELECT *
 		                   FROM ImpostazioniSistema
 		                   WHERE ID = ?
     	   				""";
-    	   
-    	   List<Map<String, Object>> result = _contex.eseguiSelect(sql, id);
-           
-           if (result == null || result.isEmpty()) 
-               return null;
                
-           try
-           {
-               return mapping(result.get(0));
+            return _contex.eseguiSelectSingolo(sql, impostazioniSistemaMapper, id);
+                               
            }
            catch(SQLException e)
            {
-                System.err.println("Errore nella ricerca delle impostazioni per id " + e.getMessage());
-                throw e;
+                throw new SQLException("Errore nella ricerca delle impostazioni per id " + id + ": " + e.getMessage(), e);
            }
     }
     
-    public List<ImpostazioniSistema> getAllImp() throws SQLException
+    public List<ImpostazioniSistema> findAll() throws SQLException
     {
-    	   String sql = """
-		                   SELECT *
+    	   try
+           {
+            String sql = """
+		                    SELECT *
 		                   FROM ImpostazioniSistema
 		                   WHERE Data_Fine is NULL
     	   				""";
-    	   
-    	   List<Map<String, Object>> result = _contex.eseguiSelect(sql);
-           
-           if (result == null || result.isEmpty()) 
-               return null;
-           
-           List<ImpostazioniSistema> impostazioni = new ArrayList<ImpostazioniSistema>();
                
-           try
-           {
-        	   for (Map<String, Object> map : result) 
-               {
-        		   impostazioni.add(mapping(map));
-               }
-               return impostazioni;
-           }
+            return _contex.eseguiSelect(sql, impostazioniSistemaMapper);
+                               
+           } 
            catch(SQLException e)
            {
-                System.err.println("Errore nella ricerca delle impostazioni: " + e.getMessage());
-                throw e;
+                throw new SQLException("Errore nella ricerca delle impostazioni " + e.getMessage(), e);
            }
     }
     
-    public int getIDImpByKey(String key) throws SQLException
+    public int findIDByKey(String key) throws SQLException
     {
-    	   String sql = """
-		                   SELECT *
-		                   FROM ImpostazioniSistema
-		                   WHERE Chiave = ?
-		                   AND Data_Fine is NULL
-    	   				""";
-    	   
-    	   List<Map<String, Object>> result = _contex.eseguiSelect(sql, key);
-           
-           if (result == null || result.isEmpty()) 
-               return -1;
-               
-           try
-           {
-               return mapping(result.get(0)).getId();
-           }
-           catch(SQLException e)
-           {
-                System.err.println("Errore nella ricerca delle impostazioni per id " + e.getMessage());
-                throw e;
-           }
-    }
-    
-    public int insertImp(String chiave,String valore,int idAmministatore) throws SQLException
-    {
-    	   String sql = """
-		                  INSERT 
-		                  INTO ImpostazioniSistema (Chiave, Valore, Data_Inizio, Data_Fine, Updated_by) 
-		                  VALUES('?', '?','?', NULL,?),
-    	   				""";
-    	   Connection conn = _contex.getConnection();
-    	   conn.setAutoCommit(false);
-    	   try
-           {
-	    	   int idOld = getIDImpByKey(chiave);
-	    	   if(idOld != -1)
-	    	   {
-	    		   String sqlUpdateOld = 	"""
-		    		   							UPDATE ImpoImpostazioniSistema
-		    		   							set Data_Fine = ?
-		    		   							where id = ?
-	    		   							""";
-	    		   _contex.eseguiUpdate(sqlUpdateOld, conn,LocalDateTime.now(),idOld);
-	    	   }
-	    	   
-	    	   int idnew = _contex.eseguiUpdate(sql, conn,chiave,valore,LocalDateTime.now(),idAmministatore);
-    	  
-        	   conn.commit();
-               return idnew;
-           }
-           catch(SQLException e)
-           {
-        	   conn.rollback();
-                System.err.println("Errore nella modifica delle impostazioni: " + e.getMessage());
-                throw e;
-           }
-    	   finally 
-    	   {
-			conn.close();
-		}
-    }
-    
-    private ImpostazioniSistema mapping(Map<String, Object> map) throws SQLException 
-    {
-        if (map == null) 
-            return null;
-            
-        try 
+    	try
         {
-            ImpostazioniSistema i = new ImpostazioniSistema();
-            
-            int id = Integer.parseInt(String.valueOf(map.get("ID")));
-           
-            i.setId(id);
-            i.setChiave(String.valueOf(map.get("Chiave")));
-            i.setValore(String.valueOf(map.get("Valore")));
-            i.setDataInizio(LocalDateTime.parse(String.valueOf(map.get("Data_Inizio"))));
-            i.setDataFine(LocalDateTime.parse(String.valueOf(map.get("Data_Fine"))));
-            i.setUpdatedBy(Integer.parseInt(String.valueOf(map.get("Updated_by"))));
-            
-            
-            return i;
-        } 
-        catch (Exception e) 
+            String sql = """
+                            SELECT *
+                            FROM ImpostazioniSistema
+                            WHERE Chiave = ?
+                            AND Data_Fine is NULL
+                        """;
+
+            ImpostazioniSistema imp = _contex.eseguiSelectSingolo(sql, impostazioniSistemaMapper, key).orElse(null);
+            if(imp == null)
+            {
+                return -1;
+            }
+            return imp.getId();                              
+        }
+        catch(SQLException e)
         {
-            throw new SQLException("Errore durante il mapping delle impostazioni di sistema: " + e.getMessage(), e);
+            throw new SQLException("Errore nella ricerca delle impostazioni per chiave " + key + ": " + e.getMessage(), e);
         }
     }
+    
+    public int insert(String chiave,String valore,int idAmministatore) throws SQLException
+    {   
+        String sql =     """
+                        INSERT 
+                        INTO ImpostazioniSistema (Chiave, Valore, Data_Inizio, Data_Fine, Updated_by) 
+                        VALUES(?, ?, ?, NULL, ?)
+                        """;
+        Connection conn = _contex.getConnection();
+        conn.setAutoCommit(false);
+        try
+        {
+            int idOld = findIDByKey(chiave);
+            if(idOld != -1)
+            {
+                String sqlUpdateOld = 	"""
+                                        UPDATE ImpostazioniSistema
+                                        set Data_Fine = ?
+                                        where id = ?
+                                        """;
+                _contex.eseguiUpdate(sqlUpdateOld, conn,LocalDateTime.now(),idOld);
+            }
+            
+            int idnew = _contex.eseguiUpdate(sql, conn,chiave,valore,LocalDateTime.now(),idAmministatore);
+        
+            conn.commit();
+            return idnew;
+        }
+        catch(SQLException e)
+        {
+            conn.rollback();
+            throw new SQLException("Errore nell'inserimento delle impostazioni: " + e.getMessage(), e);
+        }
+        finally 
+        {
+            conn.close();
+        }
+    }
+
+    public void getCompleto(ImpostazioniSistema i) throws SQLException
+	{
+        int idAmministratore = i.getAmministratoreId();
+
+        if(idAmministratore > 0)
+        {
+            Amministratore a = amministratoreDAO.findById(idAmministratore).orElseThrow(() -> new SQLException("Amministratore con ID " + idAmministratore + " non trovato"));
+            i.setAmministratore(a);
+        }
+        
+    }
+
+    private final ResultMapper<ImpostazioniSistema> impostazioniSistemaMapper = row -> 
+    {
+        ImpostazioniSistema i = new ImpostazioniSistema();
+
+        Integer idAmministratore = MapRow.getIntOrNull(row, "Updated_by");
+        idAmministratore = idAmministratore != null ? idAmministratore : -1;
+        
+        i.setId(MapRow.getInt(row, "ID"));
+        i.setChiave(MapRow.getString(row, "Chiave"));
+        i.setValore(MapRow.getString(row, "Valore"));
+        i.setDataInizio(MapRow.getLocalDateTime(row, "Data_Inizio"));
+        i.setDataFine(MapRow.getLocalDateTime(row, "Data_Fine"));
+        i.setAmministratoreId(idAmministratore);
+        
+        return i;
+    };
 
    
 }

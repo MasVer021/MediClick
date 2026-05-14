@@ -3,7 +3,8 @@ package it.mediclick.model.bean;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class Disponibilita implements Serializable {
+public class Disponibilita implements Serializable
+{
 
     private static final long serialVersionUID = 1L;
 
@@ -33,71 +34,151 @@ public class Disponibilita implements Serializable {
     	
     	
         private final String label;
-        Stato(String label) { this.label = label; }
-        public String getLabel() { return label; }
+
+        Stato(String label)
+        {
+            this.label = label;
+        }
+
+        public String getLabel()
+        {
+            return label;
+        }
     }
 
     private int id;
-    private int medicoId;
-    private Integer studioId;
     private LocalDateTime dataOraInizio;
     private LocalDateTime dataOraFine;
     private Stato stato;
     private LocalDateTime timestampBlocco;
-    private Integer pazienteIdBlocco;
-
-    // Relazioni opzionali
+    
+    private int medicoId = -1;
     private Medico medico;
+
+    private int studioId = -1;
     private Studio studio;
 
-    public Disponibilita() {
+    private int pazienteId = -1;
+    private Paziente paziente;
+
+    public int getMedicoId() 
+    {
+        return medicoId;
+    }
+
+    public void setMedicoId(int medicoId) 
+    {
+        this.medicoId = medicoId;
+    }
+
+    public int getStudioId()
+    {
+        return studioId;
+    }
+
+    public void setStudioId(int studioId) 
+    {
+        this.studioId = studioId;
+    }
+
+    public int getPazienteId() 
+    {
+        return pazienteId;
+    }
+
+    public void setPazienteId(int pazienteId) 
+    {
+        this.pazienteId = pazienteId;
+    }
+
+    public Paziente getPaziente() 
+    {
+		return paziente;
+	}
+
+	public void setPaziente(Paziente paziente) 
+	{
+		this.paziente = paziente;
+	}
+
+	public Disponibilita()
+    {
         this.stato = Stato.DISPONIBILE;
     }
 
-    public Disponibilita(int id, int medicoId, Integer studioId, LocalDateTime dataOraInizio,
-                         LocalDateTime dataOraFine, Stato stato, LocalDateTime timestampBlocco, Integer pazienteIdBlocco) {
-        this.id = id;
-        this.medicoId = medicoId;
-        this.studioId = studioId;
-        this.dataOraInizio = dataOraInizio;
-        this.dataOraFine = dataOraFine;
-        this.stato = stato;
-        this.timestampBlocco = timestampBlocco;
-        this.pazienteIdBlocco = pazienteIdBlocco;
+    public int getId()
+    {
+        return id;
     }
 
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public void setId(int id)
+    {
+        this.id = id;
+    }
 
-    public int getMedicoId() { return medicoId; }
-    public void setMedicoId(int medicoId) { this.medicoId = medicoId; }
+    public LocalDateTime getDataOraInizio()
+    {
+        return dataOraInizio;
+    }
 
-    public Integer getStudioId() { return studioId; }
-    public void setStudioId(Integer studioId) { this.studioId = studioId; }
+    public void setDataOraInizio(LocalDateTime dataOraInizio)
+    {
+        this.dataOraInizio = dataOraInizio;
+    }
 
-    public LocalDateTime getDataOraInizio() { return dataOraInizio; }
-    public void setDataOraInizio(LocalDateTime dataOraInizio) { this.dataOraInizio = dataOraInizio; }
+    public LocalDateTime getDataOraFine()
+    {
+        return dataOraFine;
+    }
 
-    public LocalDateTime getDataOraFine() { return dataOraFine; }
-    public void setDataOraFine(LocalDateTime dataOraFine) { this.dataOraFine = dataOraFine; }
+    public void setDataOraFine(LocalDateTime dataOraFine)
+    {
+        this.dataOraFine = dataOraFine;
+    }
 
-    public Stato getStato() { return stato; }
-    public void setStato(Stato stato) { this.stato = stato; }
+    public Stato getStato()
+    {
+        return stato;
+    }
 
-    public LocalDateTime getTimestampBlocco() { return timestampBlocco; }
-    public void setTimestampBlocco(LocalDateTime timestampBlocco) { this.timestampBlocco = timestampBlocco; }
+    public void setStato(Stato stato)
+    {
+        this.stato = stato;
+    }
 
-    public Integer getPazienteIdBlocco() { return pazienteIdBlocco; }
-    public void setPazienteIdBlocco(Integer pazienteIdBlocco) { this.pazienteIdBlocco = pazienteIdBlocco; }
+    public LocalDateTime getTimestampBlocco()
+    {
+        return timestampBlocco;
+    }
 
-    public Medico getMedico() { return medico; }
-    public void setMedico(Medico medico) { this.medico = medico; }
+    public void setTimestampBlocco(LocalDateTime timestampBlocco)
+    {
+        this.timestampBlocco = timestampBlocco;
+    }
 
-    public Studio getStudio() { return studio; }
-    public void setStudio(Studio studio) { this.studio = studio; }
+    public Medico getMedico()
+    {
+        return medico;
+    }
+
+    public void setMedico(Medico medico)
+    {
+        this.medico = medico;
+    }
+
+    public Studio getStudio()
+    {
+        return studio;
+    }
+
+    public void setStudio(Studio studio)
+    {
+        this.studio = studio;
+    }
 
     @Override
-    public String toString() {
-        return "Disponibilita{id=" + id + ", medicoId=" + medicoId +", inizio=" + dataOraInizio + ", fine=" + dataOraFine+", stato=" + stato + "}";
+    public String toString()
+    {
+        return "Disponibilita{id=" + id + ", medicoId=" + getMedicoId() +", inizio=" + dataOraInizio + ", fine=" + dataOraFine+", stato=" + stato + "}";
     }
 }

@@ -69,7 +69,7 @@ public class SearchServlet extends HttpServlet {
 			
 			try 
 			{
-				List <MedicoCardDTO> medici = ricercaservice.cercaMedici(querySpecialista, idCategoriaSpecialista, citta);
+				List <MedicoCardDTO> medici = ricercaservice.cercaMediciCards(querySpecialista, idCategoriaSpecialista, citta);
 				
 				
 				request.setAttribute("medici", medici);

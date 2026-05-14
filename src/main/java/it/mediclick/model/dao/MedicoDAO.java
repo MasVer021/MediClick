@@ -1,51 +1,65 @@
 package it.mediclick.model.dao;
 
-import it.mediclick.model.bean.Medico;
-import it.mediclick.util.Contex;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import it.mediclick.model.DTO.MedicoCardDTO;
 import it.mediclick.model.bean.Categoria;
+import it.mediclick.model.bean.Medico;
+import it.mediclick.model.bean.RegimeFiscale;
+import it.mediclick.model.bean.Utente;
+import it.mediclick.util.Contex;
+import it.mediclick.util.MapRow;
+import it.mediclick.util.ResultMapper;
+import java.nio.charset.StandardCharsets;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class MedicoDAO 
 {
-    private Contex _contex;
-    private UtenteDAO utente;
+    private final Contex _contex;
+    private final UtenteDAO utenteDAO;
+    private CatalogoPrestazioniDAO catalogoPrestazioniDAO;
 
     public MedicoDAO(Contex contex) 
     {
         _contex = contex;
-        utente = new UtenteDAO(contex);
+        utenteDAO = new UtenteDAO(_contex);
+        catalogoPrestazioniDAO = new CatalogoPrestazioniDAO(_contex);
     }
 
-    public Medico findById(int id) throws SQLException 
+    public Optional<Medico> findById(int id) throws SQLException 
     {
-        String sql = """
+        try
+        {
+
+            String sql = """
                         SELECT * 
                         FROM Medico 
                         WHERE ID = ?
                      """;
-
-        List<Map<String, Object>> result = _contex.eseguiSelect(sql, id);
-
-        if (result == null || result.isEmpty()) 
-            return null;
-        
-        try
-        {
-            return mapping(result.get(0));
+           return _contex.eseguiSelectSingolo(sql, medicoMapper, id);
         }
         catch(SQLException e)
         {
-             System.err.println("Errore nella ricerca del medico by id: " + e.getMessage());
-             throw e;
+            throw new SQLException("Errore nella ricerca del medico con ID " + id, e);
+        }
+    }
+
+    public Optional<RegimeFiscale> findRegimeFiscaleById(int id) throws SQLException 
+    {
+        try
+        {
+            String sql = """
+                        SELECT * 
+                        FROM RegimeFiscale 
+                        WHERE ID = ?
+                        """;
+            return _contex.eseguiSelectSingolo(sql, regimeFiscaleMapper, id);
+        }
+        catch(SQLException e)
+        {
+             throw new SQLException("Errore nella ricerca del regime fiscale by id: " + e.getMessage(), e);
         }
     }
 
@@ -58,7 +72,8 @@ public class MedicoDAO
             sql.append("JOIN CatalogoPrestazioni CP ON EP.CatalogoPrestazioni_ID = CP.ID ");
         }
         
-        if (citta != null && !citta.isEmpty()) {
+        if (citta != null && !citta.isEmpty()) 
+        {
             if (categoriaId == null) 
             {
                 sql.append("JOIN ErogazionePrestazione EP ON M.ID = EP.Medico_ID ");
@@ -67,42 +82,37 @@ public class MedicoDAO
         }
 
         sql.append("WHERE M.Stato_verifica = 'Approvato' ");
+
         List<Object> params = new ArrayList<>();
 
-        if (query != null && !query.isEmpty()) {
+        if (query != null && !query.isEmpty()) 
+        {
             sql.append("AND (M.Cognome LIKE ? OR M.Nome LIKE ?) ");
             params.add("%" + query + "%");
             params.add("%" + query + "%");
         }
 
-        if (categoriaId != null) {
+        if (categoriaId != null) 
+        {
             sql.append("AND CP.Categoria_ID = ? ");
             params.add(categoriaId);
         }
 
-        if (citta != null && !citta.isEmpty()) {
+        if (citta != null && !citta.isEmpty()) 
+        {
             sql.append("AND S.Citta = ? ");
             params.add(citta);
         }
-
-        List<Map<String, Object>> result = _contex.eseguiSelect(sql.toString(), params.toArray());
-        List<Medico> medici = new ArrayList<>();
         
-        if (result == null || result.isEmpty())
-            return medici;
-            
+        sql.append("ORDER BY M.Cognome, M.Nome");
+        
         try
         {
-            for (Map<String, Object> map : result) 
-            {
-                medici.add(mapping(map));
-            }
-            return medici;
+            return _contex.eseguiSelect(sql.toString(), medicoMapper, params.toArray());
         }
         catch(SQLException e)
         {
-             System.err.println("Errore nella ricerca filtrata dei medici: " + e.getMessage());
-             throw e;
+             throw new SQLException("Errore nella ricerca filtrata dei medici: " + e.getMessage(), e);
         }
     }
 
@@ -116,13 +126,29 @@ public class MedicoDAO
         StringBuilder sql = new StringBuilder("""
             SELECT 
                 M.*, 
-                MIN(C.ID) as Cat_ID, MIN(C.Nome) as Categoria_Nome,
-        		MIN(S.Indirizzo_Maps) as Indirizzo_Studio, MIN(S.Citta) as Citta_Studio,
+                MIN(C.ID) as Cat_ID, 
+                MIN(C.Nome) as Categoria_Nome,
+        		MIN(S.Indirizzo_Maps) as Indirizzo_Studio, 
+                MIN(S.Citta) as Citta_Studio,
         		MIN(EP.Prezzo_Lordo_Listino) as Costo,
-                (SELECT AVG(Voto) FROM Recensione WHERE Medico_ID = M.ID) as Media_Recensioni,
-                (SELECT COUNT(*) FROM Recensione WHERE Medico_ID = M.ID) as Num_Recensioni,
-                (SELECT MIN(Data_Ora_Inizio) FROM Disponibilita D 
-                 WHERE D.Medico_ID = M.ID AND D.Stato = 'Disponibile' AND D.Data_Ora_Inizio > NOW()) as Prima_Disponibilita
+                (
+                    SELECT AVG(R.Voto) FROM Recensione R 
+                    JOIN Prenotazione P ON R.Prenotazione_ID = P.ID 
+                    JOIN Disponibilita D ON P.Disponibilita_ID = D.ID 
+                    WHERE D.Medico_ID = M.ID
+                ) as Media_Recensioni,
+                (
+                    SELECT COUNT(*) FROM Recensione R
+                    JOIN Prenotazione P ON R.Prenotazione_ID = P.ID
+                    JOIN Disponibilita D ON P.Disponibilita_ID = D.ID
+                    WHERE D.Medico_ID = M.ID
+                ) as Num_Recensioni,
+                (
+                    SELECT MIN(Data_Ora_Inizio) 
+                    FROM Disponibilita D 
+                    WHERE D.Medico_ID = M.ID AND D.Stato = 'Disponibile' 
+                    AND D.Data_Ora_Inizio > NOW()
+                ) as Prima_Disponibilita
             FROM Medico M
             JOIN ErogazionePrestazione EP ON M.ID = EP.Medico_ID
             JOIN CatalogoPrestazioni CP ON EP.CatalogoPrestazioni_ID = CP.ID
@@ -133,71 +159,53 @@ public class MedicoDAO
 
         List<Object> params = new ArrayList<>();
 
-        if (query != null && !query.isEmpty()) {
+        if (query != null && !query.isEmpty()) 
+        {
             sql.append("AND (M.Cognome LIKE ? OR M.Nome LIKE ?) ");
             params.add("%" + query + "%");
             params.add("%" + query + "%");
         }
 
-        if (categoriaId != null && categoriaId > 0) {
+        if (categoriaId != null && categoriaId > 0) 
+        {
             sql.append("AND CP.Categoria_ID = ? ");
             params.add(categoriaId);
         }
 
-        if (citta != null && !citta.isEmpty()) {
+        if (citta != null && !citta.isEmpty()) 
+        {
             sql.append("AND S.Citta = ? ");
             params.add(citta);
         }
         
         sql.append("GROUP BY M.ID ");
 
-        List<Map<String, Object>> result = _contex.eseguiSelect(sql.toString(), params.toArray());
-        List<MedicoCardDTO> cards = new ArrayList<>();
-        
-        if (result == null || result.isEmpty())
-            return cards;
-            
         try
         {
-            for (Map<String, Object> map : result) 
-            {
-                cards.add(mappingCard(map));
-            }
-            return cards;
+            return _contex.eseguiSelect(sql.toString(), medicoCardMapper, params.toArray());
         }
         catch(SQLException e)
         {
-             System.err.println("Errore nella ricerca delle card medici: " + e.getMessage());
-             throw e;
+             throw new SQLException("Errore nella ricerca delle card dei medici: " + e.getMessage(), e);
         }
     }
 
     public List<Medico> findByStato(Medico.StatoVerifica stato) throws SQLException 
-    {
-        String sql = """
+    {   
+        try
+        {
+
+             String sql = """
                         SELECT * 
                         FROM Medico 
                         WHERE Stato_verifica = ?
                      """;
-                     
-        List<Map<String, Object>> result = _contex.eseguiSelect(sql, stato.getLabel());
-        List<Medico> medici = new ArrayList<>();
-        
-        if (result == null || result.isEmpty())
-            return medici;
-            
-        try
-        {
-            for (Map<String, Object> map : result) 
-            {
-                medici.add(mapping(map));
-            }
-            return medici;
+           
+            return _contex.eseguiSelect(sql, medicoMapper, stato.getLabel());
         }
         catch(SQLException e)
         {
-             System.err.println("Errore nella ricerca medici per stato: " + e.getMessage());
-             throw e;
+            throw new SQLException("Errore nella ricerca dei medici per stato verifica " + stato.getLabel() + ": " + e.getMessage(), e);
         }
     }
 
@@ -212,31 +220,25 @@ public class MedicoDAO
         conn.setAutoCommit(false);
         try
         {
-        	int utenteId = utente.insert(conn,m.getUtente());
+        	Utente u = m.getUtente();
         	
-            _contex.eseguiUpdate(sqlMedico,
-            	conn,
-                utenteId,
-                m.getCognome(),
-                m.getNome(),
-                m.getFotoprofilo(),
-                m.getBio(),
-                m.getpIva(),
-                m.getStatoVerifica() != null ? m.getStatoVerifica().getLabel() : "In attesa",
-                m.getRegimeFiscaleId()
-            );
+	        int utenteId = utenteDAO.insert(conn,u);
+            
+            Integer regimeFiscaleId = m.getRegimeFiscaleId() >0 ? m.getRegimeFiscaleId() : null;
+           
+        	
+            _contex.eseguiUpdate(sqlMedico,conn,utenteId,m.getCognome(),m.getNome(),m.getFotoprofilo(),m.getBio(),m.getpIva(),m.getStatoVerifica() != null ? m.getStatoVerifica().getLabel() : "In attesa",regimeFiscaleId);
 
             m.setId(utenteId);
-           
             m.getUtente().setId(utenteId);
+
             conn.commit();
             return utenteId;
         } 
         catch (SQLException e) 
         {
         	conn.rollback();
-            System.err.println("Errore nell'inserimento del medico: " + e.getMessage());
-            throw e;
+            throw new SQLException("Errore nell'inserimento del medico: " + e.getMessage(), e);
         }
         finally
         {
@@ -257,14 +259,13 @@ public class MedicoDAO
 		} 
     	catch (SQLException e) 
     	{
-			 System.err.println("Errore nell'aggiornamento del medico: " + e.getMessage());
-             throw e;
+			 throw new SQLException("Errore nell'aggiornamento del medico: " + e.getMessage(), e);
 		}
     }
     
     public void updatePassword(int id, String password) throws SQLException
     {
-    	utente.updatePassword(id, password);
+    	utenteDAO.updatePassword(id, password);
     }
     
     public void updateStatoVerifica(int id, Medico.StatoVerifica stato) throws SQLException 
@@ -280,8 +281,7 @@ public class MedicoDAO
         }
         catch(SQLException e)
         {
-             System.err.println("Errore nell'aggiornamento stato verifica medico: " + e.getMessage());
-             throw e;
+             throw new SQLException("Errore nell'aggiornamento stato verifica medico: " + e.getMessage(), e);
         }
     }
 
@@ -303,102 +303,81 @@ public class MedicoDAO
         }
     }
 
-    private Medico mapping(Map<String, Object> map) throws SQLException 
-    {
-        if (map == null) 
-            return null;
-            
-        try 
-        {
-            Medico m = new Medico();
-            int id = Integer.parseInt(String.valueOf(map.get("ID")));
-            
-            
-            m.setId(id);
-            m.setCognome((String) map.get("Cognome"));
-            m.setNome((String) map.get("Nome"));
-            m.setFotoprofilo((String) map.get("Fotoprofilo"));
-            m.setBio((String) map.get("Bio"));
-            m.setpIva((String) map.get("P_Iva"));
+    public void getCompleto(Medico m) throws SQLException
+	{
 
-            String statoStr = (String) map.get("Stato_verifica");
-            
-            m.setStatoVerifica(Medico.StatoVerifica.fromString(statoStr));
-            
-            
-            if (map.get("Regime_fiscale") != null) 
-            {
-                m.setRegimeFiscaleId(Integer.parseInt(String.valueOf(map.get("Regime_fiscale"))));
-            }
-            
-            m.setUtente(utente.findById(id));
-            
-            return m;
-        } 
-        catch (Exception e) 
-        {
-            throw new SQLException("Errore durante il mapping del Medico: " + e.getMessage(), e);
-        }
+        int regimeFiscaleId = m.getRegimeFiscaleId();
+        int utenteId = m.getId();
+
+
+        RegimeFiscale r = findRegimeFiscaleById(regimeFiscaleId).orElseThrow(() -> new SQLException("Regime fiscale con ID " + regimeFiscaleId + " non trovato"));
+        Utente u = utenteDAO.findById(utenteId).orElseThrow(() -> new SQLException("Utente non trovato per ID: " + utenteId));
+
+        m.setRegimeFiscale(r);
+        m.setUtente(u);
     }
 
-    private MedicoCardDTO mappingCard(Map<String, Object> map) throws SQLException 
+   
+    
+    private final ResultMapper<RegimeFiscale> regimeFiscaleMapper = row ->
     {
-        if (map == null) 
-            return null;
-            
-        try 
-        {
-            MedicoCardDTO dto = new MedicoCardDTO();
-            
-           
-            Medico m = mapping(map); 
-            dto.setMedico(m);
-            
-           
-            Categoria c = new Categoria();
-            if (map.get("Cat_ID") != null) 
-            {
-                c.setId(Integer.parseInt(String.valueOf(map.get("Cat_ID"))));
-                c.setNome((String) map.get("Categoria_Nome"));
-            }
-            dto.setCategoria(c);
-            
-           
-            String indirizzo = (String) map.get("Indirizzo_Studio");
-            String citta = (String) map.get("Citta_Studio");
-            if (indirizzo != null && citta != null) 
-            {
-                dto.setIndirizzo(indirizzo + ", " + citta);
-            }
-            
-            if (map.get("Costo") != null) 
-            {
-                dto.setCosto(Double.parseDouble(String.valueOf(map.get("Costo"))));
-            }
-            
-           
-            if (map.get("Media_Recensioni") != null) 
-            {
- 
-                dto.setValoreRecensioni((int) Math.round(Double.parseDouble(String.valueOf(map.get("Media_Recensioni")))));
-            }
-            if (map.get("Num_Recensioni") != null) 
-            {
-                dto.setNumeroRecensioni(Integer.parseInt(String.valueOf(map.get("Num_Recensioni"))));
-            }
-            
-            
-            if (map.get("Prima_Disponibilita") != null) 
-            {
-                Timestamp ts = Timestamp.valueOf(String.valueOf(map.get("Prima_Disponibilita")));
-                dto.setPrimaDisponibilita(ts.toLocalDateTime());
-            }
-            
-            return dto;
-        } 
-        catch (Exception e) 
-        {
-            throw new SQLException("Errore durante il mapping di MedicoCardDTO: " + e.getMessage(), e);
-        }
-    }
+    	RegimeFiscale r = new RegimeFiscale();
+    	
+    	r.setId(MapRow.getInt(row, "ID"));
+    	r.setNome(MapRow.getString(row, "Nome"));
+    	r.setDescrizione(MapRow.getString(row, "Descrizione"));
+    	r.setAliquotaDefault(MapRow.getInt(row, "Aliquota_Default"));
+    	
+    	return r;
+    };
+
+    private final ResultMapper<Medico> medicoMapper = row ->
+    {
+        Medico m = new Medico();
+
+
+        Integer regimeFiscaleId = MapRow.getIntOrNull(row, "Regime_fiscale")!=null ? MapRow.getInt(row, "Regime_fiscale") : -1;
+        
+        m.setId(MapRow.getInt(row, "ID"));
+        m.setCognome(MapRow.getString(row, "Cognome"));
+        m.setNome(MapRow.getString(row, "Nome"));
+
+        String fotoprofiloStr = MapRow.getString(row, "Fotoprofilo");
+    
+        m.setFotoprofilo(fotoprofiloStr != null ? fotoprofiloStr.getBytes(StandardCharsets.UTF_8) : null);
+        
+        m.setBio(MapRow.getString(row, "Bio"));
+        m.setpIva(MapRow.getString(row, "P_Iva"));
+        m.setStatoVerifica(Medico.StatoVerifica.fromString(MapRow.getString(row, "Stato_verifica")));
+        
+        m.setRegimeFiscaleId(regimeFiscaleId);
+
+        return m;
+
+    };
+
+    private final ResultMapper<MedicoCardDTO> medicoCardMapper = row ->
+    {
+        MedicoCardDTO dto = new MedicoCardDTO();
+
+        Medico m = medicoMapper.map(row);
+
+        int idCategoria = MapRow.getIntOrNull(row, "Cat_ID");
+
+        Categoria c = new Categoria();
+        c.setId(idCategoria);
+    	c.setNome(MapRow.getString(row, "Categoria_Nome"));
+       
+        dto.setCategoria(c);
+        dto.setMedico(m);
+
+        dto.setCosto(MapRow.getDouble(row, "Costo"));
+        dto.setIndirizzo(MapRow.getString(row, "Indirizzo_Studio"));
+        dto.setNumeroRecensioni(MapRow.getInt(row, "Num_Recensioni"));
+        dto.setPrimaDisponibilita(MapRow.getLocalDateTime(row, "Prima_Disponibilita"));
+        dto.setValoreRecensioni(MapRow.getDouble(row, "Media_Recensioni"));
+
+        return dto;
+        
+    };    
 }

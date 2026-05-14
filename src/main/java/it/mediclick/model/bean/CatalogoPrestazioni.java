@@ -2,60 +2,126 @@ package it.mediclick.model.bean;
 
 import java.io.Serializable;
 
-public class CatalogoPrestazioni implements Serializable {
+public class CatalogoPrestazioni implements Serializable 
+{
 
     private static final long serialVersionUID = 1L;
 
-    public enum Stato {
+    public enum Stato
+    {
         ATTIVA("Attiva"),
         DISATTIVA("Disattiva");
 
         private final String label;
-        Stato(String label) { this.label = label; }
-        public String getLabel() { return label; }
+        
+        
+        
+        
+        public static Stato fromString(String statoStr)
+        {
+        	if(statoStr == null)
+        		return null;
+        	
+	        for (CatalogoPrestazioni.Stato s : CatalogoPrestazioni.Stato.values()) 
+	        {
+	            if (s.getLabel().equalsIgnoreCase(statoStr) || s.name().equalsIgnoreCase(statoStr)) 
+	            {
+	               return s;
+	            }
+	        }
+	        
+	        return null;
+        }
+        
+        Stato(String label) 
+        { 
+        	this.label = label; 
+        }
+        
+        public String getLabel() 
+        { 
+        	return label;
+        }
     }
 
     private int id;
     private String nome;
     private Stato stato;
     private String descrizione;
-    private Integer categoriaId;
+    
 
-    // Relazione opzionale
+    private int categoriaId = -1;
+    
     private Categoria categoria;
 
-    public CatalogoPrestazioni() {
-        this.stato = Stato.ATTIVA;
+    public int getCategoriaId() 
+    {
+        return categoriaId;
     }
 
-    public CatalogoPrestazioni(int id, String nome, Stato stato, String descrizione, Integer categoriaId) {
-        this.id = id;
-        this.nome = nome;
-        this.stato = stato;
-        this.descrizione = descrizione;
+    public void setCategoriaId(int categoriaId) 
+    {
         this.categoriaId = categoriaId;
     }
 
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public CatalogoPrestazioni() 
+    {
+        this.stato = Stato.ATTIVA;
+    }
 
-    public String getNome() { return nome; }
-    public void setNome(String nome) { this.nome = nome; }
+    public int getId() 
+    { 
+    	return id; 
+    }
+    
+    public void setId(int id) 
+    { 
+    	this.id = id; 
+    }
 
-    public Stato getStato() { return stato; }
-    public void setStato(Stato stato) { this.stato = stato; }
+    public String getNome() 
+    { 
+    	return nome; 
+    }
+    
+    public void setNome(String nome) 
+    { 
+    	this.nome = nome;
+    }
 
-    public String getDescrizione() { return descrizione; }
-    public void setDescrizione(String descrizione) { this.descrizione = descrizione; }
+    public Stato getStato() 
+    { 
+    	return stato; 
+    }
+    
+    public void setStato(Stato stato) 
+    { 
+    	this.stato = stato; 
+    }
 
-    public Integer getCategoriaId() { return categoriaId; }
-    public void setCategoriaId(Integer categoriaId) { this.categoriaId = categoriaId; }
+    public String getDescrizione() 
+    { 
+    	return descrizione; 
+    }
+    
+    public void setDescrizione(String descrizione) 
+    { 
+    	this.descrizione = descrizione; 
+    }
 
-    public Categoria getCategoria() { return categoria; }
-    public void setCategoria(Categoria categoria) { this.categoria = categoria; }
+    public Categoria getCategoria() 
+    { 
+    	return categoria; 
+    }
+    
+    public void setCategoria(Categoria categoria) 
+    { 
+    	this.categoria = categoria; 
+    }
 
     @Override
-    public String toString() {
+    public String toString() 
+    {
         return "CatalogoPrestazioni{id=" + id + ", nome='" + nome + "', stato=" + stato + "}";
     }
 }

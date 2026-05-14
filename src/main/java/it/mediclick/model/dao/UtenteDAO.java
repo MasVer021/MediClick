@@ -3,65 +3,60 @@ package it.mediclick.model.dao;
 import it.mediclick.model.bean.Ruolo;
 import it.mediclick.model.bean.Utente;
 import it.mediclick.util.*;
-
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 public class UtenteDAO 
 {
-	private Contex _contex;
+	private final Contex _contex;
+	private RuoloDAO ruoloDAO;
+
 	
 	public UtenteDAO(Contex contex)
 	{
 		_contex = contex;
+		ruoloDAO = new RuoloDAO(contex);
 	}
 	
-	public Utente findById(int id) throws SQLException
+	public Optional<Utente> findById(int id) throws SQLException
 	{
-		String sql = "SELECT * FROM Utente WHERE ID = ?";
-		
-		List<Map<String, Object>> result = _contex.eseguiSelect(sql, id);
-		
-		if (result == null || result.isEmpty()) 
-	        return null;
 	    try
 	    {
-	    	return mapping(result.get(0));
+			String sql = """
+						SELECT * 
+						FROM Utente 
+						WHERE ID = ?
+						""";
+
+	    	return _contex.eseguiSelectSingolo(sql, utenteMapper, id);
 	    }
 	    catch(SQLException e)
 	    {
-	    	 System.err.println("Errore nella ricerca dell'utente by id: " + e.getMessage());
-		     throw e;
+	    	throw new SQLException("Errore nella ricerca dell'utente per ID: " + id + e.getMessage(), e);
 	    }
 		
 	}
 	
-	public Utente findByEmail(String email) throws SQLException
+	public Optional<Utente> findByEmail(String email) throws SQLException
 	{
-		String sql = "SELECT * FROM Utente WHERE Email = ?";
 		
-		List<Map<String, Object>> result = _contex.eseguiSelect(sql, email);
-		
-		if (result == null || result.isEmpty()) 
-	        return null;
 	    
 		 try
 		    {
-		    	return mapping(result.get(0));
+				String sql = 	"""
+								SELECT * 
+								FROM Utente 
+								WHERE Email = ?
+								""";
+						
+		    	return _contex.eseguiSelectSingolo(sql, utenteMapper, email);
 		    }
 		    catch(SQLException e)
 		    {
-		    	 System.err.println("Errore nella ricerca dell'utente by email: " + e.getMessage());
-			     throw e;
+		    	throw new SQLException("Errore nella ricerca dell'utente per email: " + email + e.getMessage(), e);
 		    }
-	}
-	
-	public int insert(Connection conn,String email, String password, LocalDate dataIscrizione, boolean accountAttivo, Integer ruoloId) throws SQLException
-	{
-		return insert(conn,new Utente(-1,email,password,dataIscrizione,accountAttivo,ruoloId, new RuoloDAO(_contex).findById(ruoloId)));
 	}
 	
 	public int insert(Connection conn,Utente u) throws SQLException
@@ -75,12 +70,15 @@ public class UtenteDAO
 		
 		try
 		{
-			ID = _contex.eseguiUpdate(sql,conn,u.getEmail(),PasswordUtils.hashPassword(u.getPassword()),u.getDataIscrizione(),u.isAccountAttivo(),u.getRuoloId());
+			int RuoloId = u.getRuoloId();
+			String passwordhash = PasswordUtils.hashPassword(u.getPassword());
+			LocalDateTime dataIscrizione = LocalDateTime.now();
+			
+			ID = _contex.eseguiUpdate(sql,conn,u.getEmail(),passwordhash,dataIscrizione,u.isAccountAttivo(),RuoloId);
 		}
 		catch(SQLException e)
 		{
-			 System.err.println("Errore nell'inserimento dell'utente: " + e.getMessage());
-		     throw e;  
+			throw new SQLException("Errore nell'inserimento dell'utente: " + e.getMessage(), e);
 		}
 		
 		return ID;
@@ -95,12 +93,12 @@ public class UtenteDAO
 				""";
 		try
 		{
-			_contex.eseguiUpdate(sql,PasswordUtils.hashPassword(password),id);
+			 String passwordHash = PasswordUtils.hashPassword(password);
+			 _contex.eseguiUpdate(sql,passwordHash,id);
 		}
 		catch(SQLException e)
 		{
-			 System.err.println("Errore nell'aggiornamento della passowrd utente: " + e.getMessage());
-		     throw e;
+			throw new SQLException("Errore nell'aggiornamento della password utente: " + e.getMessage(), e);
 		}
 	}
 	
@@ -117,45 +115,33 @@ public class UtenteDAO
 		}
 		catch(SQLException e)
 		{
-			 System.err.println("Errore nell'aggiornamento dello stato account: " + e.getMessage());
-		     throw e;
+			throw new SQLException("Errore nell'aggiornamento dello stato dell'account utente: " + e.getMessage(), e);
+		}
+	}
+
+	public void getCompleto(Utente u) throws SQLException
+	{
+		int ruoloId = u.getRuoloId();
+		if(ruoloId > 0)
+		{
+			Ruolo r = ruoloDAO.findById(ruoloId).orElseThrow(() -> new SQLException("Ruolo non trovato per ID: " + ruoloId));
+			u.setRuolo(r);
 		}
 	}
 	
-	private Utente mapping (Map<String,Object> u) throws SQLException
+	private final ResultMapper<Utente> utenteMapper = row -> 
 	{
-		if (u == null) 
-			return null;
+		Utente u = new Utente();
 
-	    try 
-	    {
-	    	Utente utente = new Utente();
-	    	
-	    	
-	    	int id =  Integer.parseInt(String.valueOf(u.get("ID")));
-	    	String email =  (String) u.get("Email");
-	    	String password =   (String) u.get("Password");
-	    	LocalDate data_iscrizione =  LocalDate.parse(String.valueOf(u.get("Data_Iscrizione")));
-	    	Boolean isAttivo =  Boolean.parseBoolean(String.valueOf(u.get("Account_attivo")));
-	    	int ruolo_id =   Integer.parseInt(String.valueOf(u.get("Ruolo_ID")));
-	    	Ruolo ruolo = new RuoloDAO(_contex).findById(ruolo_id);
-	    	
-	    	
-	    	
-	    	utente.setId(0);
-	    	utente.setEmail(email);
-	    	utente.setPassword(password);
-	    	utente.setDataIscrizione(data_iscrizione);
-	    	utente.setAccountAttivo(isAttivo);
-	    	utente.setRuoloId(ruolo_id);
-	    	utente.setRuolo(ruolo);
-	    
-	        return utente;
-	    } 
-	    catch (Exception e) 
-	    {
-	        throw new SQLException("Errore durante il mapping dei dati Utente: " + e.getMessage(), e);
-	    }
+		int ruoloId = MapRow.getInt(row, "Ruolo_ID");
 
-	}
+		u.setId(MapRow.getInt(row, "ID"));
+		u.setEmail(MapRow.getString(row, "Email"));
+		u.setPassword(MapRow.getString(row, "Password"));
+		u.setDataIscrizione(MapRow.getLocalDate(row, "Data_Iscrizione"));
+		u.setAccountAttivo(MapRow.getBoolean(row, "Account_attivo"));
+		u.setRuoloId(ruoloId);
+
+		return u;
+	};
 }

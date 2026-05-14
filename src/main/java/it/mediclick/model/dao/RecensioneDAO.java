@@ -1,100 +1,81 @@
 package it.mediclick.model.dao;
 
+import it.mediclick.model.bean.Prenotazione;
 import it.mediclick.model.bean.Recensione;
 import it.mediclick.util.Contex;
-
+import it.mediclick.util.MapRow;
+import it.mediclick.util.ResultMapper;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 public class RecensioneDAO 
 {
-    private Contex _contex;
+    private final Contex _contex;
+    private final PrenotazioneDAO prenotazioneDAO;
 
     public RecensioneDAO(Contex contex) 
     {
         _contex = contex;
+        prenotazioneDAO = new PrenotazioneDAO(_contex); 
     }
 
-    public Recensione findById(int id) throws SQLException 
+    public Optional<Recensione> findById(int id) throws SQLException 
     {
-        String sql = """
+          
+        try
+        {
+            String sql = """
                         SELECT * 
                         FROM Recensione 
                         WHERE ID = ?
-                     """;
-                     
-        List<Map<String, Object>> result = _contex.eseguiSelect(sql, id);
-        
-        if (result == null || result.isEmpty()) 
-            return null;
-            
-        try
-        {
-            return mapping(result.get(0));
+                        """;
+
+            return _contex.eseguiSelectSingolo(sql, recensioneMapper, id);
         }
         catch(SQLException e)
         {
-             System.err.println("Errore nella ricerca della recensione by id: " + e.getMessage());
-             throw e;
+            throw new SQLException("Errore nella ricerca della recensione per ID: " + id + e.getMessage(), e);
         }
     }
 
-    public Recensione findByPrenotazione(int prenotazioneId) throws SQLException 
-    {
-        String sql = """
+    public Optional<Recensione> findByPrenotazione(int prenotazioneId) throws SQLException 
+    {             
+        try
+        {
+            String sql = """
                         SELECT * 
                         FROM Recensione 
                         WHERE Prenotazione_ID = ?
                      """;
-                     
-        List<Map<String, Object>> result = _contex.eseguiSelect(sql, prenotazioneId);
-        
-        if (result == null || result.isEmpty()) 
-            return null;
-            
-        try
-        {
-            return mapping(result.get(0));
+
+            return _contex.eseguiSelectSingolo(sql, recensioneMapper, prenotazioneId);
         }
         catch(SQLException e)
         {
-             System.err.println("Errore nella ricerca della recensione per prenotazione: " + e.getMessage());
-             throw e;
+            throw new SQLException("Errore nella ricerca della recensione per ID prenotazione: " + prenotazioneId + e.getMessage(), e);
         }
     }
 
     public List<Recensione> findByMedico(int medicoId) throws SQLException 
-    {
-        String sql = """
+    {     
+        try
+        {
+
+             String sql = """
                         SELECT R.* 
                         FROM Recensione R 
                         JOIN Prenotazione P ON R.Prenotazione_ID = P.ID 
                         JOIN Disponibilita D ON P.Disponibilita_ID = D.ID 
                         WHERE D.Medico_ID = ?
                      """;
-                     
-        List<Map<String, Object>> result = _contex.eseguiSelect(sql, medicoId);
-        List<Recensione> list = new ArrayList<>();
-        
-        if (result == null || result.isEmpty())
-            return list;
-            
-        try
-        {
-            for (Map<String, Object> map : result) 
-            {
-                list.add(mapping(map));
-            }
-            return list;
+
+           return _contex.eseguiSelect(sql, recensioneMapper, medicoId);
         }
         catch(SQLException e)
         {
-             System.err.println("Errore nella ricerca recensioni per medico: " + e.getMessage());
-             throw e;
+             throw new SQLException("Errore nella ricerca delle recensioni per ID medico: " + medicoId + e.getMessage(), e);
         }
     }
 
@@ -106,18 +87,15 @@ public class RecensioneDAO
                      """;
         try
         {
-            _contex.eseguiUpdate(sql, 
-                r.getPrenotazioneId(),
-                r.getVoto(),
-                r.getCommento(),
-                r.isVisible(),
-                r.getDataPubblicazione() != null ? Timestamp.valueOf(r.getDataPubblicazione()) : null
-            );
+            Integer prenotazioneId = r.getPrenotazioneId() > 0 ? r.getPrenotazioneId() : null;
+
+            LocalDateTime dataPubblicazione = r.getDataPubblicazione() != null ? r.getDataPubblicazione() : null;
+              
+            _contex.eseguiUpdate(sql,prenotazioneId,r.getVoto(),r.getCommento(),r.isVisible(),dataPubblicazione);
         }
         catch(SQLException e)
         {
-             System.err.println("Errore nell'inserimento della recensione: " + e.getMessage());
-             throw e;
+           throw new SQLException("Errore nell'inserimento della recensione: " + e.getMessage(), e);
         }
     }
 
@@ -134,39 +112,33 @@ public class RecensioneDAO
         }
         catch(SQLException e)
         {
-             System.err.println("Errore nell'aggiornamento visibilita recensione: " + e.getMessage());
-             throw e;
+           throw new SQLException("Errore nell'aggiornamento della visibilità della recensione con ID " + id + ": " + e.getMessage(), e);
         }
     }
 
-    private Recensione mapping(Map<String, Object> map) throws SQLException 
+    public void getCompleto(Recensione r) throws SQLException
+	{
+        int prenotazioneId = r.getPrenotazioneId();
+
+        Prenotazione p = prenotazioneDAO.findById(prenotazioneId).orElseThrow(() -> new SQLException("Prenotazione non trovata per ID: " + prenotazioneId));
+        r.setPrenotazione(p);
+    }
+
+    private final ResultMapper<Recensione> recensioneMapper = row -> 
     {
-        if (map == null) 
-            return null;
-            
-        try 
-        {
-            Recensione r = new Recensione();
-            r.setId(Integer.parseInt(String.valueOf(map.get("ID"))));
-            r.setPrenotazioneId(Integer.parseInt(String.valueOf(map.get("Prenotazione_ID"))));
-            r.setVoto(Integer.parseInt(String.valueOf(map.get("Voto"))));
-            r.setCommento((String) map.get("Commento"));
-            
-            if (map.get("is_visible") != null) 
-            {
-                r.setVisible(Boolean.parseBoolean(String.valueOf(map.get("is_visible"))));
-            }
+        Recensione r = new Recensione();
 
-            if (map.get("Data_Pubblicazione") != null) 
-            {
-                r.setDataPubblicazione(LocalDateTime.parse(String.valueOf(map.get("Data_Pubblicazione"))));
-            }
+        Integer prenotazioneId = MapRow.getIntOrNull(row, "Prenotazione_ID");
+        prenotazioneId = prenotazioneId != null ? prenotazioneId : -1;
 
-            return r;
-        } 
-        catch (Exception e) 
-        {
-            throw new SQLException("Errore durante il mapping di Recensione: " + e.getMessage(), e);
-        }
-    }
+        r.setId(MapRow.getInt(row, "ID"));
+        r.setVoto(MapRow.getInt(row, "Voto"));
+        r.setCommento(MapRow.getString(row, "Commento"));
+        r.setVisible(MapRow.getBoolean(row, "is_visible"));
+        r.setDataPubblicazione(MapRow.getLocalDateTime(row, "Data_Pubblicazione"));
+
+        r.setPrenotazioneId(prenotazioneId);
+
+        return r;
+    };
 }
