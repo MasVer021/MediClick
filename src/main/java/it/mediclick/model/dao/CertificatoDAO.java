@@ -1,7 +1,6 @@
 package it.mediclick.model.dao;
 
 import it.mediclick.model.bean.Amministratore;
-
 import it.mediclick.model.bean.Certificato;
 import it.mediclick.model.bean.Medico;
 import it.mediclick.model.bean.TipoCertificato;
@@ -9,16 +8,15 @@ import it.mediclick.util.Contex;
 import it.mediclick.util.MapRow;
 import it.mediclick.util.ResultMapper;
 import java.nio.charset.StandardCharsets;
-
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
 public class CertificatoDAO 
 {
-    private Contex _contex;
-    private MedicoDAO medicoDAO;
-    private AmministratoreDAO amministratoreDAO;
+    private final Contex _contex;
+    private final MedicoDAO medicoDAO;
+    private final AmministratoreDAO amministratoreDAO;
 
     public CertificatoDAO(Contex contex) 
     {
@@ -111,10 +109,9 @@ public class CertificatoDAO
                      """;
         try
         {
-        	Integer medicoId = c.getMedico().getId();
-        	Integer tipoCertificatoId = c.getTipoCertificato().getId();
-        	
-        	Integer approvatoreId = c.getApprovatore() != null ? c.getApprovatore().getId() : null;
+        	Integer medicoId = c.getMedicoId();
+        	Integer tipoCertificatoId = c.getTipoCertificatoId();
+        	Integer approvatoreId = c.getApprovatoreId() > 0 ? c.getApprovatoreId() : null;
         	
         	String stato =  c.getStato() != null ? c.getStato().getLabel() : "In revisione";
         	
@@ -153,6 +150,27 @@ public class CertificatoDAO
         }
     }
 
+
+    public void getCompleto(Certificato c) throws SQLException
+	{
+
+        int medicoId = c.getMedicoId();
+    	Integer amministratoreId = c.getApprovatoreId();
+    	Integer tipoCertificatoId = c.getTipoCertificatoId();
+        
+        TipoCertificato tc = tipoCertificatofindById(tipoCertificatoId).orElseThrow(() -> new SQLException("TipoCertificato " + tipoCertificatoId + " non trovato"));
+        Medico m = medicoDAO.findById(medicoId).orElseThrow(() -> new SQLException("Medico " + medicoId + " non trovato"));
+        if(amministratoreId >0)
+        {
+            Amministratore a = amministratoreDAO.findById(amministratoreId).orElse(null);
+            c.setApprovatore(a);
+        }
+        
+
+		c.setMedico(m);
+    	c.setTipoCertificato(tc);
+    	
+    }
        
     private final ResultMapper<TipoCertificato> tipoCertificatoMapper = row ->
     {
@@ -169,36 +187,28 @@ public class CertificatoDAO
     {
     	Certificato c = new Certificato();
     	
-    	int medicoId = MapRow.getInt(row,"Medico_ID"); 
-    	
-    	Integer amministratoreId = MapRow.getIntOrNull(row,"Approved_by"); 
-    	
-    	Medico m = medicoDAO.findById(medicoId).orElseThrow(() -> new SQLException("Medico " + medicoId + " non trovato"));
-    	Optional<Amministratore> a = Optional.empty();
-    	
-    	Integer tipoCertificatoId = MapRow.getInt(row, "TipoCertificato_ID");
+    	Integer medicoId = MapRow.getIntOrNull(row,"Medico_ID");
+        medicoId = medicoId != null ? medicoId : -1; 
+
+    	Integer amministratoreId = MapRow.getIntOrNull(row,"Approved_by");
+        amministratoreId = amministratoreId != null ? amministratoreId : -1;
+
+        Integer tipoCertificatoId = MapRow.getIntOrNull(row, "TipoCertificato_ID");
+        tipoCertificatoId = tipoCertificatoId != null ? tipoCertificatoId : -1;
+
+        String dati = MapRow.getString(row, "Dati_Documento");
     		
-		TipoCertificato tc = tipoCertificatofindById(tipoCertificatoId).orElseThrow(() -> new SQLException("TipoCertificato " + tipoCertificatoId + " non trovato"));
-    		
-    	if(amministratoreId!=null)
-    	{
-    		a = amministratoreDAO.findById(amministratoreId);
-    	}
-    	
     	c.setId(MapRow.getInt(row, "ID"));
     	c.setNomeFile(MapRow.getString(row,"Nome_File"));
-    	
-    	
-    	String dati = MapRow.getString(row, "Dati_Documento");
     	c.setDatiDocumento(dati != null ? dati.getBytes(StandardCharsets.UTF_8) : null);
-    	
     	c.setStato(Certificato.Stato.fromString(MapRow.getString(row,"Stato")));
     	c.setMimeType(MapRow.getString(row,"Mime_Type"));
     	c.setDataCaricamento(MapRow.getLocalDateTime(row,"Data_Caricamento"));
     	c.setDataScadenza(MapRow.getLocalDateTime(row,"Data_Scadenza"));
-    	c.setMedico(m);
-    	c.setTipoCertificato(tc);
-    	c.setApprovatore(a.orElse(null));
+
+        c.setApprovatoreId(amministratoreId);
+        c.setMedicoId(medicoId);
+        c.setTipoCertificatoId(tipoCertificatoId);
     	
     	return c;
     };

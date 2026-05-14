@@ -14,7 +14,18 @@ public class ImpostazioniSistema implements Serializable
     private LocalDateTime dataInizio;
     private LocalDateTime dataFine;  
 
+    private int amministratoreId = -1;
     private Amministratore amministratore;
+
+    public int getAmministratoreId()
+    {
+        return amministratoreId;
+    }
+
+    public void setAmministratoreId(int amministratoreId) 
+    {
+        this.amministratoreId = amministratoreId;
+    }
 
     public ImpostazioniSistema()
     {

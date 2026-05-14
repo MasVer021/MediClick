@@ -2,71 +2,54 @@ package it.mediclick.model.dao;
 
 import it.mediclick.model.bean.Studio;
 import it.mediclick.util.Contex;
-
-import java.math.BigDecimal;
+import it.mediclick.util.MapRow;
+import it.mediclick.util.ResultMapper;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 public class StudioDAO 
 {
-    private Contex _contex;
+    private final Contex _contex;
 
     public StudioDAO(Contex contex) 
     {
         _contex = contex;
     }
 
-    public Studio findById(int id) throws SQLException 
+    public Optional<Studio> findById(int id) throws SQLException 
     {
-        String sql = """
+        try
+        {
+             String sql = """
                         SELECT * 
                         FROM Studio 
                         WHERE ID = ?
-                     """;
-                     
-        List<Map<String, Object>> result = _contex.eseguiSelect(sql, id);
-        
-        if (result == null || result.isEmpty()) 
-            return null;
+                        """;
             
-        try
-        {
-            return mapping(result.get(0));
+            return _contex.eseguiSelectSingolo(sql, studioMapper, id);
         }
         catch(SQLException e)
         {
-             System.err.println("Errore nella ricerca dello studio by id: " + e.getMessage());
-             throw e;
+            throw new SQLException("Errore nella ricerca dello studio per ID: " + id + e.getMessage(), e);
         }
     }
 
     public List<Studio> findAll() throws SQLException 
-    {
-        String sql = """
+    {    
+        try
+        {
+             String sql = """
                         SELECT * 
                         FROM Studio
                      """;
-                     
-        List<Map<String, Object>> result = _contex.eseguiSelect(sql);
-        List<Studio> list = new ArrayList<>();
-        
-        if (result == null || result.isEmpty())
-            return list;
-            
-        try
-        {
-            for (Map<String, Object> map : result) 
-            {
-                list.add(mapping(map));
-            }
-            return list;
+
+            return _contex.eseguiSelect(sql, studioMapper);
+           
         }
         catch(SQLException e)
         {
-             System.err.println("Errore nella ricerca di tutti gli studi: " + e.getMessage());
-             throw e;
+            throw new SQLException("Errore nella ricerca di tutti gli studi: " + e.getMessage(), e);
         }
     }
 
@@ -78,19 +61,11 @@ public class StudioDAO
                      """;
         try
         {
-            _contex.eseguiUpdate(sql, 
-                s.getPlaceId(),
-                s.getNomeSede(),
-                s.getIndirizzoMaps(),
-                s.getCitta(),
-                s.getLat(),
-                s.getLng()
-            );
+            _contex.eseguiUpdate(sql,s.getPlaceId(),s.getNomeSede(),s.getIndirizzoMaps(),s.getCitta(),s.getLat(),s.getLng());
         }
         catch(SQLException e)
         {
-             System.err.println("Errore nell'inserimento dello studio: " + e.getMessage());
-             throw e;
+            throw new SQLException("Errore nell'inserimento dello studio: " + e.getMessage(), e);
         }
     }
 
@@ -103,20 +78,11 @@ public class StudioDAO
                      """;
         try
         {
-            _contex.eseguiUpdate(sql, 
-                s.getPlaceId(),
-                s.getNomeSede(),
-                s.getIndirizzoMaps(),
-                s.getCitta(),
-                s.getLat(),
-                s.getLng(),
-                s.getId()
-            );
+            _contex.eseguiUpdate(sql,s.getPlaceId(),s.getNomeSede(),s.getIndirizzoMaps(),s.getCitta(),s.getLat(),s.getLng(),s.getId());
         }
         catch(SQLException e)
         {
-             System.err.println("Errore nell'aggiornamento dello studio: " + e.getMessage());
-             throw e;
+             throw new SQLException("Errore nell'aggiornamento dello studio: " + e.getMessage(), e);
         }
     }
 
@@ -132,39 +98,22 @@ public class StudioDAO
         }
         catch(SQLException e)
         {
-             System.err.println("Errore nella cancellazione dello studio: " + e.getMessage());
-             throw e;
+             throw new SQLException("Errore nella cancellazione dello studio: " + e.getMessage(), e);
         }
     }
 
-    private Studio mapping(Map<String, Object> map) throws SQLException 
+    private final ResultMapper<Studio> studioMapper = row -> 
     {
-        if (map == null) 
-            return null;
-            
-        try 
-        {
-            Studio s = new Studio();
-            s.setId(Integer.parseInt(String.valueOf(map.get("ID"))));
-            s.setPlaceId((String) map.get("Place_ID"));
-            s.setNomeSede((String) map.get("Nome_Sede"));
-            s.setIndirizzoMaps((String) map.get("Indirizzo_Maps"));
-            s.setCitta((String) map.get("Citta"));
-            
-            if (map.get("Lat") != null) 
-            {
-                s.setLat(new BigDecimal(String.valueOf(map.get("Lat"))));
-            }
-            if (map.get("Lng") != null) 
-            {
-                s.setLng(new BigDecimal(String.valueOf(map.get("Lng"))));
-            }
+        Studio s = new Studio();
 
-            return s;
-        } 
-        catch (Exception e) 
-        {
-            throw new SQLException("Errore durante il mapping di Studio: " + e.getMessage(), e);
-        }
-    }
+        s.setId(MapRow.getInt(row, "ID"));
+        s.setPlaceId(MapRow.getString(row, "Place_ID"));
+        s.setNomeSede(MapRow.getString(row, "Nome_Sede"));
+        s.setIndirizzoMaps(MapRow.getString(row, "Indirizzo_Maps"));
+        s.setCitta(MapRow.getString(row, "Citta"));
+        s.setLat(MapRow.getBigDecimal(row, "Lat"));
+        s.setLng(MapRow.getBigDecimal(row, "Lng"));
+    
+        return s;
+    };
 }

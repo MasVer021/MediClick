@@ -49,7 +49,20 @@ public class CatalogoPrestazioni implements Serializable
     private Stato stato;
     private String descrizione;
     
+
+    private int categoriaId = -1;
+    
     private Categoria categoria;
+
+    public int getCategoriaId() 
+    {
+        return categoriaId;
+    }
+
+    public void setCategoriaId(int categoriaId) 
+    {
+        this.categoriaId = categoriaId;
+    }
 
     public CatalogoPrestazioni() 
     {

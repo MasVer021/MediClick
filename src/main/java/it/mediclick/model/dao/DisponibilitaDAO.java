@@ -1,107 +1,92 @@
 package it.mediclick.model.dao;
 
 import it.mediclick.model.bean.Disponibilita;
+import it.mediclick.model.bean.Medico;
+import it.mediclick.model.bean.Paziente;
+import it.mediclick.model.bean.Studio;
 import it.mediclick.util.Contex;
 import it.mediclick.util.MapRow;
 import it.mediclick.util.ResultMapper;
-
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 public class DisponibilitaDAO 
 {
-    private Contex _contex;
-    private MedicoDAO medicoDAO;
-    private PazienteDAO pazienteDAO;
+    private final Contex _contex;
+    private final MedicoDAO medicoDAO;
+    private final PazienteDAO pazienteDAO;
+    private final StudioDAO studioDAO;
 
     public DisponibilitaDAO(Contex contex) 
     {
         _contex = contex;
         medicoDAO = new MedicoDAO(_contex);
         pazienteDAO = new PazienteDAO(_contex);
+        studioDAO = new StudioDAO(_contex);
     }
 
-    public Disponibilita findById(int id) throws SQLException 
+    public Optional<Disponibilita> findById(int id) throws SQLException 
     {
-        String sql = """
+        try 
+        {
+            String sql = """
                    SELECT *
                    FROM Disponibilita
                    WHERE ID = ?
                 """;
 
-        List<Map<String, Object>> result = _contex.eseguiSelect(sql, id);
-
-        if (result == null || result.isEmpty())
-            return null;
-
-        try {
-            return mapping(result.get(0));
-        } catch (SQLException e) {
-            System.err.println("Errore nella ricerca della disponibilita by id: " + e.getMessage());
-            throw e;
+            return _contex.eseguiSelectSingolo(sql, disponibilitaMapper, id);
+           
+        } 
+        catch (SQLException e) 
+        {
+            throw new SQLException("Errore nella ricerca della disponibilita con ID " + id, e);
         }
     }
 
-    public List<Disponibilita> findByMedico(int medicoId) throws SQLException {
-        String sql = """
+    public List<Disponibilita> findByMedico(int medicoId) throws SQLException 
+    {
+        try 
+        {
+            String sql = """
                    SELECT *
                    FROM Disponibilita
                    WHERE Medico_ID = ?
                 """;
 
-        List<Map<String, Object>> result = _contex.eseguiSelect(sql, medicoId);
-        List<Disponibilita> list = new ArrayList<>();
-
-        if (result == null || result.isEmpty())
-            return list;
-
-        try {
-            for (Map<String, Object> map : result) {
-                list.add(mapping(map));
-            }
-            return list;
-        } catch (SQLException e) {
-            System.err.println("Errore nella ricerca disponibilita per medico: " + e.getMessage());
-            throw e;
+            return _contex.eseguiSelect(sql, disponibilitaMapper, medicoId);
+        } 
+        catch (SQLException e) 
+        {
+            throw new SQLException("Errore nella ricerca della disponibilita con ID medico " + medicoId, e);
         }
     }
 
     public List<Disponibilita> findByMedicoEData(int medicoId, LocalDate data) throws SQLException {
-        String sql = """
+        try 
+        {
+            String sql = """
                    SELECT *
                    FROM Disponibilita
                    WHERE Medico_ID = ? AND DATE(Data_Ora_Inizio) = ?
                 """;
 
-        List<Map<String, Object>> result = _contex.eseguiSelect(sql, medicoId, java.sql.Date.valueOf(data));
-        List<Disponibilita> list = new ArrayList<>();
-
-        if (result == null || result.isEmpty())
-            return list;
-
-        try 
-        {
-            for (Map<String, Object> map : result) 
-            {
-                list.add(mapping(map));
-            }
-            return list;
+            return _contex.eseguiSelect(sql, disponibilitaMapper, medicoId, java.sql.Date.valueOf(data));
         } 
         catch (SQLException e) 
         {
-            System.err.println("Errore nella ricerca disponibilita per medico e data: " + e.getMessage());
-            throw e;
+            throw new SQLException("Errore nella ricerca della disponibilita con ID medico " + medicoId + " e data " + data, e);
         }
     }
 
     public List<Disponibilita> findDisponibili(int medicoId) throws SQLException {
-        String sql = """
+        try 
+        {
+            String sql = """
                    SELECT *
                    FROM Disponibilita
                    WHERE Medico_ID = ?
@@ -109,40 +94,39 @@ public class DisponibilitaDAO
                    AND Data_Ora_Inizio > NOW()
                 """;
 
-        List<Map<String, Object>> result = _contex.eseguiSelect(sql, medicoId);
-        List<Disponibilita> list = new ArrayList<>();
-
-        if (result == null || result.isEmpty())
-            return list;
-
-        try {
-            for (Map<String, Object> map : result) {
-                list.add(mapping(map));
-            }
-            return list;
-        } catch (SQLException e) {
-            System.err.println("Errore nella ricerca delle disponibilita attive per medico: " + e.getMessage());
-            throw e;
+            return _contex.eseguiSelect(sql, disponibilitaMapper, medicoId);
+        } 
+        catch (SQLException e) 
+        {
+            throw new SQLException("Errore nella ricerca della disponibilita libere con ID medico " + medicoId , e);
         }
     }
 
-    public void insert(Disponibilita d) throws SQLException {
+    public void insert(Disponibilita d) throws SQLException 
+    {
+        
         String sql = """
                    INSERT INTO Disponibilita(Medico_ID, Studio_ID, Data_Ora_Inizio, Data_Ora_Fine, Stato, Timestamp_Blocco, Paziente_ID_Blocco)
                    VALUES (?,?,?,?,?,?,?)
                 """;
         try {
-            _contex.eseguiUpdate(sql,
-                    d.getMedicoId(),
-                    d.getStudioId(),
-                    d.getDataOraInizio() != null ? Timestamp.valueOf(d.getDataOraInizio()) : null,
-                    d.getDataOraFine() != null ? Timestamp.valueOf(d.getDataOraFine()) : null,
-                    d.getStato().getLabel(),
-                    d.getTimestampBlocco() != null ? Timestamp.valueOf(d.getTimestampBlocco()) : null,
-                    d.getPazienteIdBlocco());
-        } catch (SQLException e) {
-            System.err.println("Errore nell'inserimento della disponibilita: " + e.getMessage());
-            throw e;
+
+            Integer medicoId = d.getMedicoId() > 0 ? d.getMedicoId() : null;
+            Integer studioId = d.getStudioId() > 0 ? d.getStudioId() : null;
+
+            Integer pazienteIdBlocco = d.getPazienteId() > 0 ? d.getPazienteId() : null;
+
+            LocalDateTime dataOraInizio = d.getDataOraInizio() != null ? d.getDataOraInizio() : null;
+            LocalDateTime dataOraFine = d.getDataOraFine() != null ? d.getDataOraFine() : null;
+            LocalDateTime dataOraBlocco = d.getTimestampBlocco() != null ? d.getTimestampBlocco() : null;
+            String stato = d.getStato() != null ? d.getStato().getLabel() : null;
+
+
+            _contex.eseguiUpdate(sql, medicoId, studioId, dataOraInizio,dataOraFine,stato, dataOraBlocco, pazienteIdBlocco);
+        } 
+        catch (SQLException e) 
+        {
+           throw new SQLException("Errore nell'inserimento della disponibilita: " + e.getMessage(), e);
         }
     }
     
@@ -155,24 +139,30 @@ public class DisponibilitaDAO
         
     }
     
-    public void updateStato(int id, Disponibilita.Stato stato,Connection conn) throws SQLException {
+    public void updateStato(int id, Disponibilita.Stato stato,Connection conn) throws SQLException 
+    {
         String sql = """
                    UPDATE Disponibilita
                    SET Stato = ?
                    WHERE ID = ?
                 """;
-        try {
+        try 
+        {
             if (!stato.equals(Disponibilita.Stato.BLOCCATA))
                 _contex.eseguiUpdate(sql,conn,stato.getLabel(), id);
-        } catch (SQLException e) {
-            System.err.println("Errore nell'aggiornamento stato della disponibilita: " + e.getMessage());
-            throw e;
+            else 
+                throw new SQLException("Per bloccare una disponibilita, utilizzare il metodo setBlocco con ID della disponibilita, ID del paziente e blocca=true");
+        } 
+        catch (SQLException e) 
+        {
+           throw new SQLException("Errore nell'aggiornamento dello stato della disponibilita con ID " + id + ": " + e.getMessage(), e);
         }
     }
 
     
 
-    public void setBlocco(int id, Integer pazienteId, boolean blocca) throws SQLException {
+    public void setBlocco(int id, Integer pazienteId, boolean blocca) throws SQLException 
+    {
         String sql = """
                    UPDATE Disponibilita
                    SET Stato = ?, Timestamp_Blocco = ?, Paziente_ID_Blocco = ?
@@ -182,102 +172,96 @@ public class DisponibilitaDAO
         LocalDateTime ts = blocca ? LocalDateTime.now() : null;
         Integer pId = blocca ? pazienteId : null;
 
-        try {
+        try 
+        {
             _contex.eseguiUpdate(sql, stato, ts, pId, id);
-        } catch (SQLException e) {
-            System.err.println("Errore nel settare il blocco della disponibilita: " + e.getMessage());
-            throw e;
+        } 
+        catch (SQLException e) 
+        {
+            throw new SQLException("Errore nel settare il blocco della disponibilita con ID " + id + ": " + e.getMessage(), e);
         }
     }
 
-    public void deleteLogic(int id) throws SQLException {
+    public void deleteLogic(int id) throws SQLException 
+    {
         String sql = """
                    UPDATE Disponibilita
                    SET Stato = ?
                    WHERE ID = ?
                 """;
-        try {
+        try 
+        {
             _contex.eseguiUpdate(sql, Disponibilita.Stato.CANCELLATA.getLabel(), id);
-        } catch (SQLException e) {
-            System.err.println("Errore nella cancellazione logica della disponibilita: " + e.getMessage());
-            throw e;
+        } 
+        catch (SQLException e) 
+        {
+            throw new SQLException("Errore nella cancellazione logica della disponibilita con ID " + id + ": " + e.getMessage(), e);
         }
     }
 
-    public void delete(int id) throws SQLException {
+    public void delete(int id) throws SQLException 
+    {
         String sql = """
                    DELETE FROM Disponibilita
                    WHERE ID = ?
                 """;
-        try {
-            _contex.eseguiUpdate(sql, id);
-        } catch (SQLException e) {
-            System.err.println("Errore nella cancellazione della disponibilita: " + e.getMessage());
-            throw e;
-        }
-    }
-
-    private Disponibilita mapping(Map<String, Object> map) throws SQLException {
-        if (map == null)
-            return null;
-
-        try {
-            Disponibilita d = new Disponibilita();
-            d.setId(Integer.parseInt(String.valueOf(map.get("ID"))));
-            d.setMedicoId(Integer.parseInt(String.valueOf(map.get("Medico_ID"))));
-
-            if (map.get("Studio_ID") != null) {
-                d.setStudioId(Integer.parseInt(String.valueOf(map.get("Studio_ID"))));
-            }
-
-            if (map.get("Data_Ora_Inizio") != null) {
-                LocalDateTime dataOraInizio = LocalDateTime.parse(String.valueOf(map.get("Data_Ora_Inizio")));
-                d.setDataOraInizio(dataOraInizio);
-            }
-
-            if (map.get("Data_Ora_Fine") != null) {
-                LocalDateTime dataOraFine = LocalDateTime.parse(String.valueOf(map.get("Data_Ora_Fine")));
-                d.setDataOraFine(dataOraFine);
-            }
-
-            d.setStato(Disponibilita.Stato.fromString((String) map.get("Stato")));
-
-            if (map.get("Timestamp_Blocco") != null) {
-                LocalDateTime dataOraBlocco = LocalDateTime.parse(String.valueOf(map.get("Timestamp_Blocco")));
-                d.setTimestampBlocco(dataOraBlocco);
-            }
-
-            if (map.get("Paziente_ID_Blocco") != null) {
-                d.setPazienteIdBlocco(Integer.parseInt(String.valueOf(map.get("Paziente_ID_Blocco"))));
-            }
-
-            return d;
-        } 
-        catch (Exception e) 
+        try 
         {
-            throw new SQLException("Errore durante il mapping della Disponibilita: " + e.getMessage(), e);
+            _contex.eseguiUpdate(sql, id);
+        } 
+        catch (SQLException e) 
+        {
+            throw new SQLException("Errore nella cancellazione della disponibilita con ID " + id + ": " + e.getMessage(), e);
         }
     }
-    
+
+    public void getCompleto(Disponibilita d) throws SQLException
+	{
+        int medicoId = d.getMedicoId();
+        int studioId = d.getStudioId();
+        int pazineteIdBlocco = d.getPazienteId();
+
+        
+        Medico m = medicoDAO.findById(medicoId).orElseThrow(()-> new SQLException("Medico non trovato per disponibilita id: " + medicoId));
+        Studio s = studioDAO.findById(studioId).orElseThrow(()-> new SQLException("Studio non trovato per disponibilita id: " + studioId));
+
+        if(pazineteIdBlocco > 0)
+        {
+            Paziente p = pazienteDAO.findById(pazineteIdBlocco).orElse(null);
+            d.setPaziente(p);
+        }
+
+        d.setMedico(m);
+        d.setStudio(s);
+        
+    }
+
     private final ResultMapper<Disponibilita> disponibilitaMapper = row->
     {
     	Disponibilita d = new Disponibilita();
     	int id = MapRow.getInt(row, "ID");
 
+        Integer medicoId = MapRow.getIntOrNull(row, "Medico_ID");
+        medicoId = medicoId != null ? medicoId : -1;
+
+        Integer studioId = MapRow.getIntOrNull(row, "Studio_ID");
+        studioId = studioId != null ? studioId : -1;
+
+        Integer pazineteIdBlocco = MapRow.getIntOrNull(row, "Paziente_ID_Blocco");
+        pazineteIdBlocco = pazineteIdBlocco != null ? pazineteIdBlocco : -1;
+
     	d.setId(id);
 
-        Medico m = medicoDAO
-    	
-    	d.setMedico(null);
-    	d.setPaziente(null);
-    	d.setDataOraFine(null);
-    	d.setDataOraInizio(null);
-    	d.setStudio(null);
-    	d.setTimestampBlocco(null);
-    	d.setStato(null);
-    	
-    	
-    	
+        
+        d.setStudioId(studioId);
+    	d.setMedicoId(medicoId);
+    	d.setPazienteId(pazineteIdBlocco);
+
+    	d.setDataOraFine(MapRow.getLocalDateTime(row, "Data_Ora_Fine"));
+    	d.setDataOraInizio(MapRow.getLocalDateTime(row, "Data_Ora_Inizio"));
+    	d.setTimestampBlocco(MapRow.getLocalDateTime(row, "Timestamp_Blocco"));
+    	d.setStato(Disponibilita.Stato.fromString((MapRow.getString(row, "Stato"))));
+    
     	return d;
     };
 }

@@ -12,7 +12,7 @@ import java.util.Optional;
 
 public class CatalogoPrestazioniDAO 
 {
-    private Contex _contex;
+    private final Contex _contex;
 
     public CatalogoPrestazioniDAO(Contex contex) 
     {
@@ -88,7 +88,7 @@ public class CatalogoPrestazioniDAO
                      WHERE Stato = ?
                   """;
 	                     
-	        return _contex.eseguiSelect(sql,catalogoMapper,stato.name());
+	        return _contex.eseguiSelect(sql,catalogoMapper,stato.getLabel());
        
        }
        catch(SQLException e)
@@ -142,7 +142,7 @@ public class CatalogoPrestazioniDAO
         				""";
         
         
-        Integer categoriaId = cp.getCategoria() == null ? null : cp.getCategoria().getId();
+        Integer categoriaId = cp.getCategoriaId();
         
         String catalogoNome = cp.getNome();
         String catalogoStato = cp.getStato() != null ? cp.getStato().getLabel() : "Attiva";
@@ -174,6 +174,13 @@ public class CatalogoPrestazioniDAO
         	throw new SQLException("Errore nell'update dello stato della prestazione", e);
         }
     }
+
+    public void getCompleto(CatalogoPrestazioni c) throws SQLException
+	{
+		Categoria cat = findCategoriaById(c.getCategoriaId()).orElseThrow(() -> new SQLException("Categoria con ID " + c.getCategoriaId() + " non trovata"));
+		c.setCategoria(cat);
+	}
+
     
     private final ResultMapper<Categoria> categoriaMapper = row ->
     {
@@ -187,22 +194,18 @@ public class CatalogoPrestazioniDAO
 
     private final ResultMapper<CatalogoPrestazioni> catalogoMapper = row ->
     {
+        CatalogoPrestazioni catalogo = new CatalogoPrestazioni();
+
     	int id = MapRow.getInt(row, "ID");
     	
     	Integer categoriaID = MapRow.getIntOrNull(row, "Categoria_ID");
-    	
-    	CatalogoPrestazioni catalogo = new CatalogoPrestazioni();
+        categoriaID = categoriaID != null ? categoriaID : -1;
     	
     	catalogo.setId(id);
     	catalogo.setNome(MapRow.getString(row, "Nome"));
     	catalogo.setStato(CatalogoPrestazioni.Stato.fromString(MapRow.getString(row, "Stato")));
     	catalogo.setDescrizione(MapRow.getString(row,"Descrizione"));
-    	
-    	
-    	if(categoriaID!=null)
-    	{
-    		catalogo.setCategoria(findCategoriaById(categoriaID).orElseThrow(()->new SQLException("Categoria " + categoriaID + " non trovata")));
-    	}
+        catalogo.setCategoriaId(categoriaID);
     	
         return catalogo;
     };

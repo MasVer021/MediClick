@@ -1,70 +1,58 @@
 package it.mediclick.model.dao;
 
 import it.mediclick.model.bean.Paziente;
+import it.mediclick.model.bean.Utente;
 import it.mediclick.util.Contex;
-
+import it.mediclick.util.MapRow;
+import it.mediclick.util.ResultMapper;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 public class PazienteDAO 
 {
-    private Contex _contex;
-    private UtenteDAO utente;
+    private final Contex _contex;
+    private final UtenteDAO utenteDAO;
 
     public PazienteDAO(Contex contex) 
     {
         _contex = contex;
-        utente = new UtenteDAO(contex);
+        utenteDAO = new UtenteDAO(contex);
     }
 
-    public Paziente findById(int id) throws SQLException 
+    public Optional<Paziente> findById(int id) throws SQLException 
     {
-        String sql = """
+        try
+        {
+             String sql = """
                         SELECT * 
                         FROM Paziente 
                         WHERE ID = ?
                      """;
-                     
-        List<Map<String, Object>> result = _contex.eseguiSelect(sql, id);
-        
-        if (result == null || result.isEmpty()) 
-            return null;
-            
-        try
-        {
-            return mapping(result.get(0));
+
+            return _contex.eseguiSelectSingolo(sql, pazienteMapper, id);        
         }
         catch(SQLException e)
         {
-             System.err.println("Errore nella ricerca del paziente by id: " + e.getMessage());
-             throw e;
+             throw new SQLException("Errore nella ricerca del paziente per ID: " + id + e.getMessage(), e);
         }
     }
 
-    public Paziente findByCodiceFiscale(String cf) throws SQLException 
-    {
-        String sql = """
+    public Optional<Paziente> findByCodiceFiscale(String cf) throws SQLException 
+    {             
+       try
+        {
+             String sql = """
                         SELECT * 
                         FROM Paziente 
                         WHERE Codice_Fiscale = ?
                      """;
-                     
-        List<Map<String, Object>> result = _contex.eseguiSelect(sql, cf);
-        
-        if (result == null || result.isEmpty()) 
-            return null;
-            
-        try
-        {
-            return mapping(result.get(0));
+
+            return _contex.eseguiSelectSingolo(sql, pazienteMapper, cf);        
         }
         catch(SQLException e)
         {
-             System.err.println("Errore nella ricerca del paziente per codice fiscale: " + e.getMessage());
-             throw e;
+             throw new SQLException("Errore nella ricerca del paziente per Codice Fiscale: " + cf + e.getMessage(), e);
         }
     }
 
@@ -80,17 +68,9 @@ public class PazienteDAO
         
         try 
         {
-        	int utenteId = utente.insert(conn,p.getUtente());
+        	int utenteId = utenteDAO.insert(conn,p.getUtente());
 
-            _contex.eseguiUpdate(sqlPaziente,
-            	conn,
-                utenteId,
-                p.getCognome(),
-                p.getNome(),
-                p.getCodiceFiscale(),
-                p.getTelefono(),
-                p.getDataNascita()
-            );
+            _contex.eseguiUpdate(sqlPaziente,conn,utenteId,p.getCognome(),p.getNome(),p.getCodiceFiscale(),p.getTelefono(),p.getDataNascita());
 
             p.setId(utenteId);
             
@@ -98,13 +78,11 @@ public class PazienteDAO
             
             conn.commit();
             return utenteId;
-            
         } 
         catch (SQLException e) 
         {
         	conn.rollback();
-            System.err.println("Errore nell'inserimento del paziente: " + e.getMessage());
-            throw e;
+            throw new SQLException("Errore durante l'inserimento del paziente: " + e.getMessage(), e);
         }
         finally
         {
@@ -114,7 +92,7 @@ public class PazienteDAO
     
     public void updatePassword(int id, String password) throws SQLException
     {
-    	utente.updatePassword(id, password);
+    	utenteDAO.updatePassword(id, password);
     }
 
     public void update(Paziente p) throws SQLException 
@@ -130,39 +108,31 @@ public class PazienteDAO
         }
         catch(SQLException e)
         {
-             System.err.println("Errore nell'aggiornamento del paziente: " + e.getMessage());
-             throw e;
+             throw new SQLException("Errore durante l'aggiornamento del paziente con ID " + p.getId() + ": " + e.getMessage(), e);
         }
     }
 
-    private Paziente mapping(Map<String, Object> map) throws SQLException 
-    {
-        if (map == null) 
-            return null;
-            
-        try 
-        {
-            Paziente p = new Paziente();
-            
-            int id = Integer.parseInt(String.valueOf(map.get("ID")));
-            
-            p.setId(id);
-            p.setCognome((String) map.get("Cognome"));
-            p.setNome((String) map.get("Nome"));
-            p.setCodiceFiscale((String) map.get("Codice_Fiscale"));
-            p.setTelefono((String) map.get("Telefono"));
-            
-            if (map.get("Data_Nascita") != null) 
-            {
-                p.setDataNascita(LocalDate.parse(String.valueOf(map.get("Data_Nascita"))));
-            }
-            
-            p.setUtente(utente.findById(id));
-            return p;
-        } 
-        catch (Exception e) 
-        {
-            throw new SQLException("Errore durante il mapping del Paziente: " + e.getMessage(), e);
-        }
+    public void getCompleto(Paziente p) throws SQLException
+	{
+        int utenteId = p.getId();
+
+        Utente u = utenteDAO.findById(utenteId).orElseThrow(() -> new SQLException("Utente non trovato per ID: " + utenteId));
+
+        p.setUtente(u);
     }
+
+    private final ResultMapper<Paziente> pazienteMapper = row->
+    {
+        Paziente p = new Paziente();
+        
+        p.setId(MapRow.getInt(row, "ID"));
+        p.setCognome(MapRow.getString(row, "Cognome"));
+        p.setNome(MapRow.getString(row, "Nome"));
+        p.setCodiceFiscale(MapRow.getString(row, "Codice_Fiscale"));
+        p.setTelefono(MapRow.getString(row, "Telefono"));
+        p.setDataNascita(MapRow.getLocalDate(row, "Data_Nascita"));
+
+        return p;
+
+    };
 }

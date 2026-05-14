@@ -16,11 +16,31 @@ public class Caratterizzato implements Serializable {
 
     public Caratterizzato() {}
 
-    public Integer getRuoloId() 
-    { 
-    	return ruolo.getId(); 
+    public int getRuoloId() 
+    {
+        return ruoloId;
     }
-    
+
+    public void setRuoloId(int ruoloId) 
+    {
+        this.ruoloId = ruoloId;
+    }
+
+    public int getPermessoId() 
+    {
+        return permessoId;
+    }
+
+    public void setPermessoId(int permessoId) 
+    {
+        this.permessoId = permessoId;
+    }
+
+    public Ruolo getRuolo() 
+    {
+        return ruolo;
+    }
+
     public void setRuolo(Ruolo ruolo) 
     { 
     	this.ruolo = ruolo; 

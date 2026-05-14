@@ -48,9 +48,44 @@ public class ErogazionePrestazione implements Serializable
     private Integer durata;
     private Stato stato;
 
+    private int medicoId = -1;
     private Medico medico;
+
+    private int catalogoPrestazioniId = -1;
     private CatalogoPrestazioni catalogoPrestazioni;
+
+    private int studioId = -1;
     private Studio studio;
+
+    public int getMedicoId() 
+    {
+        return medicoId;
+    }
+
+    public void setMedicoId(int medicoId) 
+    {
+        this.medicoId = medicoId;
+    }
+
+    public int getCatalogoPrestazioniId() 
+    {
+        return catalogoPrestazioniId;
+    }
+
+    public void setCatalogoPrestazioniId(int catalogoPrestazioniId) 
+    {
+        this.catalogoPrestazioniId = catalogoPrestazioniId;
+    }
+
+    public int getStudioId() 
+    {
+        return studioId;
+    }
+
+    public void setStudioId(int studioId) 
+    {
+        this.studioId = studioId;
+    }
 
     public ErogazionePrestazione()
     {
@@ -131,6 +166,6 @@ public class ErogazionePrestazione implements Serializable
     @Override
     public String toString()
     {
-        return "ErogazionePrestazione{id=" + id + ", medicoId=" + getMedico().getId() +", prezzoLordo=" + prezzoLordoListino + ", durata=" + durata + "min, stato=" + stato + "}";
+        return "ErogazionePrestazione{id=" + id + ", medicoId=" + getMedicoId() +", prezzoLordo=" + prezzoLordoListino + ", durata=" + durata + "min, stato=" + stato + "}";
     }
 }

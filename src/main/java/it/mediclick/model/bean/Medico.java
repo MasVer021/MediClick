@@ -37,13 +37,25 @@ public class Medico implements Serializable {
     private int id;
     private String cognome;
     private String nome;
-    private String fotoprofilo;
+    private byte[] fotoprofilo;
     private String bio;
     private String pIva;
     private StatoVerifica statoVerifica;
    
     private Utente utente;
+
+    private int regimeFiscaleId = -1;
     private RegimeFiscale regimeFiscale;
+
+    public int getRegimeFiscaleId() 
+    {
+        return regimeFiscaleId;
+    }
+
+    public void setRegimeFiscaleId(int regimeFiscaleId) 
+    {
+        this.regimeFiscaleId = regimeFiscaleId;
+    }
 
     public Medico()
     {
@@ -78,12 +90,12 @@ public class Medico implements Serializable {
     	this.nome = nome; 
     }
 
-    public String getFotoprofilo() 
+    public byte[] getFotoprofilo() 
     { 
     	return fotoprofilo; 
     }
     
-    public void setFotoprofilo(String fotoprofilo) 
+    public void setFotoprofilo(byte[] fotoprofilo) 
     { 
     	this.fotoprofilo = fotoprofilo;
     }

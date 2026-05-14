@@ -14,8 +14,18 @@ public class Recensione implements Serializable
     private boolean isVisible;
     private LocalDateTime dataPubblicazione;
 
-    // Relazione opzionale
+    private int prenotazioneId = -1;
     private Prenotazione prenotazione;
+
+    
+    public int getPrenotazioneId() 
+    {
+        return prenotazioneId;
+    }
+
+    public void setPrenotazioneId(int prenotazioneId) {
+        this.prenotazioneId = prenotazioneId;
+    }
 
     public Recensione()
     {
@@ -86,6 +96,6 @@ public class Recensione implements Serializable
     @Override
     public String toString()
     {
-        return "Recensione{id=" + id + ", prenotazioneId=" + getPrenotazione().getId() +", voto=" + voto + ", visible=" + isVisible + "}";
+        return "Recensione{id=" + id + ", prenotazioneId=" + getPrenotazioneId() +", voto=" + voto + ", visible=" + isVisible + "}";
     }
 }

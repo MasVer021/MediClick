@@ -1,18 +1,28 @@
 package it.mediclick.model.bean;
 
 import java.io.Serializable;
-import java.util.Optional;
 
 
 public class Amministratore implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private int id;           // FK -> Utente(ID)
-    private Integer dipartimentoId;
-
+    private int id;         
+   
     private Utente utente;
+
     private Dipartimento dipartimento;
+    private int dipartimentoId = -1;
+
+    public int getDipartimentoId() 
+    {
+        return dipartimentoId;
+    }
+
+    public void setDipartimentoId(int dipartimentoId) 
+    {
+        this.dipartimentoId = dipartimentoId;
+    }
 
     public Amministratore() 
     {
@@ -40,9 +50,9 @@ public class Amministratore implements Serializable {
     	this.utente = utente; 
     }
 
-    public Optional<Dipartimento> getDipartimento() 
+    public Dipartimento getDipartimento() 
     { 
-    	return Optional.ofNullable(dipartimento); 
+    	return dipartimento; 
     }
     
     public void setDipartimento(Dipartimento dipartimento) 

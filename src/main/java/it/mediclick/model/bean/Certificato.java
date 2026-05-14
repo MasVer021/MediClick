@@ -55,16 +55,51 @@ public class Certificato implements Serializable {
     private LocalDateTime dataCaricamento;
     private LocalDateTime dataScadenza;
     
+
+    private int medicoId = -1;
     private Medico medico;
+
+    private int tipoCertificatoId = -1;
     private TipoCertificato tipoCertificato;
+
+    private int approvatoreId = -1;
     private Amministratore approvatore;
+
+    public int getMedicoId() {
+        return medicoId;
+    }
+
+    public void setMedicoId(int medicoId) 
+    {
+        this.medicoId = medicoId;
+    }
+
+    public int getTipoCertificatoId() 
+    {
+        return tipoCertificatoId;
+    }
+
+    public void setTipoCertificatoId(int tipoCertificatoId) 
+    {
+        this.tipoCertificatoId = tipoCertificatoId;
+    }
+
+    public int getApprovatoreId() 
+    {
+        return approvatoreId;
+    }
+
+    public void setApprovatoreId(int approvatoreId) 
+    {
+        this.approvatoreId = approvatoreId;
+    }
 
     public Certificato() 
     {
         this.stato = Stato.IN_REVISIONE;
     }
 
-    public Integer getId() 
+    public int getId() 
     { 
     	return id; 
     }
@@ -167,6 +202,6 @@ public class Certificato implements Serializable {
     @Override
     public String toString() 
     {
-        return "Certificato{id=" + id + ", medicoId=" + getMedico().getId() +", nomeFile='" + nomeFile + "', stato=" + stato + "}";
+        return "Certificato{id=" + id + ", medicoId=" + getMedicoId() +", nomeFile='" + nomeFile + "', stato=" + stato + "}";
     }
 }

@@ -66,7 +66,7 @@ public class MapRow
         {
         	return null;
         }
-        return ((java.sql.Date) val).toLocalDate();
+        return (LocalDate) val;
     }
     
     public static BigDecimal getBigDecimal(Map<String, Object> map, String key)

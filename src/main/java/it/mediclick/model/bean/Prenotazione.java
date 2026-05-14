@@ -55,10 +55,56 @@ public class Prenotazione implements Serializable
     private double trattenutaPiattaformaEuro;
     private double tasseStimateEuro;
     private LocalDateTime dataPagamento;
+
+    private int pazienteId;
     private Paziente paziente;
+
+    private int disponibilitaId = -1;
     private Disponibilita disponibilita;
+
+    private int erogazionePrestazioneId = -1;
     private ErogazionePrestazione erogazionePrestazione;
+
+    private int codiceScontoId = -1;
     private CodiceSconto codiceSconto;
+    
+    public int getPazienteId() 
+    {
+        return pazienteId;
+    }
+
+    public void setPazienteId(int pazienteId) 
+    {
+        this.pazienteId = pazienteId;
+    }
+
+    public int getDisponibilitaId() 
+    {
+        return disponibilitaId;
+    }
+
+    public void setDisponibilitaId(int disponibilitaId) 
+    {
+        this.disponibilitaId = disponibilitaId;
+    }
+
+    public int getErogazionePrestazioneId() 
+    {
+        return erogazionePrestazioneId;
+    }
+
+    public void setErogazionePrestazioneId(int erogazionePrestazioneId) 
+    {
+        this.erogazionePrestazioneId = erogazionePrestazioneId;
+    }
+
+    public int getCodiceScontoId() {
+        return codiceScontoId;
+    }
+
+    public void setCodiceScontoId(int codiceScontoId) {
+        this.codiceScontoId = codiceScontoId;
+    }
 
     public Prenotazione()
     {
@@ -198,6 +244,6 @@ public class Prenotazione implements Serializable
     @Override
     public String toString()
     {
-        return "Prenotazione{id=" + id + ", pazienteId=" + getPaziente().getId() +", importo=" + importoPagato + ", stato=" + stato + "}";
+        return "Prenotazione{id=" + id + ", pazienteId=" + getPazienteId() +", importo=" + importoPagato + ", stato=" + stato + "}";
     }
 }

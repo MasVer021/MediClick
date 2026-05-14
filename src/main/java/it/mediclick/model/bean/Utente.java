@@ -14,11 +14,22 @@ public class Utente implements Serializable
     private LocalDate dataIscrizione;
     private boolean accountAttivo;
 
+    private int ruoloId = -1;
     private Ruolo ruolo;
 
     public Utente()
     {
         this.accountAttivo = true;
+    }
+
+    
+    public int getRuoloId() {
+        return ruoloId;
+    }
+
+
+    public void setRuoloId(int ruoloId) {
+        this.ruoloId = ruoloId;
     }
 
     public int getId()

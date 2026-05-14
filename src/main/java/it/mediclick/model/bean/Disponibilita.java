@@ -51,10 +51,45 @@ public class Disponibilita implements Serializable
     private LocalDateTime dataOraFine;
     private Stato stato;
     private LocalDateTime timestampBlocco;
-        
+    
+    private int medicoId = -1;
     private Medico medico;
+
+    private int studioId = -1;
     private Studio studio;
+
+    private int pazienteId = -1;
     private Paziente paziente;
+
+    public int getMedicoId() 
+    {
+        return medicoId;
+    }
+
+    public void setMedicoId(int medicoId) 
+    {
+        this.medicoId = medicoId;
+    }
+
+    public int getStudioId()
+    {
+        return studioId;
+    }
+
+    public void setStudioId(int studioId) 
+    {
+        this.studioId = studioId;
+    }
+
+    public int getPazienteId() 
+    {
+        return pazienteId;
+    }
+
+    public void setPazienteId(int pazienteId) 
+    {
+        this.pazienteId = pazienteId;
+    }
 
     public Paziente getPaziente() 
     {
@@ -144,6 +179,6 @@ public class Disponibilita implements Serializable
     @Override
     public String toString()
     {
-        return "Disponibilita{id=" + id + ", medicoId=" + getMedico().getId() +", inizio=" + dataOraInizio + ", fine=" + dataOraFine+", stato=" + stato + "}";
+        return "Disponibilita{id=" + id + ", medicoId=" + getMedicoId() +", inizio=" + dataOraInizio + ", fine=" + dataOraFine+", stato=" + stato + "}";
     }
 }
