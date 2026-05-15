@@ -52,21 +52,44 @@ public class MapRow
     public static LocalDateTime getLocalDateTime(Map<String, Object> map, String key)
     {
         Object val = map.get(key);
+        
         if (val == null)
         {
         	return null;
         }
-        return Timestamp.valueOf(String.valueOf(val)).toLocalDateTime();
+        	
+        if (val instanceof java.sql.Timestamp)
+        {
+        	return ((java.sql.Timestamp) val).toLocalDateTime();
+        }
+        
+        if (val instanceof LocalDateTime) 
+        {
+        	return (LocalDateTime) val;
+        }
+        	
+        return LocalDateTime.parse(String.valueOf(val));
     }
 
     public static LocalDate getLocalDate(Map<String, Object> map, String key)
     {
         Object val = map.get(key);
-        if (val == null)
+        if (val == null) 
         {
         	return null;
         }
-        return (LocalDate) val;
+        	
+        if (val instanceof java.sql.Date) 
+        {
+        	return ((java.sql.Date) val).toLocalDate();
+        }
+        
+        if (val instanceof LocalDate)
+        {
+        	return (LocalDate) val;
+        }
+        
+        return LocalDate.parse(String.valueOf(val));
     }
     
     public static BigDecimal getBigDecimal(Map<String, Object> map, String key)

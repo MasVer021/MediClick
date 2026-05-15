@@ -7,21 +7,10 @@ import javax.servlet.annotation.WebListener;
 
 
 @WebListener
-public class AppContexListener implements ServletContextListener {
+public class AppContexListener implements ServletContextListener 
+{
 
     
-    public AppContexListener() 
-    {
-        // TODO Auto-generated constructor stub
-    }
-
-	
-    public void contextDestroyed(ServletContextEvent sce)  
-    { 
-         // TODO Auto-generated method stub
-    }
-
-	
     public void contextInitialized(ServletContextEvent sce)  
     { 
     	 ServletContext ctx = sce.getServletContext();
