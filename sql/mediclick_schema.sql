@@ -111,7 +111,7 @@ CREATE TABLE Medico (
     ID          INT             NOT NULL,
     Cognome     VARCHAR(100)    NOT NULL,
     Nome        VARCHAR(100)    NOT NULL,
-    Fotoprofilo MEDIUMTEXT,
+    Fotoprofilo MEDIUMBLOB,
     Bio         TEXT,
     P_Iva       VARCHAR(20),
     Stato_verifica ENUM('In attesa', 'Approvato', 'Rifiutato', 'Sospeso') NOT NULL DEFAULT 'In attesa',
