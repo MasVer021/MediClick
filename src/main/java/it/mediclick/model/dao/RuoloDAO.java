@@ -35,6 +35,25 @@ public class RuoloDAO
             throw new SQLException("Errore nella ricerca del ruolo per ID: " + id + e.getMessage(), e);
         }
     }
+    
+    
+    public Integer findByCodice(String codice) throws SQLException 
+    { 
+        try
+        {
+             String sql =   """
+                            SELECT * 
+                            FROM Ruolo 
+                            WHERE Codice = ?
+                            """;
+
+           return _contex.eseguiSelectSingolo(sql, ruoloMapper, codice).orElseThrow(()-> new SQLException("Codice non trovato")).getId();
+        }
+        catch(SQLException e)
+        {
+            throw new SQLException("Errore nella ricerca del ruolo :"+ e.getMessage(), e);
+        }
+    }
 
     public List<Ruolo> findAll() throws SQLException 
     { 

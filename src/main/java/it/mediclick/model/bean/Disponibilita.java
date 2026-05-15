@@ -46,7 +46,7 @@ public class Disponibilita implements Serializable
         }
     }
 
-    private int id;
+    private int id = -1;
     private LocalDateTime dataOraInizio;
     private LocalDateTime dataOraFine;
     private Stato stato;

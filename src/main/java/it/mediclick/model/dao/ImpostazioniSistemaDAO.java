@@ -62,7 +62,7 @@ public class ImpostazioniSistemaDAO
            }
     }
     
-    public int findIDByKey(String key) throws SQLException
+    public Optional<Integer> findIDByKey(String key) throws SQLException
     {
     	try
         {
@@ -76,9 +76,35 @@ public class ImpostazioniSistemaDAO
             ImpostazioniSistema imp = _contex.eseguiSelectSingolo(sql, impostazioniSistemaMapper, key).orElse(null);
             if(imp == null)
             {
-                return -1;
+                return Optional.empty();
             }
-            return imp.getId();                              
+            return Optional.of(imp.getId());                              
+        }
+        catch(SQLException e)
+        {
+            throw new SQLException("Errore nella ricerca delle impostazioni per chiave " + key + ": " + e.getMessage(), e);
+        }
+    }
+
+    public Optional<Integer> findValueByKey(String key) throws SQLException
+    {
+    	try
+        {
+            String sql = """
+                            SELECT *
+                            FROM ImpostazioniSistema
+                            WHERE Chiave = ?
+                            AND Data_Fine is NULL
+                        """;
+
+                           
+
+            ImpostazioniSistema imp = _contex.eseguiSelectSingolo(sql, impostazioniSistemaMapper, key).orElse(null);
+            if(imp == null)
+            {
+                return Optional.empty();
+            }
+            return Optional.of(imp.getValore() != null ? Integer.parseInt(imp.getValore()) : null);                              
         }
         catch(SQLException e)
         {
@@ -97,8 +123,9 @@ public class ImpostazioniSistemaDAO
         conn.setAutoCommit(false);
         try
         {
-            int idOld = findIDByKey(chiave);
-            if(idOld != -1)
+            Optional<Integer> idOld = findIDByKey(chiave);
+            
+            if(idOld.isPresent())
             {
                 String sqlUpdateOld = 	"""
                                         UPDATE ImpostazioniSistema

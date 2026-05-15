@@ -7,7 +7,7 @@ public class CodiceSconto implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private int id;
+    private int id = -1;
     private String codice;
     private double valorePercentuale;
     private LocalDate dataScadenza;

@@ -8,9 +8,9 @@ public class RegimeFiscale implements Serializable
 
     private static final long serialVersionUID = 1L;
 
-    private int id;
+    private int id = -1;
     private String nome;
-    private int aliquotaDefault;
+    private double aliquotaDefault;
     private String descrizione;
 
     public RegimeFiscale()
@@ -45,12 +45,12 @@ public class RegimeFiscale implements Serializable
         this.nome = nome;
     }
 
-    public int getAliquotaDefault()
+    public double getAliquotaDefault()
     {
         return aliquotaDefault;
     }
 
-    public void setAliquotaDefault(int aliquotaDefault)
+    public void setAliquotaDefault(double aliquotaDefault)
     {
         this.aliquotaDefault = aliquotaDefault;
     }

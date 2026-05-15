@@ -34,7 +34,7 @@ public class Medico implements Serializable {
         }  
     }
 
-    private int id;
+    private int id = -1;
     private String cognome;
     private String nome;
     private byte[] fotoprofilo;

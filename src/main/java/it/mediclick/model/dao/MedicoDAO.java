@@ -19,13 +19,12 @@ public class MedicoDAO
 {
     private final Contex _contex;
     private final UtenteDAO utenteDAO;
-    private CatalogoPrestazioniDAO catalogoPrestazioniDAO;
-
+    
     public MedicoDAO(Contex contex) 
     {
         _contex = contex;
         utenteDAO = new UtenteDAO(_contex);
-        catalogoPrestazioniDAO = new CatalogoPrestazioniDAO(_contex);
+        new CatalogoPrestazioniDAO(_contex);
     }
 
     public Optional<Medico> findById(int id) throws SQLException 
@@ -52,7 +51,7 @@ public class MedicoDAO
         {
             String sql = """
                         SELECT * 
-                        FROM RegimeFiscale 
+                        FROM regime_fiscale 
                         WHERE ID = ?
                         """;
             return _contex.eseguiSelectSingolo(sql, regimeFiscaleMapper, id);
@@ -60,6 +59,22 @@ public class MedicoDAO
         catch(SQLException e)
         {
              throw new SQLException("Errore nella ricerca del regime fiscale by id: " + e.getMessage(), e);
+        }
+    }
+    
+    public List<RegimeFiscale> findAllRegimeFiscale() throws SQLException 
+    {
+        try
+        {
+            String sql = """
+                        SELECT * 
+                        FROM regime_fiscale 
+                        """;
+            return _contex.eseguiSelect(sql, regimeFiscaleMapper);
+        }
+        catch(SQLException e)
+        {
+             throw new SQLException("Errore nella ricerca dei regimi fiscali  " + e.getMessage(), e);
         }
     }
 
@@ -326,7 +341,7 @@ public class MedicoDAO
     	r.setId(MapRow.getInt(row, "ID"));
     	r.setNome(MapRow.getString(row, "Nome"));
     	r.setDescrizione(MapRow.getString(row, "Descrizione"));
-    	r.setAliquotaDefault(MapRow.getInt(row, "Aliquota_Default"));
+    	r.setAliquotaDefault(MapRow.getDouble(row, "Aliquota_Default"));
     	
     	return r;
     };

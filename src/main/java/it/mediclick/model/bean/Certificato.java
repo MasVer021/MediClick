@@ -47,7 +47,7 @@ public class Certificato implements Serializable {
         }
     }
 
-    private int id;
+    private int id = -1;
     private String nomeFile;
     private byte[] datiDocumento;
     private Stato stato;

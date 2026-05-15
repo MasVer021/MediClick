@@ -46,7 +46,7 @@ public class Prenotazione implements Serializable
         }
     }
 
-    private int id;
+    private int id = -1;
     private Stato stato;
     private String metodoPagamento;
     private String idTransazioneEsterno;

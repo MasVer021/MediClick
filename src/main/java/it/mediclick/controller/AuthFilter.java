@@ -10,6 +10,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpFilter;
 
+import it.mediclick.model.bean.Ruolo;
 import it.mediclick.model.bean.Utente;
 
 import javax.servlet.http.*;
@@ -34,6 +35,7 @@ public class AuthFilter extends HttpFilter implements Filter {
 		    	HttpSession tempSession = _request.getSession(true);
 		    	
 		    	String urlRichiesto = _request.getRequestURI();
+		    	
 		    	if (_request.getQueryString() != null) 
 		    	{
 		    	   urlRichiesto += "?" + _request.getQueryString();
@@ -45,18 +47,18 @@ public class AuthFilter extends HttpFilter implements Filter {
 	            return;
 		    }
 		     
-            
-		    String ruolo  = utente.getRuolo().getCodice();
+		    Ruolo ruolo  = utente.getRuolo();
             
             String path   = _request.getServletPath();
             
-            if (path.startsWith("/admin") && !ruolo.equals("ADMIN")) 
+            
+            if (path.startsWith("/admin") && !ruolo.getCodice().equals("ADMIN")) 
             {
                 _response.sendError(HttpServletResponse.SC_FORBIDDEN);
                 return;
             }
             
-            if (path.startsWith("/medico") && !ruolo.equals("MEDICO")) 
+            if (path.startsWith("/medico") && !ruolo.getCodice().equals("MEDICO")) 
             {
                 _response.sendError(HttpServletResponse.SC_FORBIDDEN);
                 return;

@@ -62,6 +62,23 @@ public class CertificatoDAO
        	 throw new SQLException("Errore nel recupero del tipo di certificato con ID " + id, e); 
        }
     }
+    
+    public List<TipoCertificato> tipoCertificatofindAll() throws SQLException 
+    {         
+        try
+   	 	{
+        	 String sql = 	"""
+		                    SELECT * 
+						    FROM tipocertificato
+		        	 		""";
+        	 
+        	 return  _contex.eseguiSelect(sql,tipoCertificatoMapper);  
+       }
+       catch(SQLException e)
+       {
+       	 throw new SQLException("Errore nel recupero dei tipi di certificati ", e); 
+       }
+    }
 
     public List<Certificato> findByMedico(int medicoId) throws SQLException 
     {

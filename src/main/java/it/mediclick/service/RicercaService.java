@@ -1,5 +1,6 @@
 package it.mediclick.service;
 
+import it.mediclick.exception.RicercaException;
 import it.mediclick.model.DTO.MedicoCardDTO;
 import it.mediclick.model.DTO.ProfiloMedicoPubblicoDTO;
 import it.mediclick.model.bean.CatalogoPrestazioni;
@@ -7,34 +8,29 @@ import it.mediclick.model.bean.Categoria;
 import it.mediclick.model.bean.Disponibilita;
 import it.mediclick.model.bean.ErogazionePrestazione;
 import it.mediclick.model.bean.Medico;
-import it.mediclick.model.bean.Prenotazione;
-import it.mediclick.model.bean.Recensione;
 import it.mediclick.model.bean.Studio;
 import it.mediclick.model.dao.CatalogoPrestazioniDAO;
 import it.mediclick.model.dao.DisponibilitaDAO;
 import it.mediclick.model.dao.ErogazionePrestazioneDAO;
 import it.mediclick.model.dao.MedicoDAO;
-import it.mediclick.model.dao.RecensioneDAO;
 import it.mediclick.model.dao.StudioDAO;
 import it.mediclick.util.Contex;
-
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.jasper.tagplugins.jstl.core.ForEach;
-
 public class RicercaService {
 
-    private MedicoDAO medicoDAO;
-    private DisponibilitaDAO disponibilitaDAO;
-    private ErogazionePrestazioneDAO erogazioneDAO;
-    private StudioDAO studioDAO;
-    private CatalogoPrestazioniDAO catalogoDAO;
-    private Contex _contex;
+    private final MedicoDAO medicoDAO;
+    private final DisponibilitaDAO disponibilitaDAO;
+    private final ErogazionePrestazioneDAO erogazioneDAO;
+    private final StudioDAO studioDAO;
+    private final CatalogoPrestazioniDAO catalogoDAO;
+    private final Contex _contex;
 
-    public RicercaService(Contex contex) {
+    public RicercaService(Contex contex) 
+    {
         this._contex = contex;
         this.medicoDAO = new MedicoDAO(_contex);
         this.disponibilitaDAO = new DisponibilitaDAO(_contex);
@@ -44,53 +40,45 @@ public class RicercaService {
     }
 
     
-    public List<MedicoCardDTO> cercaMediciCards(String query, Integer categoriaId, String citta) throws SQLException 
+    public List<MedicoCardDTO> cercaMediciCards(String query, Integer categoriaId, String citta) throws RicercaException 
     {
-        return medicoDAO.findCards(query, categoriaId, citta);
+        try
+        {
+            return medicoDAO.findCards(query, categoriaId, citta);
+        } 
+        catch (SQLException e) 
+        {
+            throw new RicercaException("Errore durante la ricerca dei medici: " + e.getMessage(), "RICERCA_MEDICI_CARDS_ERROR");
+        }
     }
     
-    public ProfiloMedicoPubblicoDTO dettagliProfiloMedico(int idMedico) throws SQLException
+    public ProfiloMedicoPubblicoDTO dettagliProfiloMedico(int idMedico) throws RicercaException
     {
     	   	
     	ProfiloMedicoPubblicoDTO profiloMedico = new ProfiloMedicoPubblicoDTO();
     	
     	List<ErogazionePrestazione> prestazioni  = cercaPrestazioniByMedico(idMedico);
-    	
-    	for(ErogazionePrestazione ep : prestazioni)
-    	{
-    		
-    	}
-    	
     	List<Disponibilita> disponibilita = cercaDisponibilitaByMedico(idMedico);
-    	
-    	for(Disponibilita d : disponibilita)
-    	{
-    		
-    	}
-    	
-    	
-    
-    	
-    	
     	
     	List<Studio> studi = new ArrayList<Studio>();
     	
-    	profiloMedico.setDisponibilita(cercaDisponibilitaByMedico(idMedico));
+    	profiloMedico.setDisponibilita(disponibilita);
     	profiloMedico.setMedico(getMedicoById(idMedico));
     	profiloMedico.setPrestazioni(prestazioni);
+        profiloMedico.setStudi(studi);
     	
+        try
+        {
+
+       
     	for(ErogazionePrestazione ep : prestazioni)
     	{
-    		Studio studioCorrente = studioDAO.findById(ep.getStudioId());
-    		
-    		
-    		
+    		Studio studioCorrente = studioDAO.findById(ep.getStudioId()).orElseThrow(() -> new RicercaException("Studio non trovato con ID: " + ep.getStudioId(), "RICERCA_DETTAGLI_PROFILO_MEDICO_STUDIO_NOT_FOUND"));
+            CatalogoPrestazioni prestazioneCorrente = catalogoDAO.findById(ep.getCatalogoPrestazioniId()).orElseThrow(() -> new RicercaException("Prestazione non trovata con ID: " + ep.getCatalogoPrestazioniId(), "RICERCA_DETTAGLI_PROFILO_MEDICO_PRESTAZIONE_NOT_FOUND"));
     		
     		
     		ep.setStudio(studioCorrente);
-    	    ep.setCatalogoPrestazioni(catalogoDAO.findById(ep.getCatalogoPrestazioniId()));
-    	    
-    	  
+    	    ep.setCatalogoPrestazioni(prestazioneCorrente);
     	    
     	    boolean giaPresente = studi.stream().anyMatch(s -> s.getId() == studioCorrente.getId());
     	    
@@ -99,38 +87,77 @@ public class RicercaService {
     	        studi.add(studioCorrente);
     	    }
     	}
+        }
+        catch (SQLException e) 
+        {
+            throw new RicercaException("Errore durante il recupero dei dettagli del profilo medico con ID " + idMedico + ": " + e.getMessage(), "RICERCA_DETTAGLI_PROFILO_MEDICO_ERROR");
+        }
     	
     	profiloMedico.setStudi(studi);
     	
     	return profiloMedico;
     }
     
-    public List<Disponibilita> cercaDisponibilitaByMedico(int IdMedico) throws SQLException 
+    public List<Disponibilita> cercaDisponibilitaByMedico(int IdMedico) throws RicercaException 
     {
-        return disponibilitaDAO.findByMedico(IdMedico);
+        try 
+        {
+            return disponibilitaDAO.findByMedico(IdMedico);
+        } 
+        catch (SQLException e) 
+        {
+            throw new RicercaException("Errore durante la ricerca delle disponibilità per il medico con ID " + IdMedico + ": " + e.getMessage(), "RICERCA_DISPONIBILITA_BY_MEDICO_ERROR");
+        }
     }
     
-    public List<ErogazionePrestazione> cercaPrestazioniByMedico(int IdMedico) throws SQLException 
+    public List<ErogazionePrestazione> cercaPrestazioniByMedico(int IdMedico) throws RicercaException 
     {
-        return erogazioneDAO.findByMedico(IdMedico);
+        try 
+        {
+            return erogazioneDAO.findByMedico(IdMedico);
+        } 
+        catch (SQLException e) 
+        {
+            throw new RicercaException("Errore durante la ricerca delle prestazioni per il medico con ID " + IdMedico + ": " + e.getMessage(), "RICERCA_PRESTAZIONI_BY_MEDICO_ERROR");
+        }
     } 
     
  
-    public Medico getMedicoById(int medicoId) throws SQLException 
+    public Medico getMedicoById(int medicoId) throws RicercaException 
     {
-        return medicoDAO.findById(medicoId);
+        try
+        {
+            return medicoDAO.findById(medicoId).orElseThrow(() -> new RicercaException("Medico non trovato con ID: " + medicoId, "RICERCA_GET_MEDICO_BY_ID_NOT_FOUND"));
+        }
+        catch (SQLException e) 
+        {
+            throw new RicercaException("Errore durante il recupero del medico con ID " + medicoId + ": " + e.getMessage(), "RICERCA_GET_MEDICO_BY_ID_ERROR");
+        }
     }
 
-    public List<Medico> getMediciConsigliati() throws SQLException 
+    public List<Medico> getMediciConsigliati() throws RicercaException 
     {
-        return medicoDAO.findByStato(Medico.StatoVerifica.APPROVATO).stream()
-                .limit(5)
-                .collect(Collectors.toList());
-    }
-
-    public List<Categoria> getCategorie() throws SQLException 
+        try 
+        {
+            return medicoDAO.findByStato(Medico.StatoVerifica.APPROVATO).stream()
+                    .limit(5)
+                    .collect(Collectors.toList());
+        } 
+        catch (SQLException e) 
+        {
+            throw new RicercaException("Errore durante il recupero dei medici consigliati: " + e.getMessage(), "RICERCA_GET_MEDICI_CONSIGLIATI_ERROR");
+        }
+    } 
+    
+    public List<Categoria> getCategorie() throws RicercaException 
     {
-        CatalogoPrestazioniDAO catalogoDAO = new CatalogoPrestazioniDAO(_contex);
-        return catalogoDAO.findAllCategorie();
+        try 
+        {
+            return catalogoDAO.findAllCategorie();
+        } 
+        catch (SQLException e) 
+        {
+            throw new RicercaException("Errore durante il recupero delle categorie: " + e.getMessage(), "RICERCA_GET_CATEGORIE_ERROR");
+        }
     }
 }

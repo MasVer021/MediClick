@@ -8,8 +8,8 @@ public class Caratterizzato implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private int ruoloId;
-    private int permessoId;
+    private int ruoloId = -1;
+    private int permessoId = -1;
 
     private Ruolo ruolo;
     private Permesso permesso;

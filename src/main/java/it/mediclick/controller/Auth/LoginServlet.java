@@ -1,9 +1,6 @@
 package it.mediclick.controller.Auth;
 
 import java.io.IOException;
-import java.sql.SQLException;
-
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -11,6 +8,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import it.mediclick.exception.AuthException;
+import it.mediclick.exception.ErrorInfo;
 import it.mediclick.model.bean.Utente;
 import it.mediclick.service.AutenticazioneService;
 import it.mediclick.util.Contex;
@@ -18,14 +17,9 @@ import it.mediclick.util.Contex;
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet 
 {
+	private static final long serialVersionUID = 1L;
 	
 	private AutenticazioneService autenticazioneService;
-	
-    public LoginServlet() 
-    {
-        super();
-    }
-
 	
 	public void init() throws ServletException 
 	{
@@ -36,6 +30,8 @@ public class LoginServlet extends HttpServlet
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
+	
+		
 		HttpSession session = request.getSession(false);
 		if(session != null && session.getAttribute("utente")!=null)
 		{
@@ -51,31 +47,24 @@ public class LoginServlet extends HttpServlet
 		String email    = request.getParameter("email");
 	    String password = request.getParameter("password");
 	    
-	    if (email == null || email.isBlank() || password == null || password.isBlank()) 
-	    {
-	        request.setAttribute("errore", "Inserisci email e password.");
-	        request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
-	        return;
-	    }
-	    
 	    try 
 	    {
+	    	
+	    	if (email == null || email.isBlank() || password == null || password.isBlank()) 
+		    {
+		        throw new AuthException("Campi non completi","AUTH_BLANK_FIELDS");
+		    }
+	    	
 	        Utente utente = autenticazioneService.login(email.trim(), password);
 	                
-	        if (utente == null) 
-	        {
-	            request.setAttribute("errore", "Credenziali non valide.");
-	            request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
-	            return;
-	        }
 	        if (!utente.isAccountAttivo()) 
 	        {
-	            request.setAttribute("errore", "Account sospeso. Contatta l'assistenza.");
-	            request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
-	            return;
+	           throw new AuthException("L'account risulta bloccato al momento","AUTH_BLOCKED_ACCOUNT");
 	        }
 	        
 	        HttpSession session = request.getSession(true);
+	        
+	        autenticazioneService.getUtenteCompleto(utente);	        
 	        session.setAttribute("utente", utente);
 	        
 	        String redirectUrl = (String) session.getAttribute("redirectDopoLogin");
@@ -87,13 +76,12 @@ public class LoginServlet extends HttpServlet
 	        } 
 	        else 
 	        {
-	           
 	            redirectByRole(utente, response, request);
 	        }
 	    } 
-	    catch (SQLException e) 
+	    catch (AuthException e) 
 	    {
-	        request.setAttribute("errore", "Errore interno. Riprova più tardi.");
+	    	request.setAttribute("errore",new ErrorInfo(e));
 	        request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
 	    }
 	}
@@ -104,9 +92,9 @@ public class LoginServlet extends HttpServlet
 		
 		switch(ruolo)
 		{
-			/*case 3 :
+			case 3 :
 				response.sendRedirect(request.getContextPath() + "/search");
-				break;*/
+				break;
 	        case 2 :
 	        	response.sendRedirect(request.getContextPath() + "/medico/agenda");
 	        	break;
@@ -116,7 +104,6 @@ public class LoginServlet extends HttpServlet
 	        default : 
 	        	response.sendRedirect(request.getContextPath() + "/search");
 	        	break;
-		
 		}
 	}
 

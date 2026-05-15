@@ -44,7 +44,7 @@ public class CatalogoPrestazioni implements Serializable
         }
     }
 
-    private int id;
+    private int id = -1;
     private String nome;
     private Stato stato;
     private String descrizione;

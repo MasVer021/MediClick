@@ -8,7 +8,7 @@ public class ImpostazioniSistema implements Serializable
 
     private static final long serialVersionUID = 1L;
 
-    private int id;
+    private int id = -1;
     private String chiave;
     private String valore;
     private LocalDateTime dataInizio;

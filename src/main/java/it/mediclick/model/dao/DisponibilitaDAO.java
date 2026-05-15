@@ -102,7 +102,36 @@ public class DisponibilitaDAO
         }
     }
 
-    public void insert(Disponibilita d) throws SQLException 
+    public void insertMultiDisponibilita(List<Disponibilita> disponibilitaList) throws SQLException 
+    {
+        try(Connection conn = _contex.getConnection())
+        {
+            conn.setAutoCommit(false);
+            try
+            {
+                
+                for (Disponibilita d : disponibilitaList) 
+                {
+                    insert(d, conn);
+                }
+
+                conn.commit();
+            } 
+            catch (SQLException e) 
+            {
+                conn.rollback();
+                throw new SQLException("Errore nell'inserimento delle disponibilita: " + e.getMessage(), e);
+            }
+        }
+        catch (Exception e) 
+        {
+            throw new SQLException("Errore nella gestione della transazione per l'inserimento delle disponibilita: " + e.getMessage(), e);
+        }
+           
+    }
+
+
+    public void insert(Disponibilita d , Connection conn) throws SQLException 
     {
         
         String sql = """
@@ -122,7 +151,7 @@ public class DisponibilitaDAO
             String stato = d.getStato() != null ? d.getStato().getLabel() : null;
 
 
-            _contex.eseguiUpdate(sql, medicoId, studioId, dataOraInizio,dataOraFine,stato, dataOraBlocco, pazienteIdBlocco);
+            _contex.eseguiUpdate(sql,conn, medicoId, studioId, dataOraInizio,dataOraFine,stato, dataOraBlocco, pazienteIdBlocco);
         } 
         catch (SQLException e) 
         {

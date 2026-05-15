@@ -8,7 +8,7 @@ public class Recensione implements Serializable
 
     private static final long serialVersionUID = 1L;
 
-    private int id;
+    private int id = -1;
     private int voto;             // 1-5
     private String commento;
     private boolean isVisible;
