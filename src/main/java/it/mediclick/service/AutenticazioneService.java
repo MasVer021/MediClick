@@ -50,6 +50,7 @@ public class AutenticazioneService
             Utente u = utenteDAO.findByEmail(email).orElseThrow(() -> new AuthException("Utente non trovato con email: " + email, "AUTH_USER_NOT_FOUND"));
             if (PasswordUtils.checkPassword(password, u.getPassword())) 
             {
+            	System.out.print("si si trova");
                 return u;
             } 
             else 

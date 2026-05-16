@@ -1,5 +1,7 @@
 package it.mediclick.util;
 
+import it.mediclick.exception.AuthException;
+
 public class ValidationUtils 
 {
 
@@ -18,7 +20,7 @@ public class ValidationUtils
             throw new IllegalArgumentException("Il parametro '" + nomeParametro + "' deve essere un numero intero valido.");
         }
     }
-
+    
     public static int parseInt(String valore, int valoreDiDefault) 
     {
         if (valore == null || valore.isBlank()) 
@@ -84,5 +86,37 @@ public class ValidationUtils
             return valoreDiDefault;
         }
         return valore.trim();
+    }
+    
+    public static String parseNumeroTelefono(String numeroTelefono, String nomeParametro) throws IllegalArgumentException
+    {
+    	if (numeroTelefono == null || numeroTelefono.isBlank())
+ 	    {
+ 	    	throw new IllegalArgumentException("Il numero di telefono è obbligatorio.");
+ 	    } 
+ 	    if (!numeroTelefono.matches("^\\+?[0-9]{8,15}$"))
+ 	    {
+ 	    	 throw new IllegalArgumentException("Formato telefono non valido.");
+ 	    }
+ 	    
+ 	    return numeroTelefono;
+    }
+    
+    public static String parsePassword(String password,String passwordRipetuta) throws IllegalArgumentException
+    {
+    	if (password == null || password.isBlank())
+		{
+			throw new IllegalArgumentException("La password è obbligatoria."); 
+		}
+		if (password.length() < 8)
+		{
+			 throw new IllegalArgumentException("La password deve essere di almeno 8 caratteri.");
+		} 
+		if (!password.equals(passwordRipetuta))
+		{
+			throw new IllegalArgumentException("Le password non coincidono.");
+		}
+ 	    
+ 	    return password;
     }
 }
