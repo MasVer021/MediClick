@@ -78,7 +78,6 @@ public class PrenotazioneService {
         try 
         {
             return codiceScontoDAO.findByCodice(codice).orElseThrow(()-> new PrenotazioneException("Codice sconto non trovato", "SCONTO_NOT_FOUND"));	
-    
         } 
         catch (SQLException e) 
         {
@@ -110,6 +109,22 @@ public class PrenotazioneService {
             throw new PrenotazioneException("Errore durante il blocco della disponibilità: " + e.getMessage(), "BLOCCO_DISPONIBILITA_ERROR");
         }
     }
+    
+    public void sbloccaDisponibilita(int disponibilitaId) throws PrenotazioneException 
+    {
+        try 
+        {
+            Disponibilita d = disponibilitaDAO.findById(disponibilitaId).orElseThrow(() -> new PrenotazioneException("Disponibilità non trovata", "DISPONIBILITA_NOT_FOUND"));
+
+            disponibilitaDAO.updateStato(disponibilitaId, Disponibilita.Stato.DISPONIBILE);
+            
+            d.setStato(Disponibilita.Stato.DISPONIBILE);
+        } 
+        catch (SQLException e) 
+        {
+            throw new PrenotazioneException("Errore durante lo sblocco della disponibilità: " + e.getMessage(), "SBLOCCO_DISPONIBILITA_ERROR");
+        }
+    }
 
     public RiepilogoPrenotazioneDTO getRiepilogoPrenotazione(int idStudio, int idPrestazione, int idDisponibilita) throws PrenotazioneException
     {
@@ -138,7 +153,7 @@ public class PrenotazioneService {
     }
 
     
-    public boolean creaPrenotazione(int pazienteId, int disponibilitaId,int idErogazione,double prezzo_pagato,double prezzo_trattenuta,double prezzo_netto,double prezzo_tasse,int idSconto,String metodoPagamento) throws PrenotazioneException
+    public boolean creaPrenotazione(int pazienteId, int disponibilitaId,String idTransazioneEsterno,int idErogazione,double prezzo_pagato,double prezzo_trattenuta,double prezzo_netto,double prezzo_tasse,int idSconto,String metodoPagamento) throws PrenotazioneException
     {
         try (Connection conn = _contex.getConnection()) 
         {
@@ -163,6 +178,7 @@ public class PrenotazioneService {
                 p.setErogazionePrestazioneId(idErogazione);
                 p.setDataPagamento(LocalDateTime.now());
                 p.setStato(Prenotazione.Stato.CONFERMATA);
+                p.setIdTransazioneEsterno(idTransazioneEsterno);
                 
                 if(idSconto>0)
                     p.setCodiceScontoId(idSconto);
@@ -193,6 +209,33 @@ public class PrenotazioneService {
         {
             throw new PrenotazioneException("Errore connessione database: " + e.getMessage(), "DB_CONNECTION_ERROR");
         }
+    }
+    
+    public double getPrezzoPagato(double prezzoListino,double percentualeSconto)
+    {
+    	return prezzoListino*(1-(percentualeSconto/100.0));
+    }
+    
+    public double getPrezzoTrattenuta(double prezzoListino,double percentualeSconto) throws PrenotazioneException
+    {
+    	double prezzoPagato = getPrezzoPagato(prezzoListino, percentualeSconto);
+    	
+    	return (getTrattenuta()/100.0)*prezzoPagato;
+    }
+    
+    public double getTasse(double prezzoListino,double percentualeSconto, double aliquota) throws PrenotazioneException
+    {
+    	double prezzoPagatoNotrattenuta = getPrezzoPagato(prezzoListino, percentualeSconto) - getPrezzoTrattenuta(prezzoListino,percentualeSconto);
+    	return prezzoPagatoNotrattenuta*(aliquota/100);
+    }
+    
+    public double getPrezzoNetto(double prezzoListino,double percentualeSconto, double aliquota) throws PrenotazioneException
+    {
+    	double prezzo_pagato = getPrezzoPagato(prezzoListino, percentualeSconto);
+    	double prezzo_trattenuta = getPrezzoTrattenuta(prezzoListino, percentualeSconto);
+    	double prezzo_tasse = getTasse(prezzoListino, percentualeSconto, aliquota);
+    	
+    	return prezzo_pagato - prezzo_trattenuta - prezzo_tasse;
     }
 
     
@@ -227,7 +270,21 @@ public class PrenotazioneService {
             throw new PrenotazioneException("Errore connessione database: " + e.getMessage(), "DB_CONNECTION_ERROR");
         }
     }
-
+    
+    
+    public void getCompleto(Medico m) throws PrenotazioneException
+    {
+    	try
+    	{
+    		medicoDAO.getCompleto(m);
+    	}
+    	 catch (SQLException e) 
+        {
+            throw new PrenotazioneException("Errore nel recupero dei dettagli del medico: " + e.getMessage(), "MEDICO_DETAILS_ERROR");
+        }
+    }
+    
+  
     public List<Prenotazione> getPrenotazioniPaziente(int pazienteId, boolean future) throws SQLException 
     {   
         return prenotazioneDAO.findByPaziente(pazienteId);

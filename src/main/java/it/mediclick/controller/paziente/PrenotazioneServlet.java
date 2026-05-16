@@ -1,22 +1,21 @@
 package it.mediclick.controller.paziente;
 
 import java.io.IOException;
-import java.sql.SQLException;
+import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import it.mediclick.exception.ErrorInfo;
+import it.mediclick.exception.PrenotazioneException;
 import it.mediclick.model.DTO.RiepilogoPrenotazioneDTO;
 import it.mediclick.model.bean.CodiceSconto;
-import it.mediclick.model.bean.Disponibilita;
 import it.mediclick.model.bean.Utente;
-import it.mediclick.model.dao.StudioDAO;
 import it.mediclick.service.PrenotazioneService;
-import it.mediclick.service.RicercaService;
 import it.mediclick.util.Contex;
+import it.mediclick.util.ValidationUtils;
 
 @WebServlet("/paziente/prenotazione")
 public class PrenotazioneServlet extends HttpServlet 
@@ -37,20 +36,68 @@ public class PrenotazioneServlet extends HttpServlet
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
-		int idStudio = Integer.parseInt(request.getParameter("studio"));
-		int idErogazionePrestazione = Integer.parseInt(request.getParameter("prestazione"));
-		int IdDisponibilita = Integer.parseInt(request.getParameter("disponibilitaId"));
+		String action = request.getParameter("action");
+		
+		
+		int idStudio;
+		int idErogazionePrestazione;
+		int IdDisponibilita;
 	
-		RiepilogoPrenotazioneDTO riepilogo = prenotazioneService.getRiepilogoPrenotazione(idStudio, idErogazionePrestazione, IdDisponibilita);
-		request.getSession().setAttribute("riepilogo", riepilogo);
-		
-		Utente utenteConnesso = (Utente) request.getSession().getAttribute("utente");
-		
-		if(!prenotazioneService.bloccaDisponibilita(IdDisponibilita, utenteConnesso.getId()))
+		try 
 		{
-			request.setAttribute("Errore", "Errore: Lo slot non è più disponibile o il tempo è scaduto.");
-		}
+			
+			if ("annulla".equals(action))
+			{
+				annullaPrenotaz(request);
+				 response.sendRedirect(request.getContextPath() + "/search");
+				return;
+			}
+			
+			boolean isNuovaPrenotazione = request.getParameter("studio") != null 
+                    && request.getParameter("prestazione") != null 
+                    && request.getParameter("disponibilitaId") != null;
+			
+			boolean haCarrelloInSospeso = request.getSession().getAttribute("riepilogo") != null;
+			
+			if (!isNuovaPrenotazione && haCarrelloInSospeso)
+			{
+			    request.getRequestDispatcher("/WEB-INF/view/paziente/conferma_prenotazione.jsp").forward(request, response);
+			    return;
+			}
+			
+			try
+			{
+				idStudio = ValidationUtils.parseInt(request.getParameter("studio"), "studio");
+				idErogazionePrestazione = ValidationUtils.parseInt(request.getParameter("prestazione"),"prestazione");
+				IdDisponibilita = ValidationUtils.parseInt(request.getParameter("disponibilitaId"),"disponibilitaId");
+				
+			}
+			catch (IllegalArgumentException e) 
+			{
+				throw new PrenotazioneException(e.getMessage(), "PARAM_ERROR");
+			}
+			
+			Utente utenteConnesso = (Utente) request.getSession().getAttribute("utente");
+			
+			if(utenteConnesso == null) 
+			{
+			    response.sendRedirect(request.getContextPath() + "/login");
+			    return;
+			}
+			
+			prenotazioneService.bloccaDisponibilita(IdDisponibilita, utenteConnesso.getId());
 		
+			RiepilogoPrenotazioneDTO riepilogo = prenotazioneService.getRiepilogoPrenotazione(idStudio, idErogazionePrestazione, IdDisponibilita);
+			request.getSession().setAttribute("riepilogo", riepilogo);
+			
+		}	 
+		catch (PrenotazioneException e) 
+		{
+			request.setAttribute("errore", new ErrorInfo(e));
+			request.getRequestDispatcher("/WEB-INF/view/medico_pubblic.jsp").forward(request, response);
+			return;
+		}
+			
 		request.getRequestDispatcher("/WEB-INF/view/paziente/conferma_prenotazione.jsp").forward(request, response);
 	}
 
@@ -58,10 +105,14 @@ public class PrenotazioneServlet extends HttpServlet
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
 		Utente utenteConnesso = (Utente) request.getSession().getAttribute("utente");
-		RiepilogoPrenotazioneDTO riepilogo = (RiepilogoPrenotazioneDTO) request.getSession().getAttribute("riepilogo");
 		
-		String codiceSconto = request.getParameter("codiceSconto");
-		CodiceSconto sconto = prenotazioneService.findSconto(codiceSconto);
+		if(utenteConnesso == null)
+		{
+			response.sendRedirect(request.getContextPath() + "/login");
+			return;
+		}
+		
+		RiepilogoPrenotazioneDTO riepilogo = (RiepilogoPrenotazioneDTO) request.getSession().getAttribute("riepilogo");
 		
 		if (riepilogo == null) 
 		{
@@ -69,51 +120,84 @@ public class PrenotazioneServlet extends HttpServlet
 			return;
 		}
 		
-		
-		double prezzo_pagato;
-		double prezzo_netto; 
-		double prezzo_trattenuta;
-		double prezzo_tasse;
-		
-		double percentuale_Sconto = 0;
-		int idSconto=-1;
-		
-		
-		
-		
-		if(prenotazioneService.isValid(sconto))
-		{
-			percentuale_Sconto = sconto.getValorePercentuale();
-			idSconto = sconto.getId();
-		}
-		
-		
-		prezzo_pagato = riepilogo.getPrestazione().getPrezzoLordoListino();
-		
-		prezzo_trattenuta = (double) (prenotazioneService.getTrattenuta()/100)*prezzo_pagato;
-		
-		prezzo_tasse = (double) (riepilogo.getMedico().getRegimeFiscale().getAliquotaDefault()/100) * prezzo_pagato;
-		
-		prezzo_netto= prezzo_pagato-(prezzo_trattenuta-prezzo_tasse);
-		
-		int IdDisponibilita = riepilogo.getDisponibilita().getId();
-		int idUtente = utenteConnesso.getId();
-		int idErogazione = riepilogo.getPrestazione().getId();
-		
-		String metodoPagamento = request.getParameter("metodoPagamento");
-		
-		
-		if (prenotazioneService.creaPrenotazione(idUtente, IdDisponibilita,idErogazione,prezzo_pagato, prezzo_trattenuta, prezzo_netto, prezzo_tasse, idSconto,metodoPagamento)) 
+		try
 		{
 			
-			request.getSession().removeAttribute("riepilogo");
-			response.sendRedirect(request.getContextPath() + "/WEB-INF/view/paziente/prenotazione_effettuata.jsp");
-		} 
-		else 
-		{
-			request.setAttribute("Errore", "Si è verificato un errore durante la prenotazione. Riprova.");
-			request.getRequestDispatcher("/WEB-INF/view/paziente/conferma_prenotazione.jsp").forward(request, response);
+			
+			double prezzo_lordo =  riepilogo.getPrestazione().getPrezzoLordoListino();
+			prenotazioneService.getCompleto(riepilogo.getMedico());
+			double aliquota = riepilogo.getMedico().getRegimeFiscale().getAliquotaDefault();
+			
+			
+			int idSconto = -1;
+			double percentuale_Sconto = 0;
+			
+			String codiceSconto = ValidationUtils.parseStringOpz(request.getParameter("codiceSconto"), null);
+			
+			if(codiceSconto!=null)
+			{
+				CodiceSconto sconto = prenotazioneService.findSconto(codiceSconto);
+				
+				if(prenotazioneService.isValid(sconto))
+				{
+					percentuale_Sconto = sconto.getValorePercentuale();
+					idSconto = sconto.getId();
+				}
+			}
+			
+			
+			
+			double prezzo_pagato = prenotazioneService.getPrezzoPagato(prezzo_lordo, percentuale_Sconto);
+			
+			double prezzo_trattenuta = prenotazioneService.getPrezzoTrattenuta(prezzo_lordo, percentuale_Sconto);
+			
+			double prezzo_tasse = prenotazioneService.getTasse(prezzo_lordo, percentuale_Sconto,aliquota);
+			
+			double prezzo_netto=	prenotazioneService.getPrezzoNetto(prezzo_lordo, percentuale_Sconto,aliquota);
+			
+			int IdDisponibilita = riepilogo.getDisponibilita().getId();
+			int idUtente = utenteConnesso.getId();
+			int idErogazione = riepilogo.getPrestazione().getId();
+			String metodoPagamento;
+			
+			
+			try 
+			{
+				metodoPagamento = ValidationUtils.parseString( request.getParameter("metodoPagamento"), "metodo di pagamento");
+			} 
+			catch (IllegalArgumentException e) 
+			{
+				throw new PrenotazioneException(e.getMessage(), "PARAM_ERROR");
+			}
+			
+			String idTransazioneEsterno = "TXN-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+			
+			if (prenotazioneService.creaPrenotazione(idUtente, IdDisponibilita,idTransazioneEsterno,idErogazione,prezzo_pagato, prezzo_trattenuta, prezzo_netto, prezzo_tasse, idSconto,metodoPagamento)) 
+			{
+				request.getSession().removeAttribute("riepilogo");
+				request.getRequestDispatcher("/WEB-INF/view/paziente/prenotazione_effettuata.jsp").forward(request, response);
+			} 
+			
+			
 		}
+		catch (PrenotazioneException e) 
+		{
+			request.setAttribute("errore", new ErrorInfo(e));
+			request.getRequestDispatcher("/WEB-INF/view/paziente/conferma_prenotazione.jsp").forward(request, response);
+			return;
+		}	
 	}
-
+	
+	private void annullaPrenotaz(HttpServletRequest request) throws PrenotazioneException
+	{
+		 RiepilogoPrenotazioneDTO riepilogo = (RiepilogoPrenotazioneDTO) request.getSession().getAttribute("riepilogo");
+		 
+	        if (riepilogo != null) 
+	        {
+	           
+	            prenotazioneService.sbloccaDisponibilita(riepilogo.getDisponibilita().getId());
+	           
+	            request.getSession().removeAttribute("riepilogo");
+	        }
+	}
 }

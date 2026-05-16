@@ -12,9 +12,10 @@
 	        <textarea id="Bio" name="Bio" rows="4" cols="50" placeholder="Biografia"></textarea>
 	        <input type="text" name="PIva" placeholder="Partita Iva">
 			<select id="RegimeFiscale" name="RegimeFiscale" class="form-select">
-			<c:forEach items="${regimiFiscali}"  var="regimeFiscale">
-			 	<option  value="${regimeFiscale.id}">${regimeFiscale.nome}</option>
-			</c:forEach>
+				 <option value="" disabled selected>Regime Fiscale</option>
+				<c:forEach items="${regimiFiscali}"  var="regimeFiscale">
+				 	<option  value="${regimeFiscale.id}">${regimeFiscale.nome}</option>
+				</c:forEach>
 			</select>
 			<label for="fotoprofilo">Foto Profilo (opzionale):</label>
     		<input type="file" id="fotoprofilo" name="fotoprofilo" accept="image/*">
@@ -33,11 +34,6 @@
     		<a href="${pageContext.request.contextPath}/singin">Sei un paziente?</a>
 		</c:if>
     </form>
- 	<c:if test="${not empty errore}">
-	    <div class="errore">
-	        ${errore.messaggio}
-	    </div>
-	</c:if>
 </main>
 <script src="${pageContext.request.contextPath}/js/preview-foto.js"></script>  
 <jsp:include page="/WEB-INF/view/layout/footer.jsp"/>

@@ -38,6 +38,8 @@
 				<button type="submit">Paga</button>
 			</div>
 		</form>
+		<a href="${pageContext.request.contextPath}/paziente/prenotazione?action=annulla">Annulla Prenotazione</a>
+		
 		<!--TODO  inserire un timer   -->
 		<p>Completa il pagamento entro (da inserire un timer ) per confermare la tua prenotazione</p>
 	</div>

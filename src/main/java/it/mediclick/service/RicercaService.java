@@ -69,24 +69,22 @@ public class RicercaService {
     	
         try
         {
-
-       
-    	for(ErogazionePrestazione ep : prestazioni)
-    	{
-    		Studio studioCorrente = studioDAO.findById(ep.getStudioId()).orElseThrow(() -> new RicercaException("Studio non trovato con ID: " + ep.getStudioId(), "RICERCA_DETTAGLI_PROFILO_MEDICO_STUDIO_NOT_FOUND"));
-            CatalogoPrestazioni prestazioneCorrente = catalogoDAO.findById(ep.getCatalogoPrestazioniId()).orElseThrow(() -> new RicercaException("Prestazione non trovata con ID: " + ep.getCatalogoPrestazioniId(), "RICERCA_DETTAGLI_PROFILO_MEDICO_PRESTAZIONE_NOT_FOUND"));
-    		
-    		
-    		ep.setStudio(studioCorrente);
-    	    ep.setCatalogoPrestazioni(prestazioneCorrente);
-    	    
-    	    boolean giaPresente = studi.stream().anyMatch(s -> s.getId() == studioCorrente.getId());
-    	    
-    	    if (!giaPresente) 
-    	    {
-    	        studi.add(studioCorrente);
-    	    }
-    	}
+	    	for(ErogazionePrestazione ep : prestazioni)
+	    	{
+	    		Studio studioCorrente = studioDAO.findById(ep.getStudioId()).orElseThrow(() -> new RicercaException("Studio non trovato con ID: " + ep.getStudioId(), "RICERCA_DETTAGLI_PROFILO_MEDICO_STUDIO_NOT_FOUND"));
+	            CatalogoPrestazioni prestazioneCorrente = catalogoDAO.findById(ep.getCatalogoPrestazioniId()).orElseThrow(() -> new RicercaException("Prestazione non trovata con ID: " + ep.getCatalogoPrestazioniId(), "RICERCA_DETTAGLI_PROFILO_MEDICO_PRESTAZIONE_NOT_FOUND"));
+	    		
+	    		
+	    		ep.setStudio(studioCorrente);
+	    	    ep.setCatalogoPrestazioni(prestazioneCorrente);
+	    	    
+	    	    boolean giaPresente = studi.stream().anyMatch(s -> s.getId() == studioCorrente.getId());
+	    	    
+	    	    if (!giaPresente) 
+	    	    {
+	    	        studi.add(studioCorrente);
+	    	    }
+	    	}
         }
         catch (SQLException e) 
         {
@@ -102,7 +100,7 @@ public class RicercaService {
     {
         try 
         {
-            return disponibilitaDAO.findByMedico(IdMedico);
+            return disponibilitaDAO.findDisponibili(IdMedico);
         } 
         catch (SQLException e) 
         {

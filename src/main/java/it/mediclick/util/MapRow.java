@@ -63,6 +63,11 @@ public class MapRow
         	return ((java.sql.Timestamp) val).toLocalDateTime();
         }
         
+        if (val instanceof java.sql.Date) 
+        {
+            return ((java.sql.Date) val).toLocalDate().atStartOfDay(); 
+        }
+        
         if (val instanceof LocalDateTime) 
         {
         	return (LocalDateTime) val;

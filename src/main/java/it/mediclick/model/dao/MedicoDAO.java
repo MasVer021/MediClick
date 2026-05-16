@@ -8,7 +8,7 @@ import it.mediclick.model.bean.Utente;
 import it.mediclick.util.Contex;
 import it.mediclick.util.MapRow;
 import it.mediclick.util.ResultMapper;
-import java.nio.charset.StandardCharsets;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -357,10 +357,17 @@ public class MedicoDAO
         m.setCognome(MapRow.getString(row, "Cognome"));
         m.setNome(MapRow.getString(row, "Nome"));
 
-        String fotoprofiloStr = MapRow.getString(row, "Fotoprofilo");
-    
-        m.setFotoprofilo(fotoprofiloStr != null ? fotoprofiloStr.getBytes(StandardCharsets.UTF_8) : null);
+        Object fotoprofiloStr = row.get("Fotoprofilo");
         
+        if(fotoprofiloStr instanceof byte[])
+        {
+        	 m.setFotoprofilo((byte[]) fotoprofiloStr);	
+        }
+        else
+        {
+        	m.setFotoprofilo(null);
+        }
+    
         m.setBio(MapRow.getString(row, "Bio"));
         m.setpIva(MapRow.getString(row, "P_Iva"));
         m.setStatoVerifica(Medico.StatoVerifica.fromString(MapRow.getString(row, "Stato_verifica")));

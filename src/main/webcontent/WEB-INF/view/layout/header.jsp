@@ -24,9 +24,9 @@
 	    <!-- PAZIENTE -->
 	    <c:if test="${sessionScope.utente.ruolo.codice == 'PAZIENTE'}">
 	        <a href="${pageContext.request.contextPath}/paziente/profilo">Home</a>
-	        <a href="${pageContext.request.contextPath}/ricerca">Prenotazioni</a>
-	        <a href="${pageContext.request.contextPath}/ricerca">Sconti</a>
-	        <a href="${pageContext.request.contextPath}/ricerca">Medico</a>
+	        <a href="${pageContext.request.contextPath}/search">Prenotazioni</a>
+	        <a href="${pageContext.request.contextPath}/search">Sconti</a>
+	        <a href="${pageContext.request.contextPath}/search">Medico</a>
 	    </c:if>
 	
 	    <!-- MEDICO -->
@@ -78,9 +78,6 @@
 </nav>
 
 <!-- Messaggi di feedback globali -->
-<c:if test="${not empty param.msg}">
-    <div class="alert">${param.msg}</div>
-</c:if>
 <c:if test="${not empty requestScope.errore}">
-    <div class="alert alert-error">${requestScope.errore}</div>
+    <div class="alert alert-error">${requestScope.errore.messaggio}</div>
 </c:if>

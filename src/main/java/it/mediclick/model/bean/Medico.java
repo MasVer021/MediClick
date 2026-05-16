@@ -1,6 +1,7 @@
 package it.mediclick.model.bean;
 
 import java.io.Serializable;
+import java.util.Base64;
 
 public class Medico implements Serializable {
 
@@ -153,6 +154,15 @@ public class Medico implements Serializable {
     public String getNomeCompleto() 
     {
         return cognome + " " + nome;
+    }
+    
+    public String getFotoprofiloBase64() 
+    {
+        if (this.fotoprofilo != null && this.fotoprofilo.length > 0) 
+        {
+            return Base64.getEncoder().encodeToString(this.fotoprofilo);
+        }
+        return null;
     }
 
     @Override

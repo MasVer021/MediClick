@@ -121,11 +121,11 @@ public class PrenotazioneDAO
                 """;
         try 
         {
-            Integer idpaziente = p.getPaziente() != null ? p.getPaziente().getId() : null;
-            Integer iddisponibilita = p.getDisponibilita() != null ? p.getDisponibilita().getId() : null;
-            Integer iderogazionePrestazione = p.getErogazionePrestazione() != null ? p.getErogazionePrestazione().getId() : null;
-            Integer idcodiceSconto = p.getCodiceSconto() != null ? p.getCodiceSconto().getId() : null;
-
+        	Integer idpaziente = p.getPazienteId() > 0 ? (Integer) p.getPazienteId() : null;
+        	Integer iddisponibilita = p.getDisponibilitaId() > 0 ? (Integer) p.getDisponibilitaId() : null;
+        	Integer iderogazionePrestazione = p.getErogazionePrestazioneId() > 0 ? (Integer) p.getErogazionePrestazioneId() : null;
+        	Integer idcodiceSconto = p.getCodiceScontoId() > 0 ? (Integer) p.getCodiceScontoId() : null;
+        	
             _contex.eseguiUpdate(sql,conn,idpaziente,iddisponibilita,iderogazionePrestazione,idcodiceSconto,p.getStato() != null ? p.getStato().getLabel() : "Confermata",p.getMetodoPagamento(),p.getIdTransazioneEsterno(),p.getImportoPagato(),p.getRicavoNettoMedicoEuro(),p.getTrattenutaPiattaformaEuro(),p.getTasseStimateEuro(),p.getDataPagamento() != null ? Timestamp.valueOf(p.getDataPagamento()) : null);
         } 
         catch (SQLException e) 

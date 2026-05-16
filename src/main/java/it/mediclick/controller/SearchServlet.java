@@ -1,7 +1,6 @@
 package it.mediclick.controller;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -10,12 +9,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.jasper.tagplugins.jstl.core.ForEach;
 
+import it.mediclick.exception.*;
 import it.mediclick.model.DTO.MedicoCardDTO;
 import it.mediclick.model.bean.Categoria;
-import it.mediclick.model.bean.Medico;
-import it.mediclick.service.AutenticazioneService;
 import it.mediclick.service.RicercaService;
 import it.mediclick.util.Contex;
 
@@ -36,21 +33,22 @@ public class SearchServlet extends HttpServlet {
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
-		
+			if (request.getSession().getAttribute("riepilogo") != null) 
+			{
+				request.getRequestDispatcher("/WEB-INF/view/paziente/conferma_prenotazione.jsp").forward(request, response);
+			    return;
+			}
+
 			List<Categoria> categorie = null;
+			
 			try 
 			{
 				categorie = ricercaservice.getCategorie();
 				
-				for( var i : categorie)
-				{
-					System.out.print(i);
-				}
 			} 
-			catch (SQLException e) 
+			catch (RicercaException e) 
 			{
-				
-				request.setAttribute("errore", "Errore interno. Riprova più tardi.");
+				request.setAttribute("errore", new ErrorInfo(e));
 			    request.getRequestDispatcher("/WEB-INF/view/search.jsp").forward(request, response);
 			}
 			
@@ -63,29 +61,37 @@ public class SearchServlet extends HttpServlet {
 		}
 		else
 		{
-			int idCategoriaSpecialista = request.getParameter("specialista")!=null ? Integer.parseInt(request.getParameter("specialista")):-1;
-			String citta = request.getParameter("citta")!=null ? request.getParameter("citta"):"";
-			String querySpecialista = request.getParameter("querySpecialista")!=null ? request.getParameter("querySpecialista"):"";
+			int idCategoriaSpecialista = -1;
+			String catSpec = request.getParameter("specialista");
+			
+			if(catSpec != null && !catSpec.isBlank())
+			{
+				try
+				{
+					idCategoriaSpecialista = Integer.parseInt(catSpec);
+				}
+				catch(NumberFormatException e)
+				{
+						
+				}
+			}
+				
+			String citta = request.getParameter("citta")!=null ? request.getParameter("citta"): null;
+			String querySpecialista = request.getParameter("querySpecialista")!=null ? request.getParameter("querySpecialista"):  null;
 			
 			try 
 			{
 				List <MedicoCardDTO> medici = ricercaservice.cercaMediciCards(querySpecialista, idCategoriaSpecialista, citta);
-				
-				
 				request.setAttribute("medici", medici);
 			} 
-			catch (SQLException e) 
+			catch (RicercaException e) 
 			{
-				// TODO cambiare errore
-				request.setAttribute("errore", "Errore interno. Riprova più tardi.");
+				request.setAttribute("errore", new ErrorInfo(e));
 			    request.getRequestDispatcher("/WEB-INF/view/search.jsp").forward(request, response);
 			}
-			request.getRequestDispatcher("/WEB-INF/view/search.jsp").forward(request, response);
-			return;	
-		}
-		
-		
 			
+			request.getRequestDispatcher("/WEB-INF/view/search.jsp").forward(request, response);	
+		}	
 	}
 
 	
