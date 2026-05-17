@@ -1,4 +1,4 @@
-package it.mediclick.controller.medico;
+package it.mediclick.controller;
 
 import java.io.IOException;
 import java.sql.SQLException;

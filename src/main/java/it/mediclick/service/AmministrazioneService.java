@@ -72,7 +72,6 @@ public class AmministrazioneService
         }
     }
 
-    
     public void bloccaUtente(int utenteId, boolean bloccato) throws AmministratoreException 
     {
         try 

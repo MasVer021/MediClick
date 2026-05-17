@@ -5,7 +5,9 @@ import it.mediclick.util.Contex;
 import it.mediclick.util.MapRow;
 import it.mediclick.util.ResultMapper;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public class StudioDAO 
@@ -51,6 +53,26 @@ public class StudioDAO
         {
             throw new SQLException("Errore nella ricerca di tutti gli studi: " + e.getMessage(), e);
         }
+    }
+    
+    public List<Studio> findAllStudioMedico (int medicoId) throws SQLException 
+    {
+    	 try
+         {
+    		 String sql = """
+ 				    SELECT DISTINCT S.*
+ 				    FROM Studio S
+ 				    JOIN Disponibilita D ON S.ID = D.Studio_ID
+ 				    WHERE D.Medico_ID = ?
+ 				""";
+
+    		 return _contex.eseguiSelect(sql, studioMapper, medicoId);
+            
+         }
+         catch(SQLException e)
+         {
+             throw new SQLException("Errore nella ricerca di tutti gli studi in cui il medico ha disponibilità: " + e.getMessage(), e);
+         }
     }
 
     public void insert(Studio s) throws SQLException 

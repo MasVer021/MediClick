@@ -23,19 +23,17 @@
 	
 	    <!-- PAZIENTE -->
 	    <c:if test="${sessionScope.utente.ruolo.codice == 'PAZIENTE'}">
-	        <a href="${pageContext.request.contextPath}/paziente/profilo">Home</a>
-	        <a href="${pageContext.request.contextPath}/search">Prenotazioni</a>
-	        <a href="${pageContext.request.contextPath}/search">Sconti</a>
+	        <a href="${pageContext.request.contextPath}/">Home</a>
+	        <a href="${pageContext.request.contextPath}/paziente/prenotazioni">Prenotazioni</a>
 	        <a href="${pageContext.request.contextPath}/search">Medico</a>
 	    </c:if>
 	
 	    <!-- MEDICO -->
 	    <c:if test="${sessionScope.utente.ruolo.codice == 'MEDICO'}">
 	        <a href="${pageContext.request.contextPath}/medico/agenda">Home</a>
-	        <a href="${pageContext.request.contextPath}/medico/disponibilita">Documenti</a>
-	        <a href="${pageContext.request.contextPath}/medico/disponibilita">Prenotazioni</a>
+	        <a href="${pageContext.request.contextPath}/medico/certificati">Documenti</a>
 	        <a href="${pageContext.request.contextPath}/medico/disponibilita">Disponibilità</a>
-	        <a href="${pageContext.request.contextPath}/medico/disponibilita">Contabilità</a>
+	        <a href="${pageContext.request.contextPath}/medico/dashboard">Contabilità</a>
 	    </c:if>
 	
 	    <!-- ADMIN -->

@@ -63,6 +63,12 @@ public class AuthFilter extends HttpFilter implements Filter {
                 return;
             }
             
+            if (path.startsWith("/paziente") && !ruolo.getCodice().equals("PAZIENTE")) 
+            {
+                _response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                return;
+            }
+            
             chain.doFilter(_request, _response);
 	}
 

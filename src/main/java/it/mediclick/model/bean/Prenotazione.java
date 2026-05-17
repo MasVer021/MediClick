@@ -240,6 +240,15 @@ public class Prenotazione implements Serializable
     {
         this.codiceSconto = codiceSconto;
     }
+    
+    public boolean isFutura() 
+    {
+        if (this.disponibilita == null || this.disponibilita.getDataOraInizio() == null) 
+        {
+            return false;
+        }
+        return this.disponibilita.getDataOraInizio().isAfter(java.time.LocalDateTime.now());
+    }
 
     @Override
     public String toString()

@@ -76,7 +76,6 @@ public class AutenticazioneService
 		}
     }
     
-    
     public int getRuoloIdByCodice(String codice) throws AuthException
     {
     	try 
@@ -89,7 +88,6 @@ public class AutenticazioneService
 		}
     }
     
-    
     public boolean isValidRegimeFiscale(int regimeFiscaleId) throws AuthException 
     {
     	try 
@@ -101,8 +99,7 @@ public class AutenticazioneService
     		throw new AuthException("Errore durante il recupero del regime fiscale" + e.getMessage(),"AUTH_REGIME_ERROR");
 		}
     }
-  
-
+ 
     public int registraPaziente(Paziente p)  throws AuthException 
     {
         try 
@@ -141,7 +138,6 @@ public class AutenticazioneService
 		}
     }
     
-    
     public List<RegimeFiscale> findAllRegimeFiscale () throws AuthException
     {
     	try 
@@ -168,8 +164,6 @@ public class AutenticazioneService
 			}
     	}
     }
-    
-
     
     public int registraAdmin(Amministratore a) throws AuthException 
     {

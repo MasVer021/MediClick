@@ -49,7 +49,7 @@ public class PrenotazioneServlet extends HttpServlet
 			if ("annulla".equals(action))
 			{
 				annullaPrenotaz(request);
-				 response.sendRedirect(request.getContextPath() + "/search");
+				response.sendRedirect(request.getContextPath() + "/search");
 				return;
 			}
 			
@@ -85,7 +85,7 @@ public class PrenotazioneServlet extends HttpServlet
 			    return;
 			}
 			
-			prenotazioneService.bloccaDisponibilita(IdDisponibilita, utenteConnesso.getId());
+			prenotazioneService.bloccaDisponibilita(IdDisponibilita,idErogazionePrestazione,utenteConnesso.getId());
 		
 			RiepilogoPrenotazioneDTO riepilogo = prenotazioneService.getRiepilogoPrenotazione(idStudio, idErogazionePrestazione, IdDisponibilita);
 			request.getSession().setAttribute("riepilogo", riepilogo);
@@ -195,7 +195,7 @@ public class PrenotazioneServlet extends HttpServlet
 	        if (riepilogo != null) 
 	        {
 	           
-	            prenotazioneService.sbloccaDisponibilita(riepilogo.getDisponibilita().getId());
+	            prenotazioneService.sbloccaDisponibilita(riepilogo.getDisponibilita().getId(),riepilogo.getPrestazione().getId());
 	           
 	            request.getSession().removeAttribute("riepilogo");
 	        }

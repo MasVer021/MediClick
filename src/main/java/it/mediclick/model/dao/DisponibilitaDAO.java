@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public class DisponibilitaDAO 
@@ -83,7 +84,8 @@ public class DisponibilitaDAO
         }
     }
 
-    public List<Disponibilita> findDisponibili(int medicoId) throws SQLException {
+    public List<Disponibilita> findDisponibili(int medicoId) throws SQLException 
+    {
         try 
         {
             String sql = """
@@ -101,7 +103,28 @@ public class DisponibilitaDAO
             throw new SQLException("Errore nella ricerca della disponibilita libere con ID medico " + medicoId , e);
         }
     }
-
+    
+    public List<Disponibilita> findDisponibiliFilterDate(int medicoId,LocalDateTime dataInizio,LocalDateTime dataFine) throws SQLException 
+    {
+        try 
+        {
+            String sql = """
+	                   SELECT *
+	                   FROM Disponibilita
+	                   WHERE Medico_ID = ?
+	            	   AND Data_Ora_Inizio < ?   
+	            	   AND Data_Ora_Fine > ?     
+	            	   AND Stato != 'Cancellata'
+                """;
+            
+            return _contex.eseguiSelect(sql, disponibilitaMapper, medicoId,dataFine,dataInizio);
+        } 
+        catch (SQLException e) 
+        {
+            throw new SQLException("Errore nella ricerca della disponibilita libere con ID medico " + medicoId , e);
+        }
+    }
+    
     public void insertMultiDisponibilita(List<Disponibilita> disponibilitaList) throws SQLException 
     {
         try(Connection conn = _contex.getConnection())
@@ -129,7 +152,6 @@ public class DisponibilitaDAO
         }
            
     }
-
 
     public void insert(Disponibilita d , Connection conn) throws SQLException 
     {
@@ -188,8 +210,6 @@ public class DisponibilitaDAO
         }
     }
 
-    
-
     public void setBlocco(int id, Integer pazienteId, boolean blocca) throws SQLException 
     {
         String sql = """
@@ -243,7 +263,7 @@ public class DisponibilitaDAO
             throw new SQLException("Errore nella cancellazione della disponibilita con ID " + id + ": " + e.getMessage(), e);
         }
     }
-
+    
     public void getCompleto(Disponibilita d) throws SQLException
 	{
         int medicoId = d.getMedicoId();

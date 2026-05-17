@@ -7,6 +7,7 @@ import it.mediclick.util.ResultMapper;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,6 +52,7 @@ public class PrenotazioneDAO
                             SELECT *
                             FROM Prenotazione
                             WHERE Paziente_ID = ?
+                            ORDER BY Data_Pagamento DESC
                             """;
 
 
@@ -81,6 +83,28 @@ public class PrenotazioneDAO
            throw new SQLException("Errore nella ricerca prenotazioni per medico: " + e.getMessage(), e);
         }
     }
+    
+    public List<Prenotazione> findByMedico(int medicoId,LocalDateTime dataInizio,LocalDateTime dataFine) throws SQLException 
+    {
+        try 
+        {
+            String sql =    """
+                            SELECT P.*
+                            FROM Prenotazione P
+                            JOIN Disponibilita D ON P.Disponibilita_ID = D.ID
+                            WHERE D.Medico_ID = ?
+                            AND D.Data_Ora_Inizio >= ?
+                            AND D.Data_Ora_Fine <= ?
+                            """;
+
+
+           return _contex.eseguiSelect(sql, prenotazioneMapper, medicoId,dataInizio ,dataFine);
+        } 
+        catch (SQLException e) 
+        {
+           throw new SQLException("Errore nella ricerca prenotazioni per medico: " + e.getMessage(), e);
+        }
+    }
 
     public List<Prenotazione> findByStato(Prenotazione.Stato stato) throws SQLException 
     {
@@ -100,9 +124,6 @@ public class PrenotazioneDAO
         }
     }
     
-    
-    
-
     public void insert(Prenotazione p) throws SQLException 
     {
     	try(Connection conn = _contex.getConnection())

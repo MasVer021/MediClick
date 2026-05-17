@@ -174,7 +174,9 @@ public class ErogazionePrestazioneDAO
         catalogoPrestazioniId = catalogoPrestazioniId != null ? catalogoPrestazioniId : -1;
 
     	Double prezzo = MapRow.getDouble(row, "Prezzo_Lordo_Listino");
-    	Integer durata = MapRow.getInt(row, "Durata");
+    	
+    	Integer durata = MapRow.getIntOrNull(row, "Durata");
+    	durata = (durata != null) ? durata : 30; 
     	
     	ep.setId(prestazioneId);
        

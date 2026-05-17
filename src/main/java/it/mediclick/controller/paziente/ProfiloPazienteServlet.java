@@ -143,9 +143,6 @@ public class ProfiloPazienteServlet extends HttpServlet
 		}
 		
 		response.sendRedirect(request.getContextPath() + "/paziente/profilo?msg=Aggiornamento+completato");
-	    
-	    
-	    
 	}
 	
 	private Paziente getPazienteConnesso(HttpServletRequest request,HttpServletResponse response) throws PazienteException
@@ -158,7 +155,7 @@ public class ProfiloPazienteServlet extends HttpServlet
 		}
 		
 		Paziente p = pazienteService.findById(u.getId());
-		
+		p.setUtente(u);
 		return p;
 	}
 

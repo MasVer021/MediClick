@@ -14,7 +14,8 @@ public class Certificato implements Serializable {
         IN_REVISIONE("In revisione"),
         APPROVATO("Approvato"),
         RIFIUTATO("Rifiutato"),
-        SCADUTO("Scaduto");
+        SCADUTO("Scaduto"),
+    	ELIMINATO("Eliminato");
     	
     	
     	public static Stato fromString(String statoStr)

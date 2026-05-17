@@ -13,6 +13,7 @@ import it.mediclick.exception.ErrorInfo;
 import it.mediclick.model.bean.Utente;
 import it.mediclick.service.AutenticazioneService;
 import it.mediclick.util.Contex;
+import it.mediclick.util.ValidationUtils;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet 
@@ -33,6 +34,7 @@ public class LoginServlet extends HttpServlet
 	
 		
 		HttpSession session = request.getSession(false);
+		
 		if(session != null && session.getAttribute("utente")!=null)
 		{
 			redirectByRole((Utente)session.getAttribute("utente"), response, request);
@@ -44,40 +46,44 @@ public class LoginServlet extends HttpServlet
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
-		String email    = request.getParameter("email");
-	    String password = request.getParameter("password");
+		
 	    
 	    try 
 	    {
-	    	
-	    	if (email == null || email.isBlank() || password == null || password.isBlank()) 
-		    {
-		        throw new AuthException("Campi non completi","AUTH_BLANK_FIELDS");
-		    }
-	    	
-	        Utente utente = autenticazioneService.login(email.trim(), password);
-	                
-	        if (!utente.isAccountAttivo()) 
-	        {
-	           throw new AuthException("L'account risulta bloccato al momento","AUTH_BLOCKED_ACCOUNT");
-	        }
-	        
-	        HttpSession session = request.getSession(true);
-	        
-	        autenticazioneService.getUtenteCompleto(utente);	        
-	        session.setAttribute("utente", utente);
-	        
-	        String redirectUrl = (String) session.getAttribute("redirectDopoLogin");
-	        
-	        if (redirectUrl != null) 
-	        {
-	            session.removeAttribute("redirectDopoLogin");
-	            response.sendRedirect(redirectUrl);
-	        } 
-	        else 
-	        {
-	            redirectByRole(utente, response, request);
-	        }
+	    	try
+	    	{
+	    		String email    = ValidationUtils.parseString(request.getParameter("email"), "Email");
+			    String password = ValidationUtils.parseString(request.getParameter("password"), "Password");
+			    
+			    Utente utente = autenticazioneService.login(email.trim(), password);
+                
+		        if (!utente.isAccountAttivo()) 
+		        {
+		           throw new AuthException("L'account risulta bloccato al momento","AUTH_BLOCKED_ACCOUNT");
+		        }
+		        
+		        HttpSession session = request.getSession(true);
+		        
+		        autenticazioneService.getUtenteCompleto(utente);
+		        
+		        session.setAttribute("utente", utente);
+		        
+		        String redirectUrl = (String) session.getAttribute("redirectDopoLogin");
+		        
+		        if (redirectUrl != null) 
+		        {
+		            session.removeAttribute("redirectDopoLogin");
+		            response.sendRedirect(redirectUrl);
+		        } 
+		        else 
+		        {
+		            redirectByRole(utente, response, request);
+		        }
+	    	}
+	    	catch (IllegalArgumentException e) 
+	    	{
+				throw new AuthException(e.getMessage(),"ERROR_CREDENTIAL");
+			}   
 	    } 
 	    catch (AuthException e) 
 	    {
@@ -100,9 +106,6 @@ public class LoginServlet extends HttpServlet
 	        	break;
 	        case 1 :
 	        	response.sendRedirect(request.getContextPath() + "/admin/dashboard");
-	        	break;
-	        default : 
-	        	response.sendRedirect(request.getContextPath() + "/search");
 	        	break;
 		}
 	}

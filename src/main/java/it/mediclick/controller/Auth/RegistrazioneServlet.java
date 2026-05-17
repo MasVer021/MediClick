@@ -21,6 +21,7 @@ import it.mediclick.model.bean.RegimeFiscale;
 import it.mediclick.model.bean.Utente;
 import it.mediclick.service.AutenticazioneService;
 import it.mediclick.util.Contex;
+import it.mediclick.util.ValidationUtils;
 
 
 @WebServlet("/singin")
@@ -93,40 +94,23 @@ public class RegistrazioneServlet extends HttpServlet
 	{
 		Utente u = new Utente();
 		
-		
-		String email = (String)request.getParameter("email");
-		String password = (String)request.getParameter("password");
-		String passwordRipetuta = (String)request.getParameter("passwordRipetuta");
-		
-		
-		if (email == null || email.isBlank())
-		{
-			throw new AuthException("L'email è obbligatoria.", "REG_EMAIL_BLANK"); 
-		}
-		if (!email.matches("^[\\w.+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}$"))
-		{
-			throw new AuthException("Formato email non valido.", "REG_EMAIL_INVALID");
-		}
-		if (password == null || password.isBlank())
-		{
-			throw new AuthException("La password è obbligatoria.", "REG_PASSWORD_BLANK"); 
-		}
-		if (password.length() < 8)
-		{
-			 throw new AuthException("La password deve essere di almeno 8 caratteri.", "REG_PASSWORD_TOO_SHORT");
+		try {
+			String email = ValidationUtils.parseEmail(request.getParameter("email"),"email");
+			String password = ValidationUtils.parsePassword(request.getParameter("password"), request.getParameter("passwordRipetuta"));
+			
+			u.setEmail(email);  
+			u.setPassword(password);
+			u.setDataIscrizione(LocalDate.now());
+			u.setRuoloId(ruoloId);	
+			
+			return u;
 		} 
-		if (!password.equals(passwordRipetuta))
+		catch (IllegalArgumentException e) 
 		{
-			throw new AuthException("Le password non coincidono.", "REG_PASSWORD_MISMATCH");
+			throw new AuthException(e.getMessage(),"CREDENTIAL_ERROR");
 		}
-		
-	        
-		u.setEmail(email);  
-		u.setPassword(password);
-		u.setDataIscrizione(LocalDate.now());
-		u.setRuoloId(ruoloId);	
-		
-		return u;	
+		  
+			
 	}
 	
 	
@@ -135,7 +119,7 @@ public class RegistrazioneServlet extends HttpServlet
 		
 		Medico m = new Medico();
 		
-		String nome = (String)request.getParameter("nome");
+		String nome = request.getParameter("nome");			
 		String cognome = (String)request.getParameter("cognome");
 		String bio = (String)request.getParameter("Bio");
 		String partitaIva = (String)request.getParameter("PIva");
@@ -157,21 +141,22 @@ public class RegistrazioneServlet extends HttpServlet
 		
 		int ruoloId = autenticazioneService.getRuoloIdByCodice("MEDICO");
 		
-		
-		
-		
+	
 		if (nome == null || nome.isBlank())
 		{
 			 throw new AuthException("Il nome è obbligatorio.", "REG_NOME_BLANK");
 		} 
+		
 		if (cognome == null || cognome.isBlank())
 		{
 			throw new AuthException("Il cognome è obbligatorio.", "REG_COGNOME_BLANK");
 		}
+		
 	    if (bio == null || bio.isBlank())
 	    {
 	    	throw new AuthException("La bio è obbligatoria.", "REG_BIO_BLANK");
 	    }
+	    
 	    if(regimeFiscaleStr == null || regimeFiscaleStr.isBlank())
 	    {
 	    	throw new AuthException("Il regime fiscale è obbligatoria.", "REGIME_BLANK");
@@ -181,11 +166,11 @@ public class RegistrazioneServlet extends HttpServlet
 	    {
 	    	throw new AuthException("La partita iva è obbligatoria.", "PIVA_BLANK");
 	    }
+	    
 	    if(!partitaIva.matches("^\\d{11}$"))
 	    {
 	    	throw new AuthException("Formato partita iva non valido.", "PIVA_INVALID");
 	    }
-	    
 	    
 	    int regime;
 	    

@@ -89,6 +89,7 @@ public class CertificatoDAO
 		                     SELECT * 
 		                     FROM Certificato 
 		                     WHERE Medico_ID = ?
+		                     AND Stato != 'Eliminato'
 	                  		""";
         	 
 	        return  _contex.eseguiSelect(sql,certificatoMapper, medicoId);  
@@ -108,6 +109,7 @@ public class CertificatoDAO
                     SELECT * 
                     FROM Certificato 
                     WHERE Medico_ID = ? AND TipoCertificato_ID = ?
+                    AND Stato != 'Eliminato'
                  """;
         	 
 	        return  _contex.eseguiSelectSingolo(sql,certificatoMapper, medicoId,tipoCertificatoId);  
@@ -117,6 +119,7 @@ public class CertificatoDAO
        	 throw new SQLException("Errore nel recupero dell Certificato con medico id " + medicoId + " e ID tipo " + tipoCertificatoId, e); 
        }
     }
+    
 
     public void insert(Certificato c) throws SQLException 
     {
@@ -146,7 +149,8 @@ public class CertificatoDAO
         }
         catch(SQLException e)
         {
-        	throw new SQLException("Errore nell'inserimento del certificato: " , e); 
+            e.printStackTrace();
+            throw new SQLException("Errore nell'inserimento del certificato: " + e.getMessage(), e); // <-- AGGIUNTO e.getMessage()!
         }
     }
 
@@ -166,6 +170,7 @@ public class CertificatoDAO
         	throw new SQLException("Errore nell' aggiornamento dello stato del certificato: " , e); 
         }
     }
+    
 
 
     public void getCompleto(Certificato c) throws SQLException
@@ -213,11 +218,11 @@ public class CertificatoDAO
         Integer tipoCertificatoId = MapRow.getIntOrNull(row, "TipoCertificato_ID");
         tipoCertificatoId = tipoCertificatoId != null ? tipoCertificatoId : -1;
 
-        String dati = MapRow.getString(row, "Dati_Documento");
+        byte[] dati = (byte[]) row.get("Dati_Documento"); 
     		
     	c.setId(MapRow.getInt(row, "ID"));
     	c.setNomeFile(MapRow.getString(row,"Nome_File"));
-    	c.setDatiDocumento(dati != null ? dati.getBytes(StandardCharsets.UTF_8) : null);
+    	c.setDatiDocumento(dati); 
     	c.setStato(Certificato.Stato.fromString(MapRow.getString(row,"Stato")));
     	c.setMimeType(MapRow.getString(row,"Mime_Type"));
     	c.setDataCaricamento(MapRow.getLocalDateTime(row,"Data_Caricamento"));

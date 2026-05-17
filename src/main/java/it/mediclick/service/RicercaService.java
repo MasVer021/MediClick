@@ -120,7 +120,6 @@ public class RicercaService {
         }
     } 
     
- 
     public Medico getMedicoById(int medicoId) throws RicercaException 
     {
         try

@@ -147,11 +147,11 @@ public class MedicoDAO
                 MIN(S.Citta) as Citta_Studio,
         		MIN(EP.Prezzo_Lordo_Listino) as Costo,
                 (
-                    SELECT AVG(R.Voto) FROM Recensione R 
-                    JOIN Prenotazione P ON R.Prenotazione_ID = P.ID 
-                    JOIN Disponibilita D ON P.Disponibilita_ID = D.ID 
-                    WHERE D.Medico_ID = M.ID
-                ) as Media_Recensioni,
+        		    SELECT COALESCE(AVG(R.Voto), 0) FROM Recensione R 
+				    JOIN Prenotazione P ON R.Prenotazione_ID = P.ID 
+				    JOIN Disponibilita D ON P.Disponibilita_ID = D.ID 
+				    WHERE D.Medico_ID = M.ID
+				) as Media_Recensioni,
                 (
                     SELECT COUNT(*) FROM Recensione R
                     JOIN Prenotazione P ON R.Prenotazione_ID = P.ID
