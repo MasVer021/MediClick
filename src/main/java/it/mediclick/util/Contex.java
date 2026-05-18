@@ -1,148 +1,141 @@
 package it.mediclick.util;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-
-public class Contex 
+public class Contex
 {
-    private String url;
-    private String userName;
-    private String password;
+	private String url;
+	private String userName;
+	private String password;
 
-    public Contex(String dbUrl, String userName, String password) 
-    {
-        this.url = dbUrl;
-        this.userName = userName;
-        this.password = password;
+	public Contex(String dbUrl, String userName, String password)
+	{
+		this.url = dbUrl;
+		this.userName = userName;
+		this.password = password;
 
-        try 
-        {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } 
-        catch (ClassNotFoundException e) 
-        {
-            e.printStackTrace();
-        }
-    }
-    
-    public int eseguiUpdate(String sql, Object... params) throws SQLException
-    {
-        boolean isInsert = sql.trim().toUpperCase().startsWith("INSERT");
-        try
-        (
-            Connection conn = DriverManager.getConnection(this.url, this.userName, this.password);
-            PreparedStatement pstmt = isInsert ? 
-                conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) : 
-                conn.prepareStatement(sql);
-        )
-        {
-            for (int i = 0; i < params.length; i++)
-            {
-                pstmt.setObject(i + 1, params[i]);
-            }
-            int rows = pstmt.executeUpdate();
+		try
+		{
+			Class.forName("com.mysql.cj.jdbc.Driver");
+		}
+		catch (ClassNotFoundException e)
+		{
+			e.printStackTrace();
+		}
+	}
 
-            if (isInsert) 
-            {
-                try (ResultSet keys = pstmt.getGeneratedKeys()) 
-                {
-                    if (keys.next()) 
-                    {
-                        return keys.getInt(1);
-                    }
-                }
-            }
-            return rows; 
-        }
-    }
+	public int eseguiUpdate(String sql, Object... params) throws SQLException
+	{
+		boolean isInsert = sql.trim().toUpperCase().startsWith("INSERT");
+		try (Connection conn = DriverManager.getConnection(this.url, this.userName, this.password);
+				PreparedStatement pstmt = isInsert ? conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) : conn.prepareStatement(sql);)
+		{
+			for (int i = 0; i < params.length; i++)
+			{
+				pstmt.setObject(i + 1, params[i]);
+			}
+			int rows = pstmt.executeUpdate();
 
-    public int eseguiUpdate(String sql, Connection conn, Object... params) throws SQLException
-    {
-        boolean isInsert = sql.trim().toUpperCase().startsWith("INSERT");
-        try (PreparedStatement pstmt = isInsert ? 
-                conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) : 
-                conn.prepareStatement(sql))
-        {
-            for (int i = 0; i < params.length; i++)
-            {
-                pstmt.setObject(i + 1, params[i]);
-            }
-            int rows = pstmt.executeUpdate();
+			if (isInsert)
+			{
+				try (ResultSet keys = pstmt.getGeneratedKeys())
+				{
+					if (keys.next())
+					{
+						return keys.getInt(1);
+					}
+				}
+			}
+			return rows;
+		}
+	}
 
-            if (isInsert) 
-            {
-                try (ResultSet keys = pstmt.getGeneratedKeys()) 
-                {
-                    if (keys.next()) 
-                    {
-                        return keys.getInt(1);
-                    }
-                }
-            }
-            return rows; 
-        }
-    }
-    
-    public Connection getConnection() throws SQLException 
-    {
-        return DriverManager.getConnection(this.url, this.userName, this.password);
-    }
+	public int eseguiUpdate(String sql, Connection conn, Object... params) throws SQLException
+	{
+		boolean isInsert = sql.trim().toUpperCase().startsWith("INSERT");
+		try (PreparedStatement pstmt = isInsert ? conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) : conn.prepareStatement(sql))
+		{
+			for (int i = 0; i < params.length; i++)
+			{
+				pstmt.setObject(i + 1, params[i]);
+			}
+			int rows = pstmt.executeUpdate();
 
-    public List<Map<String, Object>> eseguiSelect(String sql, Object... params) throws SQLException 
-    {
-        List<Map<String, Object>> risultati = new ArrayList<>();
+			if (isInsert)
+			{
+				try (ResultSet keys = pstmt.getGeneratedKeys())
+				{
+					if (keys.next())
+					{
+						return keys.getInt(1);
+					}
+				}
+			}
+			return rows;
+		}
+	}
 
-        try 
-        (
-            Connection conn = DriverManager.getConnection(this.url, this.userName, this.password);
-            PreparedStatement pstmt = conn.prepareStatement(sql);
-        ) 
-        {
-            for (int i = 0; i < params.length; i++) 
-            {
-                pstmt.setObject(i + 1, params[i]);
-            }
+	public Connection getConnection() throws SQLException
+	{
+		return DriverManager.getConnection(this.url, this.userName, this.password);
+	}
 
-            try (ResultSet rs = pstmt.executeQuery()) 
-            {
-                ResultSetMetaData metaData = rs.getMetaData();
-                int colCount = metaData.getColumnCount();
+	public List<Map<String, Object>> eseguiSelect(String sql, Object... params) throws SQLException
+	{
+		List<Map<String, Object>> risultati = new ArrayList<>();
 
-                while (rs.next()) 
-                {
-                    Map<String, Object> riga = new HashMap<>();
-                    for (int i = 1; i <= colCount; i++)
-                    {
-                        riga.put(metaData.getColumnLabel(i), rs.getObject(i));
-                    }
-                    risultati.add(riga);
-                }
-            }
-        }
+		try (Connection conn = DriverManager.getConnection(this.url, this.userName, this.password); PreparedStatement pstmt = conn.prepareStatement(sql);)
+		{
+			for (int i = 0; i < params.length; i++)
+			{
+				pstmt.setObject(i + 1, params[i]);
+			}
 
-        return risultati;
-    }
-    
-    
-    public <T> List<T> eseguiSelect(String sql, ResultMapper<T> mapper, Object... params) throws SQLException
-    {
-        List<Map<String, Object>> rows = eseguiSelect(sql, params);
-        List<T> result = new ArrayList<>();
-        for (Map<String, Object> row : rows)
-        {
-        	 result.add(mapper.map(row));
-        }
-        return result;
-    }
-    
-    public <T> Optional<T> eseguiSelectSingolo(String sql, ResultMapper<T> mapper, Object... params) throws SQLException
-    {
-        List<T> result = eseguiSelect(sql, mapper, params);
-        return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
-    }
+			try (ResultSet rs = pstmt.executeQuery())
+			{
+				ResultSetMetaData metaData = rs.getMetaData();
+				int colCount = metaData.getColumnCount();
+
+				while (rs.next())
+				{
+					Map<String, Object> riga = new HashMap<>();
+					for (int i = 1; i <= colCount; i++)
+					{
+						riga.put(metaData.getColumnLabel(i), rs.getObject(i));
+					}
+					risultati.add(riga);
+				}
+			}
+		}
+
+		return risultati;
+	}
+
+	public <T> List<T> eseguiSelect(String sql, ResultMapper<T> mapper, Object... params) throws SQLException
+	{
+		List<Map<String, Object>> rows = eseguiSelect(sql, params);
+		List<T> result = new ArrayList<>();
+		for (Map<String, Object> row : rows)
+		{
+			result.add(mapper.map(row));
+		}
+		return result;
+	}
+
+	public <T> Optional<T> eseguiSelectSingolo(String sql, ResultMapper<T> mapper, Object... params) throws SQLException
+	{
+		List<T> result = eseguiSelect(sql, mapper, params);
+		return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
+	}
 }

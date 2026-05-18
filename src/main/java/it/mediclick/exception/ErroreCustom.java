@@ -1,7 +1,8 @@
 package it.mediclick.exception;
 
-public interface ErroreCustom 
+public interface ErroreCustom
 {
-    String getErrorCode();
-    String getMessage(); 
+	String getErrorCode();
+
+	String getMessage();
 }

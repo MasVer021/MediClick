@@ -6,94 +6,94 @@ import java.math.BigDecimal;
 public class Studio implements Serializable
 {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    private int id = -1;
-    private String placeId;
-    private String nomeSede;
-    private String indirizzoMaps;
-    private String citta;
-    private BigDecimal lat;
-    private BigDecimal lng;
+	private int id = -1;
+	private String placeId;
+	private String nomeSede;
+	private String indirizzoMaps;
+	private String citta;
+	private BigDecimal lat;
+	private BigDecimal lng;
 
-    public Studio()
-    {
-    	
-    }
+	public Studio()
+	{
 
-    public int getId()
-    {
-        return id;
-    }
+	}
 
-    public void setId(int id)
-    {
-        this.id = id;
-    }
+	public int getId()
+	{
+		return id;
+	}
 
-    public String getPlaceId()
-    {
-        return placeId;
-    }
+	public void setId(int id)
+	{
+		this.id = id;
+	}
 
-    public void setPlaceId(String placeId)
-    {
-        this.placeId = placeId;
-    }
+	public String getPlaceId()
+	{
+		return placeId;
+	}
 
-    public String getNomeSede()
-    {
-        return nomeSede;
-    }
+	public void setPlaceId(String placeId)
+	{
+		this.placeId = placeId;
+	}
 
-    public void setNomeSede(String nomeSede)
-    {
-        this.nomeSede = nomeSede;
-    }
+	public String getNomeSede()
+	{
+		return nomeSede;
+	}
 
-    public String getIndirizzoMaps()
-    {
-        return indirizzoMaps;
-    }
+	public void setNomeSede(String nomeSede)
+	{
+		this.nomeSede = nomeSede;
+	}
 
-    public void setIndirizzoMaps(String indirizzoMaps)
-    {
-        this.indirizzoMaps = indirizzoMaps;
-    }
+	public String getIndirizzoMaps()
+	{
+		return indirizzoMaps;
+	}
 
-    public String getCitta()
-    {
-        return citta;
-    }
+	public void setIndirizzoMaps(String indirizzoMaps)
+	{
+		this.indirizzoMaps = indirizzoMaps;
+	}
 
-    public void setCitta(String citta)
-    {
-        this.citta = citta;
-    }
+	public String getCitta()
+	{
+		return citta;
+	}
 
-    public BigDecimal getLat()
-    {
-        return lat;
-    }
+	public void setCitta(String citta)
+	{
+		this.citta = citta;
+	}
 
-    public void setLat(BigDecimal lat)
-    {
-        this.lat = lat;
-    }
+	public BigDecimal getLat()
+	{
+		return lat;
+	}
 
-    public BigDecimal getLng()
-    {
-        return lng;
-    }
+	public void setLat(BigDecimal lat)
+	{
+		this.lat = lat;
+	}
 
-    public void setLng(BigDecimal lng)
-    {
-        this.lng = lng;
-    }
+	public BigDecimal getLng()
+	{
+		return lng;
+	}
 
-    @Override
-    public String toString()
-    {
-        return "Studio{id=" + id + ", nomeSede='" + nomeSede + "', citta='" + citta + "'}";
-    }
+	public void setLng(BigDecimal lng)
+	{
+		this.lng = lng;
+	}
+
+	@Override
+	public String toString()
+	{
+		return "Studio{id=" + id + ", nomeSede='" + nomeSede + "', citta='" + citta + "'}";
+	}
 }

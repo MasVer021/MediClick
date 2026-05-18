@@ -6,95 +6,95 @@ import java.time.LocalDate;
 public class Utente implements Serializable
 {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    private int id = -1;
-    private String email;
-    private String password;
-    private LocalDate dataIscrizione;
-    private boolean accountAttivo;
+	private int id = -1;
+	private String email;
+	private String password;
+	private LocalDate dataIscrizione;
+	private boolean accountAttivo;
 
-    private int ruoloId = -1;
-    private Ruolo ruolo;
+	private int ruoloId = -1;
+	private Ruolo ruolo;
 
-    public Utente()
-    {
-        this.accountAttivo = true;
-    }
+	public Utente()
+	{
+		this.accountAttivo = true;
+	}
 
-    
-    public int getRuoloId() {
-        return ruoloId;
-    }
+	public int getRuoloId()
+	{
+		return ruoloId;
+	}
 
+	public void setRuoloId(int ruoloId)
+	{
+		this.ruoloId = ruoloId;
+	}
 
-    public void setRuoloId(int ruoloId) {
-        this.ruoloId = ruoloId;
-    }
+	public int getId()
+	{
+		return id;
+	}
 
-    public int getId()
-    {
-        return id;
-    }
+	public void setId(int id)
+	{
+		this.id = id;
+	}
 
-    public void setId(int id)
-    {
-        this.id = id;
-    }
+	public String getEmail()
+	{
+		return email;
+	}
 
-    public String getEmail()
-    {
-        return email;
-    }
+	public void setEmail(String email)
+	{
+		this.email = email;
+	}
 
-    public void setEmail(String email)
-    {
-        this.email = email;
-    }
+	public String getPassword()
+	{
+		return password;
+	}
 
-    public String getPassword()
-    {
-        return password;
-    }
+	public void setPassword(String password)
+	{
+		this.password = password;
+	}
 
-    public void setPassword(String password)
-    {
-        this.password = password;
-    }
+	public LocalDate getDataIscrizione()
+	{
+		return dataIscrizione;
+	}
 
-    public LocalDate getDataIscrizione()
-    {
-        return dataIscrizione;
-    }
+	public void setDataIscrizione(LocalDate dataIscrizione)
+	{
+		this.dataIscrizione = dataIscrizione;
+	}
 
-    public void setDataIscrizione(LocalDate dataIscrizione)
-    {
-        this.dataIscrizione = dataIscrizione;
-    }
+	public boolean isAccountAttivo()
+	{
+		return accountAttivo;
+	}
 
-    public boolean isAccountAttivo()
-    {
-        return accountAttivo;
-    }
+	public void setAccountAttivo(boolean accountAttivo)
+	{
+		this.accountAttivo = accountAttivo;
+	}
 
-    public void setAccountAttivo(boolean accountAttivo)
-    {
-        this.accountAttivo = accountAttivo;
-    }
+	public Ruolo getRuolo()
+	{
+		return ruolo;
+	}
 
-    public Ruolo getRuolo()
-    {
-        return ruolo;
-    }
+	public void setRuolo(Ruolo ruolo)
+	{
+		this.ruolo = ruolo;
+	}
 
-    public void setRuolo(Ruolo ruolo)
-    {
-        this.ruolo = ruolo;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "Utente{id=" + id + ", email='" + email + "', accountAttivo=" + accountAttivo + "}";
-    }
+	@Override
+	public String toString()
+	{
+		return "Utente{id=" + id + ", email='" + email + "', accountAttivo=" + accountAttivo + "}";
+	}
 }

@@ -3,80 +3,82 @@ package it.mediclick.model.bean;
 import java.io.Serializable;
 import java.util.Objects;
 
- 
-public class Caratterizzato implements Serializable {
+public class Caratterizzato implements Serializable
+{
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    private int ruoloId = -1;
-    private int permessoId = -1;
+	private int ruoloId = -1;
+	private int permessoId = -1;
 
-    private Ruolo ruolo;
-    private Permesso permesso;
+	private Ruolo ruolo;
+	private Permesso permesso;
 
-    public Caratterizzato() {}
+	public Caratterizzato()
+	{
+	}
 
-    public int getRuoloId() 
-    {
-        return ruoloId;
-    }
+	public int getRuoloId()
+	{
+		return ruoloId;
+	}
 
-    public void setRuoloId(int ruoloId) 
-    {
-        this.ruoloId = ruoloId;
-    }
+	public void setRuoloId(int ruoloId)
+	{
+		this.ruoloId = ruoloId;
+	}
 
-    public int getPermessoId() 
-    {
-        return permessoId;
-    }
+	public int getPermessoId()
+	{
+		return permessoId;
+	}
 
-    public void setPermessoId(int permessoId) 
-    {
-        this.permessoId = permessoId;
-    }
+	public void setPermessoId(int permessoId)
+	{
+		this.permessoId = permessoId;
+	}
 
-    public Ruolo getRuolo() 
-    {
-        return ruolo;
-    }
+	public Ruolo getRuolo()
+	{
+		return ruolo;
+	}
 
-    public void setRuolo(Ruolo ruolo) 
-    { 
-    	this.ruolo = ruolo; 
-    }
+	public void setRuolo(Ruolo ruolo)
+	{
+		this.ruolo = ruolo;
+	}
 
-    public Permesso getPermesso() 
-    { 
-    	return permesso; 
-    }
-    
-    public void setPermesso(Permesso permesso) 
-    { 
-    	this.permesso = permesso; 
-    }
+	public Permesso getPermesso()
+	{
+		return permesso;
+	}
 
-    @Override
-    public boolean equals(Object o) 
-    {
-        if (this == o) 
-        	return true;
-        if (!(o instanceof Caratterizzato)) 
-        	return false;
-        Caratterizzato that = (Caratterizzato) o;
-        
-        return ruoloId == that.ruoloId && permessoId == that.permessoId;
-    }
+	public void setPermesso(Permesso permesso)
+	{
+		this.permesso = permesso;
+	}
 
-    @Override
-    public int hashCode() 
-    {
-        return Objects.hash(ruoloId, permessoId);
-    }
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+			return true;
+		if (!(o instanceof Caratterizzato))
+			return false;
+		Caratterizzato that = (Caratterizzato) o;
 
-    @Override
-    public String toString() 
-    {
-        return "Caratterizzato{ruoloId=" + ruoloId + ", permessoId=" + permessoId + "}";
-    }
+		return ruoloId == that.ruoloId && permessoId == that.permessoId;
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return Objects.hash(ruoloId, permessoId);
+	}
+
+	@Override
+	public String toString()
+	{
+		return "Caratterizzato{ruoloId=" + ruoloId + ", permessoId=" + permessoId + "}";
+	}
 }

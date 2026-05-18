@@ -1,119 +1,121 @@
 package it.mediclick.model.dao;
 
-import it.mediclick.model.bean.Ruolo;
-import it.mediclick.model.bean.Utente;
-import it.mediclick.util.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-public class UtenteDAO 
+import it.mediclick.model.bean.Ruolo;
+import it.mediclick.model.bean.Utente;
+import it.mediclick.util.Contex;
+import it.mediclick.util.MapRow;
+import it.mediclick.util.PasswordUtils;
+import it.mediclick.util.ResultMapper;
+
+public class UtenteDAO
 {
 	private final Contex _contex;
 	private RuoloDAO ruoloDAO;
 
-	
 	public UtenteDAO(Contex contex)
 	{
 		_contex = contex;
 		ruoloDAO = new RuoloDAO(contex);
 	}
-	
+
 	public Optional<Utente> findById(int id) throws SQLException
 	{
-	    try
-	    {
+		try
+		{
 			String sql = """
-						SELECT * 
-						FROM Utente 
-						WHERE ID = ?
-						""";
+							SELECT *
+							FROM Utente
+							WHERE ID = ?
+							""";
 
-	    	return _contex.eseguiSelectSingolo(sql, utenteMapper, id);
-	    }
-	    catch(SQLException e)
-	    {
-	    	throw new SQLException("Errore nella ricerca dell'utente per ID: " + id + e.getMessage(), e);
-	    }
-		
+			return _contex.eseguiSelectSingolo(sql, utenteMapper, id);
+		}
+		catch (SQLException e)
+		{
+			throw new SQLException("Errore nella ricerca dell'utente per ID: " + id + e.getMessage(), e);
+		}
+
 	}
-	
+
 	public Optional<Utente> findByEmail(String email) throws SQLException
 	{
-		
-	    
-		 try
-		    {
-				String sql = 	"""
-								SELECT * 
-								FROM Utente 
-								WHERE Email = ?
-								""";
-						
-		    	return _contex.eseguiSelectSingolo(sql, utenteMapper, email);
-		    }
-		    catch(SQLException e)
-		    {
-		    	throw new SQLException("Errore nella ricerca dell'utente per email: " + email + e.getMessage(), e);
-		    }
+
+		try
+		{
+			String sql = """
+							SELECT *
+							FROM Utente
+							WHERE Email = ?
+							""";
+
+			return _contex.eseguiSelectSingolo(sql, utenteMapper, email);
+		}
+		catch (SQLException e)
+		{
+			throw new SQLException("Errore nella ricerca dell'utente per email: " + email + e.getMessage(), e);
+		}
 	}
-	
-	public int insert(Connection conn,Utente u) throws SQLException
+
+	public int insert(Connection conn, Utente u) throws SQLException
 	{
 		String sql = """
-					INSERT INTO Utente(Email,Password,Data_Iscrizione,Account_attivo,Ruolo_ID)
-					VALUES (?,?,?,?,?);
-					""";
-		
+						INSERT INTO Utente(Email,Password,Data_Iscrizione,Account_attivo,Ruolo_ID)
+						VALUES (?,?,?,?,?);
+						""";
+
 		int ID = -1;
-		
+
 		try
 		{
 			int RuoloId = u.getRuoloId();
 			String passwordhash = PasswordUtils.hashPassword(u.getPassword());
 			LocalDateTime dataIscrizione = LocalDateTime.now();
-			
-			ID = _contex.eseguiUpdate(sql,conn,u.getEmail(),passwordhash,dataIscrizione,u.isAccountAttivo(),RuoloId);
+
+			ID = _contex.eseguiUpdate(sql, conn, u.getEmail(), passwordhash, dataIscrizione, u.isAccountAttivo(), RuoloId);
 		}
-		catch(SQLException e)
+		catch (SQLException e)
 		{
 			throw new SQLException("Errore nell'inserimento dell'utente: " + e.getMessage(), e);
 		}
-		
+
 		return ID;
 	}
-	
-	public void updatePassword(int id,String password) throws SQLException
+
+	public void updatePassword(int id, String password) throws SQLException
 	{
 		String sql = """
-						UPDATE Utente
-						SET Password = ?
-						WHERE ID = ?; 
-				""";
+								UPDATE Utente
+								SET Password = ?
+								WHERE ID = ?;
+						""";
 		try
 		{
-			 String passwordHash = PasswordUtils.hashPassword(password);
-			 _contex.eseguiUpdate(sql,passwordHash,id);
+			String passwordHash = PasswordUtils.hashPassword(password);
+			_contex.eseguiUpdate(sql, passwordHash, id);
 		}
-		catch(SQLException e)
+		catch (SQLException e)
 		{
 			throw new SQLException("Errore nell'aggiornamento della password utente: " + e.getMessage(), e);
 		}
 	}
-	
-	public void setAccountAttivo(int id,boolean attivo) throws SQLException
+
+	public void setAccountAttivo(int id, boolean attivo) throws SQLException
 	{
 		String sql = """
-						UPDATE Utente
-						SET Account_attivo = ?
-						WHERE ID = ?; 
-				""";
+								UPDATE Utente
+								SET Account_attivo = ?
+								WHERE ID = ?;
+						""";
 		try
 		{
-			_contex.eseguiUpdate(sql,attivo,id);
+			_contex.eseguiUpdate(sql, attivo, id);
 		}
-		catch(SQLException e)
+		catch (SQLException e)
 		{
 			throw new SQLException("Errore nell'aggiornamento dello stato dell'account utente: " + e.getMessage(), e);
 		}
@@ -122,14 +124,14 @@ public class UtenteDAO
 	public void getCompleto(Utente u) throws SQLException
 	{
 		int ruoloId = u.getRuoloId();
-		if(ruoloId > 0)
+		if (ruoloId > 0)
 		{
 			Ruolo r = ruoloDAO.findById(ruoloId).orElseThrow(() -> new SQLException("Ruolo non trovato per ID: " + ruoloId));
 			u.setRuolo(r);
 		}
 	}
-	
-	private final ResultMapper<Utente> utenteMapper = row -> 
+
+	private final ResultMapper<Utente> utenteMapper = row ->
 	{
 		Utente u = new Utente();
 

@@ -3,256 +3,252 @@ package it.mediclick.model.bean;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-
-
 public class Prenotazione implements Serializable
 {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public enum Stato
-    {
-        CONFERMATA("Confermata"),
-        COMPLETATA("Completata"),
-        CANCELLATA("Cancellata"),
-        RIMBORSATA("Rimborsata");
-        
-        public static Stato fromString(String statoStr)
-        {
-            if(statoStr == null)
-                return null;
-            
-            for (Prenotazione.Stato s : Prenotazione.Stato.values()) 
-            {
-                if (s.getLabel().equalsIgnoreCase(statoStr) || s.name().equalsIgnoreCase(statoStr)) 
-                {
-                   return s;
-                }
-            }
-            
-            return null;
-        }  
+	public enum Stato {
+		CONFERMATA("Confermata"), COMPLETATA("Completata"), CANCELLATA("Cancellata"), RIMBORSATA("Rimborsata");
 
-        private final String label;
+		public static Stato fromString(String statoStr)
+		{
+			if (statoStr == null)
+				return null;
 
-        Stato(String label)
-        {
-            this.label = label;
-        }
+			for (Prenotazione.Stato s : Prenotazione.Stato.values())
+			{
+				if (s.getLabel().equalsIgnoreCase(statoStr) || s.name().equalsIgnoreCase(statoStr))
+				{
+					return s;
+				}
+			}
 
-        public String getLabel()
-        {
-            return label;
-        }
-    }
+			return null;
+		}
 
-    private int id = -1;
-    private Stato stato;
-    private String metodoPagamento;
-    private String idTransazioneEsterno;
-    private double importoPagato;
-    private double ricavoNettoMedicoEuro;
-    private double trattenutaPiattaformaEuro;
-    private double tasseStimateEuro;
-    private LocalDateTime dataPagamento;
+		private final String label;
 
-    private int pazienteId;
-    private Paziente paziente;
+		Stato(String label)
+		{
+			this.label = label;
+		}
 
-    private int disponibilitaId = -1;
-    private Disponibilita disponibilita;
+		public String getLabel()
+		{
+			return label;
+		}
+	}
 
-    private int erogazionePrestazioneId = -1;
-    private ErogazionePrestazione erogazionePrestazione;
+	private int id = -1;
+	private Stato stato;
+	private String metodoPagamento;
+	private String idTransazioneEsterno;
+	private double importoPagato;
+	private double ricavoNettoMedicoEuro;
+	private double trattenutaPiattaformaEuro;
+	private double tasseStimateEuro;
+	private LocalDateTime dataPagamento;
 
-    private int codiceScontoId = -1;
-    private CodiceSconto codiceSconto;
-    
-    public int getPazienteId() 
-    {
-        return pazienteId;
-    }
+	private int pazienteId;
+	private Paziente paziente;
 
-    public void setPazienteId(int pazienteId) 
-    {
-        this.pazienteId = pazienteId;
-    }
+	private int disponibilitaId = -1;
+	private Disponibilita disponibilita;
 
-    public int getDisponibilitaId() 
-    {
-        return disponibilitaId;
-    }
+	private int erogazionePrestazioneId = -1;
+	private ErogazionePrestazione erogazionePrestazione;
 
-    public void setDisponibilitaId(int disponibilitaId) 
-    {
-        this.disponibilitaId = disponibilitaId;
-    }
+	private int codiceScontoId = -1;
+	private CodiceSconto codiceSconto;
 
-    public int getErogazionePrestazioneId() 
-    {
-        return erogazionePrestazioneId;
-    }
+	public int getPazienteId()
+	{
+		return pazienteId;
+	}
 
-    public void setErogazionePrestazioneId(int erogazionePrestazioneId) 
-    {
-        this.erogazionePrestazioneId = erogazionePrestazioneId;
-    }
+	public void setPazienteId(int pazienteId)
+	{
+		this.pazienteId = pazienteId;
+	}
 
-    public int getCodiceScontoId() {
-        return codiceScontoId;
-    }
+	public int getDisponibilitaId()
+	{
+		return disponibilitaId;
+	}
 
-    public void setCodiceScontoId(int codiceScontoId) {
-        this.codiceScontoId = codiceScontoId;
-    }
+	public void setDisponibilitaId(int disponibilitaId)
+	{
+		this.disponibilitaId = disponibilitaId;
+	}
 
-    public Prenotazione()
-    {
-        this.stato = Stato.CONFERMATA;
-    }
+	public int getErogazionePrestazioneId()
+	{
+		return erogazionePrestazioneId;
+	}
 
-    public int getId()
-    {
-        return id;
-    }
+	public void setErogazionePrestazioneId(int erogazionePrestazioneId)
+	{
+		this.erogazionePrestazioneId = erogazionePrestazioneId;
+	}
 
-    public void setId(int id)
-    {
-        this.id = id;
-    }
-    
-    public Stato getStato()
-    {
-        return stato;
-    }
+	public int getCodiceScontoId()
+	{
+		return codiceScontoId;
+	}
 
-    public void setStato(Stato stato)
-    {
-        this.stato = stato;
-    }
+	public void setCodiceScontoId(int codiceScontoId)
+	{
+		this.codiceScontoId = codiceScontoId;
+	}
 
-    public String getMetodoPagamento()
-    {
-        return metodoPagamento;
-    }
+	public Prenotazione()
+	{
+		this.stato = Stato.CONFERMATA;
+	}
 
-    public void setMetodoPagamento(String metodoPagamento)
-    {
-        this.metodoPagamento = metodoPagamento;
-    }
+	public int getId()
+	{
+		return id;
+	}
 
-    public String getIdTransazioneEsterno()
-    {
-        return idTransazioneEsterno;
-    }
+	public void setId(int id)
+	{
+		this.id = id;
+	}
 
-    public void setIdTransazioneEsterno(String idTransazioneEsterno)
-    {
-        this.idTransazioneEsterno = idTransazioneEsterno;
-    }
+	public Stato getStato()
+	{
+		return stato;
+	}
 
-    public double getImportoPagato()
-    {
-        return importoPagato;
-    }
+	public void setStato(Stato stato)
+	{
+		this.stato = stato;
+	}
 
-    public void setImportoPagato(double importoPagato)
-    {
-        this.importoPagato = importoPagato;
-    }
+	public String getMetodoPagamento()
+	{
+		return metodoPagamento;
+	}
 
-    public double getRicavoNettoMedicoEuro()
-    {
-        return ricavoNettoMedicoEuro;
-    }
+	public void setMetodoPagamento(String metodoPagamento)
+	{
+		this.metodoPagamento = metodoPagamento;
+	}
 
-    public void setRicavoNettoMedicoEuro(double ricavoNettoMedicoEuro)
-    {
-        this.ricavoNettoMedicoEuro = ricavoNettoMedicoEuro;
-    }
+	public String getIdTransazioneEsterno()
+	{
+		return idTransazioneEsterno;
+	}
 
-    public double getTrattenutaPiattaformaEuro()
-    {
-        return trattenutaPiattaformaEuro;
-    }
+	public void setIdTransazioneEsterno(String idTransazioneEsterno)
+	{
+		this.idTransazioneEsterno = idTransazioneEsterno;
+	}
 
-    public void setTrattenutaPiattaformaEuro(double trattenutaPiattaformaEuro)
-    {
-        this.trattenutaPiattaformaEuro = trattenutaPiattaformaEuro;
-    }
+	public double getImportoPagato()
+	{
+		return importoPagato;
+	}
 
-    public double getTasseStimateEuro()
-    {
-        return tasseStimateEuro;
-    }
+	public void setImportoPagato(double importoPagato)
+	{
+		this.importoPagato = importoPagato;
+	}
 
-    public void setTasseStimateEuro(double tasseStimateEuro)
-    {
-        this.tasseStimateEuro = tasseStimateEuro;
-    }
+	public double getRicavoNettoMedicoEuro()
+	{
+		return ricavoNettoMedicoEuro;
+	}
 
-    public LocalDateTime getDataPagamento()
-    {
-        return dataPagamento;
-    }
+	public void setRicavoNettoMedicoEuro(double ricavoNettoMedicoEuro)
+	{
+		this.ricavoNettoMedicoEuro = ricavoNettoMedicoEuro;
+	}
 
-    public void setDataPagamento(LocalDateTime dataPagamento)
-    {
-        this.dataPagamento = dataPagamento;
-    }
+	public double getTrattenutaPiattaformaEuro()
+	{
+		return trattenutaPiattaformaEuro;
+	}
 
-    public Paziente getPaziente()
-    {
-        return paziente;
-    }
+	public void setTrattenutaPiattaformaEuro(double trattenutaPiattaformaEuro)
+	{
+		this.trattenutaPiattaformaEuro = trattenutaPiattaformaEuro;
+	}
 
-    public void setPaziente(Paziente paziente)
-    {
-        this.paziente = paziente;
-    }
+	public double getTasseStimateEuro()
+	{
+		return tasseStimateEuro;
+	}
 
-    public Disponibilita getDisponibilita()
-    {
-        return disponibilita;
-    }
+	public void setTasseStimateEuro(double tasseStimateEuro)
+	{
+		this.tasseStimateEuro = tasseStimateEuro;
+	}
 
-    public void setDisponibilita(Disponibilita disponibilita)
-    {
-        this.disponibilita = disponibilita;
-    }
+	public LocalDateTime getDataPagamento()
+	{
+		return dataPagamento;
+	}
 
-    public ErogazionePrestazione getErogazionePrestazione()
-    {
-        return erogazionePrestazione;
-    }
+	public void setDataPagamento(LocalDateTime dataPagamento)
+	{
+		this.dataPagamento = dataPagamento;
+	}
 
-    public void setErogazionePrestazione(ErogazionePrestazione erogazionePrestazione)
-    {
-        this.erogazionePrestazione = erogazionePrestazione;
-    }
+	public Paziente getPaziente()
+	{
+		return paziente;
+	}
 
-    public CodiceSconto getCodiceSconto()
-    {
-        return codiceSconto;
-    }
+	public void setPaziente(Paziente paziente)
+	{
+		this.paziente = paziente;
+	}
 
-    public void setCodiceSconto(CodiceSconto codiceSconto)
-    {
-        this.codiceSconto = codiceSconto;
-    }
-    
-    public boolean isFutura() 
-    {
-        if (this.disponibilita == null || this.disponibilita.getDataOraInizio() == null) 
-        {
-            return false;
-        }
-        return this.disponibilita.getDataOraInizio().isAfter(java.time.LocalDateTime.now());
-    }
+	public Disponibilita getDisponibilita()
+	{
+		return disponibilita;
+	}
 
-    @Override
-    public String toString()
-    {
-        return "Prenotazione{id=" + id + ", pazienteId=" + getPazienteId() +", importo=" + importoPagato + ", stato=" + stato + "}";
-    }
+	public void setDisponibilita(Disponibilita disponibilita)
+	{
+		this.disponibilita = disponibilita;
+	}
+
+	public ErogazionePrestazione getErogazionePrestazione()
+	{
+		return erogazionePrestazione;
+	}
+
+	public void setErogazionePrestazione(ErogazionePrestazione erogazionePrestazione)
+	{
+		this.erogazionePrestazione = erogazionePrestazione;
+	}
+
+	public CodiceSconto getCodiceSconto()
+	{
+		return codiceSconto;
+	}
+
+	public void setCodiceSconto(CodiceSconto codiceSconto)
+	{
+		this.codiceSconto = codiceSconto;
+	}
+
+	public boolean isFutura()
+	{
+		if (this.disponibilita == null || this.disponibilita.getDataOraInizio() == null)
+		{
+			return false;
+		}
+		return this.disponibilita.getDataOraInizio().isAfter(java.time.LocalDateTime.now());
+	}
+
+	@Override
+	public String toString()
+	{
+		return "Prenotazione{id=" + id + ", pazienteId=" + getPazienteId() + ", importo=" + importoPagato + ", stato=" + stato + "}";
+	}
 }

@@ -3,74 +3,75 @@ package it.mediclick.model.bean;
 import java.io.Serializable;
 import java.time.LocalDate;
 
-public class CodiceSconto implements Serializable {
+public class CodiceSconto implements Serializable
+{
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    private int id = -1;
-    private String codice;
-    private double valorePercentuale;
-    private LocalDate dataScadenza;
-    private boolean attivo;
+	private int id = -1;
+	private String codice;
+	private double valorePercentuale;
+	private LocalDate dataScadenza;
+	private boolean attivo;
 
-    public CodiceSconto() 
-    {
-        this.attivo = true;
-    }
+	public CodiceSconto()
+	{
+		this.attivo = true;
+	}
 
-    public int getId() 
-    { 
-    	return id; 
-    }
-    
-    public void setId(int id) 
-    { 
-    	this.id = id; 
-    }
+	public int getId()
+	{
+		return id;
+	}
 
-    public String getCodice() 
-    {
-    	return codice; 
-    }
-    
-    public void setCodice(String codice) 
-    { 
-    	this.codice = codice; 
-    }
+	public void setId(int id)
+	{
+		this.id = id;
+	}
 
-    public double getValorePercentuale() 
-    {
-    	return valorePercentuale; 
-    }
-    
-    public void setValorePercentuale(double valorePercentuale) 
-    { 
-    	this.valorePercentuale = valorePercentuale; 
-    }
+	public String getCodice()
+	{
+		return codice;
+	}
 
-    public LocalDate getDataScadenza() 
-    {
-    	return dataScadenza; 
-    }
-    
-    public void setDataScadenza(LocalDate dataScadenza) 
-    { 
-    	this.dataScadenza = dataScadenza; 
-    }
+	public void setCodice(String codice)
+	{
+		this.codice = codice;
+	}
 
-    public boolean isAttivo() 
-    { 
-    	return attivo; 
-    }
-    
-    public void setAttivo(boolean attivo) 
-    { 
-    	this.attivo = attivo; 
-    }
+	public double getValorePercentuale()
+	{
+		return valorePercentuale;
+	}
 
-    @Override
-    public String toString() 
-    {
-        return "CodiceSconto{id=" + id + ", codice='" + codice +"', valore=" + valorePercentuale + "%, attivo=" + attivo + "}";
-    }
+	public void setValorePercentuale(double valorePercentuale)
+	{
+		this.valorePercentuale = valorePercentuale;
+	}
+
+	public LocalDate getDataScadenza()
+	{
+		return dataScadenza;
+	}
+
+	public void setDataScadenza(LocalDate dataScadenza)
+	{
+		this.dataScadenza = dataScadenza;
+	}
+
+	public boolean isAttivo()
+	{
+		return attivo;
+	}
+
+	public void setAttivo(boolean attivo)
+	{
+		this.attivo = attivo;
+	}
+
+	@Override
+	public String toString()
+	{
+		return "CodiceSconto{id=" + id + ", codice='" + codice + "', valore=" + valorePercentuale + "%, attivo=" + attivo + "}";
+	}
 }

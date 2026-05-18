@@ -1,7 +1,6 @@
 package it.mediclick.controller.paziente;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -25,109 +24,97 @@ import it.mediclick.util.ValidationUtils;
 public class PrenotazioniEffettuateServlet extends HttpServlet
 {
 	private static final long serialVersionUID = 1L;
-	
-		PazienteService pazienteService ;
-		PrenotazioneService prenotazioniService;
-	
-	 	@Override
-	    public void init() throws ServletException
-	    {
-	    	Contex contex = (Contex) getServletContext().getAttribute("contex");
-	    	pazienteService = new PazienteService(contex);
-	    	prenotazioniService = new PrenotazioneService(contex);
-	    }
-	 	
-	 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
-	 	{
-	 		try 
+
+	PazienteService pazienteService;
+	PrenotazioneService prenotazioniService;
+
+	@Override
+	public void init() throws ServletException
+	{
+		Contex contex = (Contex) getServletContext().getAttribute("contex");
+		pazienteService = new PazienteService(contex);
+		prenotazioniService = new PrenotazioneService(contex);
+	}
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+	{
+		try
+		{
+			Paziente p = getPazienteConnesso(request, response);
+			try
 			{
-				Paziente p = getPazienteConnesso(request, response);
+				List<Prenotazione> prenotazioni = prenotazioniService.getPrenotazioniPaziente(p.getId(), false);
+
+				int numeroPrenotazioni = (int) prenotazioni.stream().filter(pre -> !pre.getStato().equals(Prenotazione.Stato.CANCELLATA)).count();
+
+				double spesaTotale = (double) prenotazioni.stream().filter(pre -> !pre.getStato().equals(Prenotazione.Stato.CANCELLATA)).mapToDouble(Prenotazione::getImportoPagato).sum();
+
+				int visiteDaEffettuare = (int) prenotazioni.stream().filter(pre -> !pre.getStato().equals(Prenotazione.Stato.CANCELLATA) && pre.isFutura()).count();
+
+				request.setAttribute("numeroPrenotazioni", numeroPrenotazioni);
+				request.setAttribute("spesaTotale", spesaTotale);
+				request.setAttribute("visiteDaEffettuare", visiteDaEffettuare);
+				request.setAttribute("prenotazioni", prenotazioni);
+			}
+			catch (Exception e)
+			{
+				throw new PazienteException(e.getMessage(), "PRENOTAZIONE_ERROR");
+			}
+
+		}
+		catch (PazienteException e)
+		{
+			request.setAttribute("errore", new ErrorInfo(e));
+		}
+
+		request.getRequestDispatcher("/WEB-INF/view/paziente/prenotazioni.jsp").forward(request, response);
+
+	}
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+	{
+		try
+		{
+			Paziente p = getPazienteConnesso(request, response);
+
+			String action = request.getParameter("action");
+			if ("disdici".equals(action))
+			{
 				try
 				{
-					List<Prenotazione>prenotazioni = prenotazioniService.getPrenotazioniPaziente(p.getId(), false);
-					
-					int numeroPrenotazioni = (int) prenotazioni.stream()
-						    .filter(pre -> !pre.getStato().equals(Prenotazione.Stato.CANCELLATA))
-						    .count();
-					
-					double spesaTotale = (double) prenotazioni.stream()
-						    .filter(pre -> !pre.getStato().equals(Prenotazione.Stato.CANCELLATA))
-						    .mapToDouble(Prenotazione::getImportoPagato)
-						    .sum();
-					
-					int visiteDaEffettuare = (int) prenotazioni.stream()
-						    .filter(pre -> !pre.getStato().equals(Prenotazione.Stato.CANCELLATA) && pre.isFutura())
-						    .count();
+					int prenotazioneId = ValidationUtils.parseInt(request.getParameter("prenotazioneId"), "ID Prenotazione");
 
-					request.setAttribute("numeroPrenotazioni", numeroPrenotazioni);
-					request.setAttribute("spesaTotale", spesaTotale);
-					request.setAttribute("visiteDaEffettuare", visiteDaEffettuare);
-					request.setAttribute("prenotazioni", prenotazioni);
+					prenotazioniService.disdiciPrenotazione(prenotazioneId, p.getUtente().getId());
+
+					response.sendRedirect(request.getContextPath() + "/paziente/prenotazioni?msg=Disdetta+effettuata");
+					return;
 				}
-				catch (Exception e) 
+				catch (PrenotazioneException | IllegalArgumentException e)
 				{
-					throw new PazienteException(e.getMessage(), "PRENOTAZIONE_ERROR");
+					throw new PazienteException(e.getMessage(), "DISDETTA_ERROR");
 				}
-					
-			} 
-			catch (PazienteException e) 
-			{
-				request.setAttribute("errore", new ErrorInfo(e));
-			} 
-	 		
-	 		request.getRequestDispatcher("/WEB-INF/view/paziente/prenotazioni.jsp").forward(request, response);
-	 		
-	 		
-			
+			}
+
+			doGet(request, response);
+		}
+		catch (PazienteException e)
+		{
+			request.setAttribute("errore", new ErrorInfo(e));
+		}
+	}
+
+	private Paziente getPazienteConnesso(HttpServletRequest request, HttpServletResponse response) throws PazienteException
+	{
+		Utente u = (Utente) request.getSession(false).getAttribute("utente");
+
+		if (u == null)
+		{
+			throw new PazienteException("Errore nel recupero delL'utente", "UTENTE_ERROR");
 		}
 
-		protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
-		{
-			try 
-			{
-				Paziente p = getPazienteConnesso(request, response);
-				
-				String action = request.getParameter("action");
-			    if ("disdici".equals(action)) 
-			    {
-			        try 
-			        {
-			            int prenotazioneId = ValidationUtils.parseInt(request.getParameter("prenotazioneId"), "ID Prenotazione");
-			            
-			            prenotazioniService.disdiciPrenotazione(prenotazioneId, p.getUtente().getId());
-			            
-			            response.sendRedirect(request.getContextPath() + "/paziente/prenotazioni?msg=Disdetta+effettuata");
-			            return;
-			        } 
-			        catch (PrenotazioneException | IllegalArgumentException e) 
-			        {
-			        	throw new PazienteException(e.getMessage(), "DISDETTA_ERROR"); 
-			        }
-			    }
-			    
-			    doGet(request, response);		
-			} 
-			catch (PazienteException e) 
-			{
-				request.setAttribute("errore", new ErrorInfo(e));
-			} 
-		}
-		
-		private Paziente getPazienteConnesso(HttpServletRequest request,HttpServletResponse response) throws PazienteException
-		{
-			Utente  u = (Utente)request.getSession(false).getAttribute("utente");
-			
-			if(u== null)
-			{
-				throw new PazienteException("Errore nel recupero delL'utente", "UTENTE_ERROR");
-			}
-			
-			Paziente p = pazienteService.findById(u.getId());
-			p.setUtente(u);
-			return p;
-		}
-	 	
-	 	
-	 	
-	 	
+		Paziente p = pazienteService.findById(u.getId());
+		p.setUtente(u);
+		return p;
+	}
+
 }

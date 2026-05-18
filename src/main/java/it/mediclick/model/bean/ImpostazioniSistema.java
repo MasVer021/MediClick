@@ -6,95 +6,95 @@ import java.time.LocalDateTime;
 public class ImpostazioniSistema implements Serializable
 {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    private int id = -1;
-    private String chiave;
-    private String valore;
-    private LocalDateTime dataInizio;
-    private LocalDateTime dataFine;  
+	private int id = -1;
+	private String chiave;
+	private String valore;
+	private LocalDateTime dataInizio;
+	private LocalDateTime dataFine;
 
-    private int amministratoreId = -1;
-    private Amministratore amministratore;
+	private int amministratoreId = -1;
+	private Amministratore amministratore;
 
-    public int getAmministratoreId()
-    {
-        return amministratoreId;
-    }
+	public int getAmministratoreId()
+	{
+		return amministratoreId;
+	}
 
-    public void setAmministratoreId(int amministratoreId) 
-    {
-        this.amministratoreId = amministratoreId;
-    }
+	public void setAmministratoreId(int amministratoreId)
+	{
+		this.amministratoreId = amministratoreId;
+	}
 
-    public ImpostazioniSistema()
-    {
-    	
-    }
+	public ImpostazioniSistema()
+	{
 
-    public int getId()
-    {
-        return id;
-    }
+	}
 
-    public void setId(int id)
-    {
-        this.id = id;
-    }
+	public int getId()
+	{
+		return id;
+	}
 
-    public String getChiave()
-    {
-        return chiave;
-    }
+	public void setId(int id)
+	{
+		this.id = id;
+	}
 
-    public void setChiave(String chiave)
-    {
-        this.chiave = chiave;
-    }
+	public String getChiave()
+	{
+		return chiave;
+	}
 
-    public String getValore()
-    {
-        return valore;
-    }
+	public void setChiave(String chiave)
+	{
+		this.chiave = chiave;
+	}
 
-    public void setValore(String valore)
-    {
-        this.valore = valore;
-    }
+	public String getValore()
+	{
+		return valore;
+	}
 
-    public LocalDateTime getDataInizio()
-    {
-        return dataInizio;
-    }
+	public void setValore(String valore)
+	{
+		this.valore = valore;
+	}
 
-    public void setDataInizio(LocalDateTime dataInizio)
-    {
-        this.dataInizio = dataInizio;
-    }
+	public LocalDateTime getDataInizio()
+	{
+		return dataInizio;
+	}
 
-    public LocalDateTime getDataFine()
-    {
-        return dataFine;
-    }
+	public void setDataInizio(LocalDateTime dataInizio)
+	{
+		this.dataInizio = dataInizio;
+	}
 
-    public void setDataFine(LocalDateTime dataFine)
-    {
-        this.dataFine = dataFine;
-    }
+	public LocalDateTime getDataFine()
+	{
+		return dataFine;
+	}
 
-    public Amministratore getAmministratore()
-    {
-        return amministratore;
-    }
+	public void setDataFine(LocalDateTime dataFine)
+	{
+		this.dataFine = dataFine;
+	}
 
-    public void setAmministratore(Amministratore amministratore)
-    {
-        this.amministratore = amministratore;
-    }
+	public Amministratore getAmministratore()
+	{
+		return amministratore;
+	}
 
-    @Override
-    public String toString()
-    {
-        return "ImpostazioniSistema{id=" + id + ", chiave='" + chiave + "', valore='" + valore + "'}";
-    }
+	public void setAmministratore(Amministratore amministratore)
+	{
+		this.amministratore = amministratore;
+	}
+
+	@Override
+	public String toString()
+	{
+		return "ImpostazioniSistema{id=" + id + ", chiave='" + chiave + "', valore='" + valore + "'}";
+	}
 }

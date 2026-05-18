@@ -5,167 +5,166 @@ import java.io.Serializable;
 public class ErogazionePrestazione implements Serializable
 {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public enum Stato
-    {
-        ATTIVA("Attiva"),
-        SOSPESA("Sospesa");
-        
-        public static Stato fromString(String statoStr)
-        {
-            if(statoStr == null)
-                return null;
-            
-            for (ErogazionePrestazione.Stato s : ErogazionePrestazione.Stato.values()) 
-            {
-                if (s.getLabel().equalsIgnoreCase(statoStr) || s.name().equalsIgnoreCase(statoStr)) 
-                {
-                   return s;
-                }
-            }
-            
-            return null;
-        } 
+	public enum Stato {
+		ATTIVA("Attiva"), SOSPESA("Sospesa");
 
-        private final String label;
+		public static Stato fromString(String statoStr)
+		{
+			if (statoStr == null)
+				return null;
 
-        Stato(String label)
-        {
-            this.label = label;
-        }
+			for (ErogazionePrestazione.Stato s : ErogazionePrestazione.Stato.values())
+			{
+				if (s.getLabel().equalsIgnoreCase(statoStr) || s.name().equalsIgnoreCase(statoStr))
+				{
+					return s;
+				}
+			}
 
-        public String getLabel()
-        {
-            return label;
-        }
-    }
+			return null;
+		}
 
-    private int id = -1;
-    private double prezzoLordoListino;
-    
-    /** Durata in minuti, approssimata alla mezz'ora successiva (es. 31 min → 60 min) */
-    private Integer durata;
-    private Stato stato;
+		private final String label;
 
-    private int medicoId = -1;
-    private Medico medico;
+		Stato(String label)
+		{
+			this.label = label;
+		}
 
-    private int catalogoPrestazioniId = -1;
-    private CatalogoPrestazioni catalogoPrestazioni;
+		public String getLabel()
+		{
+			return label;
+		}
+	}
 
-    private int studioId = -1;
-    private Studio studio;
+	private int id = -1;
+	private double prezzoLordoListino;
 
-    public int getMedicoId() 
-    {
-        return medicoId;
-    }
+	/**
+	 * Durata in minuti, approssimata alla mezz'ora successiva (es. 31 min → 60 min)
+	 */
+	private Integer durata;
+	private Stato stato;
 
-    public void setMedicoId(int medicoId) 
-    {
-        this.medicoId = medicoId;
-    }
+	private int medicoId = -1;
+	private Medico medico;
 
-    public int getCatalogoPrestazioniId() 
-    {
-        return catalogoPrestazioniId;
-    }
+	private int catalogoPrestazioniId = -1;
+	private CatalogoPrestazioni catalogoPrestazioni;
 
-    public void setCatalogoPrestazioniId(int catalogoPrestazioniId) 
-    {
-        this.catalogoPrestazioniId = catalogoPrestazioniId;
-    }
+	private int studioId = -1;
+	private Studio studio;
 
-    public int getStudioId() 
-    {
-        return studioId;
-    }
+	public int getMedicoId()
+	{
+		return medicoId;
+	}
 
-    public void setStudioId(int studioId) 
-    {
-        this.studioId = studioId;
-    }
+	public void setMedicoId(int medicoId)
+	{
+		this.medicoId = medicoId;
+	}
 
-    public ErogazionePrestazione()
-    {
-        this.stato = Stato.ATTIVA;
-    }
+	public int getCatalogoPrestazioniId()
+	{
+		return catalogoPrestazioniId;
+	}
 
-    public int getId()
-    {
-        return id;
-    }
+	public void setCatalogoPrestazioniId(int catalogoPrestazioniId)
+	{
+		this.catalogoPrestazioniId = catalogoPrestazioniId;
+	}
 
-    public void setId(int id)
-    {
-        this.id = id;
-    }
+	public int getStudioId()
+	{
+		return studioId;
+	}
 
+	public void setStudioId(int studioId)
+	{
+		this.studioId = studioId;
+	}
 
-    public double getPrezzoLordoListino()
-    {
-        return prezzoLordoListino;
-    }
+	public ErogazionePrestazione()
+	{
+		this.stato = Stato.ATTIVA;
+	}
 
-    public void setPrezzoLordoListino(double prezzoLordoListino)
-    {
-        this.prezzoLordoListino = prezzoLordoListino;
-    }
+	public int getId()
+	{
+		return id;
+	}
 
-    public Integer getDurata()
-    {
-        return durata;
-    }
+	public void setId(int id)
+	{
+		this.id = id;
+	}
 
-    public void setDurata(Integer durata)
-    {
-        this.durata = durata;
-    }
+	public double getPrezzoLordoListino()
+	{
+		return prezzoLordoListino;
+	}
 
-    public Stato getStato()
-    {
-        return stato;
-    }
+	public void setPrezzoLordoListino(double prezzoLordoListino)
+	{
+		this.prezzoLordoListino = prezzoLordoListino;
+	}
 
-    public void setStato(Stato stato)
-    {
-        this.stato = stato;
-    }
+	public Integer getDurata()
+	{
+		return durata;
+	}
 
-    public Medico getMedico()
-    {
-        return medico;
-    }
+	public void setDurata(Integer durata)
+	{
+		this.durata = durata;
+	}
 
-    public void setMedico(Medico medico)
-    {
-        this.medico = medico;
-    }
+	public Stato getStato()
+	{
+		return stato;
+	}
 
-    public CatalogoPrestazioni getCatalogoPrestazioni()
-    {
-        return catalogoPrestazioni;
-    }
+	public void setStato(Stato stato)
+	{
+		this.stato = stato;
+	}
 
-    public void setCatalogoPrestazioni(CatalogoPrestazioni catalogoPrestazioni)
-    {
-        this.catalogoPrestazioni = catalogoPrestazioni;
-    }
+	public Medico getMedico()
+	{
+		return medico;
+	}
 
-    public Studio getStudio()
-    {
-        return studio;
-    }
+	public void setMedico(Medico medico)
+	{
+		this.medico = medico;
+	}
 
-    public void setStudio(Studio studio)
-    {
-        this.studio = studio;
-    }
+	public CatalogoPrestazioni getCatalogoPrestazioni()
+	{
+		return catalogoPrestazioni;
+	}
 
-    @Override
-    public String toString()
-    {
-        return "ErogazionePrestazione{id=" + id + ", medicoId=" + getMedicoId() +", prezzoLordo=" + prezzoLordoListino + ", durata=" + durata + "min, stato=" + stato + "}";
-    }
+	public void setCatalogoPrestazioni(CatalogoPrestazioni catalogoPrestazioni)
+	{
+		this.catalogoPrestazioni = catalogoPrestazioni;
+	}
+
+	public Studio getStudio()
+	{
+		return studio;
+	}
+
+	public void setStudio(Studio studio)
+	{
+		this.studio = studio;
+	}
+
+	@Override
+	public String toString()
+	{
+		return "ErogazionePrestazione{id=" + id + ", medicoId=" + getMedicoId() + ", prezzoLordo=" + prezzoLordoListino + ", durata=" + durata + "min, stato=" + stato + "}";
+	}
 }

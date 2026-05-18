@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import it.mediclick.model.bean.Categoria;
 import it.mediclick.model.bean.Medico;
 
-public class MedicoCardDTO 
+public class MedicoCardDTO
 {
 	private Medico medico;
 	private double valoreRecensioni;
@@ -15,47 +15,47 @@ public class MedicoCardDTO
 	private String indirizzo;
 	private double costo;
 
-	public Medico getMedico() 
+	public Medico getMedico()
 	{
 		return medico;
 	}
 
-	public void setMedico(Medico medico) 
+	public void setMedico(Medico medico)
 	{
 		this.medico = medico;
 	}
 
-	public double getValoreRecensioni() 
+	public double getValoreRecensioni()
 	{
 		return valoreRecensioni;
 	}
 
-	public void setValoreRecensioni(double valoreRecensioni) 
+	public void setValoreRecensioni(double valoreRecensioni)
 	{
 		this.valoreRecensioni = valoreRecensioni;
 	}
 
-	public int getNumeroRecensioni() 
+	public int getNumeroRecensioni()
 	{
 		return numeroRecensioni;
 	}
 
-	public void setNumeroRecensioni(int numeroRecensioni) 
+	public void setNumeroRecensioni(int numeroRecensioni)
 	{
 		this.numeroRecensioni = numeroRecensioni;
 	}
 
-	public Categoria getCategoria() 
+	public Categoria getCategoria()
 	{
 		return categoria;
 	}
 
-	public void setCategoria(Categoria categoria) 
+	public void setCategoria(Categoria categoria)
 	{
 		this.categoria = categoria;
 	}
 
-	public LocalDateTime getPrimaDisponibilita() 
+	public LocalDateTime getPrimaDisponibilita()
 	{
 		return primaDisponibilita;
 	}
@@ -65,26 +65,24 @@ public class MedicoCardDTO
 		this.primaDisponibilita = primaDisponibilita;
 	}
 
-	public String getIndirizzo() 
+	public String getIndirizzo()
 	{
 		return indirizzo;
 	}
 
-	public void setIndirizzo(String indirizzo) 
+	public void setIndirizzo(String indirizzo)
 	{
 		this.indirizzo = indirizzo;
 	}
 
-	public double getCosto() 
+	public double getCosto()
 	{
 		return costo;
 	}
 
-	public void setCosto(double costo) 
+	public void setCosto(double costo)
 	{
 		this.costo = costo;
 	}
-	
-	
 
 }

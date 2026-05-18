@@ -5,27 +5,21 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
-
 @WebListener
-public class AppContexListener implements ServletContextListener 
+public class AppContexListener implements ServletContextListener
 {
 
-    
-    public void contextInitialized(ServletContextEvent sce)  
-    { 
-    	 ServletContext ctx = sce.getServletContext();
-    	 
-        
-         String dbUrl      = ctx.getInitParameter("dbUrl");
-         String dbUser     = ctx.getInitParameter("dbUser");
-         String dbPassword = ctx.getInitParameter("dbPassword");
-         
-        
-         
-         Contex contex = new Contex(dbUrl, dbUser, dbPassword);
-         
-         
-         ctx.setAttribute("contex", contex);
-    }
-	
+	public void contextInitialized(ServletContextEvent sce)
+	{
+		ServletContext ctx = sce.getServletContext();
+
+		String dbUrl = ctx.getInitParameter("dbUrl");
+		String dbUser = ctx.getInitParameter("dbUser");
+		String dbPassword = ctx.getInitParameter("dbPassword");
+
+		Contex contex = new Contex(dbUrl, dbUser, dbPassword);
+
+		ctx.setAttribute("contex", contex);
+	}
+
 }

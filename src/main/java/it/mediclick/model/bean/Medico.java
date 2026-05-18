@@ -3,171 +3,178 @@ package it.mediclick.model.bean;
 import java.io.Serializable;
 import java.util.Base64;
 
-public class Medico implements Serializable {
+public class Medico implements Serializable
+{
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public enum StatoVerifica 
-    {
-        IN_ATTESA("In attesa"),
-        APPROVATO("Approvato"),
-        RIFIUTATO("Rifiutato"),
-        SOSPESO("Sospeso");
+	public enum StatoVerifica {
+		IN_ATTESA("In attesa"), APPROVATO("Approvato"), RIFIUTATO("Rifiutato"), SOSPESO("Sospeso");
 
-        private final String label;
-        StatoVerifica(String label) { this.label = label; }
-        public String getLabel() { return label; }
-        
-        public static StatoVerifica fromString(String statoStr)
-        {
-        	if(statoStr == null)
-        		return null;
-        	
-	        for (Medico.StatoVerifica s : Medico.StatoVerifica.values()) 
-	        {
-	            if (s.getLabel().equalsIgnoreCase(statoStr) || s.name().equalsIgnoreCase(statoStr)) 
-	            {
-	               return s;
-	            }
-	        }
-	        
-	        return null;
-        }  
-    }
+		private final String label;
 
-    private int id = -1;
-    private String cognome;
-    private String nome;
-    private byte[] fotoprofilo;
-    private String bio;
-    private String pIva;
-    private StatoVerifica statoVerifica;
-   
-    private Utente utente;
+		StatoVerifica(String label)
+		{
+			this.label = label;
+		}
 
-    private int regimeFiscaleId = -1;
-    private RegimeFiscale regimeFiscale;
+		public String getLabel()
+		{
+			return label;
+		}
 
-    public int getRegimeFiscaleId() 
-    {
-        return regimeFiscaleId;
-    }
+		public static StatoVerifica fromString(String statoStr)
+		{
+			if (statoStr == null)
+				return null;
 
-    public void setRegimeFiscaleId(int regimeFiscaleId) 
-    {
-        this.regimeFiscaleId = regimeFiscaleId;
-    }
+			for (Medico.StatoVerifica s : Medico.StatoVerifica.values())
+			{
+				if (s.getLabel().equalsIgnoreCase(statoStr) || s.name().equalsIgnoreCase(statoStr))
+				{
+					return s;
+				}
+			}
 
-    public Medico()
-    {
-        this.statoVerifica = StatoVerifica.IN_ATTESA;
-    }
-
-    public int getId() 
-    { 
-    	return id; 
-    }
-    public void setId(int id) 
-    { 
-    	this.id = id; 
-    }
-
-    public String getCognome() 
-    { 
-    	return cognome; 
-    }
-    public void setCognome(String cognome) 
-    {
-    	this.cognome = cognome;
+			return null;
+		}
 	}
 
-    public String getNome()
-    { 
-    	return nome; 
-    }
-    
-    public void setNome(String nome)
-    { 
-    	this.nome = nome; 
-    }
+	private int id = -1;
+	private String cognome;
+	private String nome;
+	private byte[] fotoprofilo;
+	private String bio;
+	private String pIva;
+	private StatoVerifica statoVerifica;
 
-    public byte[] getFotoprofilo() 
-    { 
-    	return fotoprofilo; 
-    }
-    
-    public void setFotoprofilo(byte[] fotoprofilo) 
-    { 
-    	this.fotoprofilo = fotoprofilo;
-    }
+	private Utente utente;
 
-    public String getBio() 
-    { 
-    	return bio; 
-    }
-    
-    public void setBio(String bio) 
-    { 
-    	this.bio = bio;
-    }
+	private int regimeFiscaleId = -1;
+	private RegimeFiscale regimeFiscale;
 
-    public String getpIva() 
-    { 
-    	return pIva; 
-    }
-    
-    public void setpIva(String pIva) 
-    { 
-    	this.pIva = pIva; 
-    }
+	public int getRegimeFiscaleId()
+	{
+		return regimeFiscaleId;
+	}
 
-    public StatoVerifica getStatoVerifica() 
-    { 
-    	return statoVerifica; 
-    }
-    
-    public void setStatoVerifica(StatoVerifica statoVerifica) 
-    { 
-    	this.statoVerifica = statoVerifica; 
-    }
+	public void setRegimeFiscaleId(int regimeFiscaleId)
+	{
+		this.regimeFiscaleId = regimeFiscaleId;
+	}
 
-    public Utente getUtente() 
-    { 
-    	return utente; 
-    }
-    public void setUtente(Utente utente) 
-    { 
-    	this.utente = utente; 
-    }
+	public Medico()
+	{
+		this.statoVerifica = StatoVerifica.IN_ATTESA;
+	}
 
-    public RegimeFiscale getRegimeFiscale() 
-    { 
-    	return regimeFiscale; 
-    }
-    
-    public void setRegimeFiscale(RegimeFiscale regimeFiscale) 
-    { 
-    	this.regimeFiscale = regimeFiscale; 
-    }
+	public int getId()
+	{
+		return id;
+	}
 
-    
-    public String getNomeCompleto() 
-    {
-        return cognome + " " + nome;
-    }
-    
-    public String getFotoprofiloBase64() 
-    {
-        if (this.fotoprofilo != null && this.fotoprofilo.length > 0) 
-        {
-            return Base64.getEncoder().encodeToString(this.fotoprofilo);
-        }
-        return null;
-    }
+	public void setId(int id)
+	{
+		this.id = id;
+	}
 
-    @Override
-    public String toString()
-    {
-        return "Medico{id=" + id + ", nome='" + getNomeCompleto() + "', stato=" + statoVerifica + "}";
-    }
+	public String getCognome()
+	{
+		return cognome;
+	}
+
+	public void setCognome(String cognome)
+	{
+		this.cognome = cognome;
+	}
+
+	public String getNome()
+	{
+		return nome;
+	}
+
+	public void setNome(String nome)
+	{
+		this.nome = nome;
+	}
+
+	public byte[] getFotoprofilo()
+	{
+		return fotoprofilo;
+	}
+
+	public void setFotoprofilo(byte[] fotoprofilo)
+	{
+		this.fotoprofilo = fotoprofilo;
+	}
+
+	public String getBio()
+	{
+		return bio;
+	}
+
+	public void setBio(String bio)
+	{
+		this.bio = bio;
+	}
+
+	public String getpIva()
+	{
+		return pIva;
+	}
+
+	public void setpIva(String pIva)
+	{
+		this.pIva = pIva;
+	}
+
+	public StatoVerifica getStatoVerifica()
+	{
+		return statoVerifica;
+	}
+
+	public void setStatoVerifica(StatoVerifica statoVerifica)
+	{
+		this.statoVerifica = statoVerifica;
+	}
+
+	public Utente getUtente()
+	{
+		return utente;
+	}
+
+	public void setUtente(Utente utente)
+	{
+		this.utente = utente;
+	}
+
+	public RegimeFiscale getRegimeFiscale()
+	{
+		return regimeFiscale;
+	}
+
+	public void setRegimeFiscale(RegimeFiscale regimeFiscale)
+	{
+		this.regimeFiscale = regimeFiscale;
+	}
+
+	public String getNomeCompleto()
+	{
+		return cognome + " " + nome;
+	}
+
+	public String getFotoprofiloBase64()
+	{
+		if (this.fotoprofilo != null && this.fotoprofilo.length > 0)
+		{
+			return Base64.getEncoder().encodeToString(this.fotoprofilo);
+		}
+		return null;
+	}
+
+	@Override
+	public String toString()
+	{
+		return "Medico{id=" + id + ", nome='" + getNomeCompleto() + "', stato=" + statoVerifica + "}";
+	}
 }
