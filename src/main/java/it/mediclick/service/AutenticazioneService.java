@@ -47,20 +47,20 @@ public class AutenticazioneService
 	{
 		try
 		{
-			Utente u = utenteDAO.findByEmail(email).orElseThrow(() -> new AuthException("Utente non trovato con email: " + email, "AUTH_USER_NOT_FOUND"));
+			Utente u = utenteDAO.findByEmail(email).orElseThrow(() -> new AuthException("Email o password non valide.", "AUTH_BAD_CREDENTIALS"));
 			if (PasswordUtils.checkPassword(password, u.getPassword()))
 			{
-				System.out.print("si si trova");
 				return u;
 			}
 			else
 			{
-				throw new AuthException("Password errata per l'utente con email: " + email, "AUTH_INVALID_PASSWORD");
+				throw new AuthException("Email o password non valide.", "AUTH_BAD_CREDENTIALS");
 			}
 		}
 		catch (SQLException e)
 		{
-			throw new AuthException("Errore durante il login per l'email " + email + ": " + e.getMessage(), "AUTH_LOGIN_ERROR");
+			e.printStackTrace();
+			throw new AuthException("Errore di sistema durante l'accesso.", "SYS_DATABASE_ERROR");
 		}
 	}
 
@@ -72,7 +72,8 @@ public class AutenticazioneService
 		}
 		catch (SQLException e)
 		{
-			throw new AuthException("Errore durante il recupero dell'utente" + e.getMessage(), "AUTH_LOGIN_ERROR");
+			e.printStackTrace();
+			throw new AuthException("Errore del sistema nel recupero dei dettagli utente.", "SYS_DATABASE_ERROR");
 		}
 	}
 
@@ -84,7 +85,8 @@ public class AutenticazioneService
 		}
 		catch (SQLException e)
 		{
-			throw new AuthException("Errore durante il recupero dell ruolo" + e.getMessage(), "AUTH_ROLE_ERROR");
+			e.printStackTrace();
+			throw new AuthException("Errore del sistema nel recupero del ruolo.", "SYS_DATABASE_ERROR");
 		}
 	}
 
@@ -96,7 +98,8 @@ public class AutenticazioneService
 		}
 		catch (SQLException e)
 		{
-			throw new AuthException("Errore durante il recupero del regime fiscale" + e.getMessage(), "AUTH_REGIME_ERROR");
+			e.printStackTrace();
+			throw new AuthException("Errore del sistema nella verifica del regime fiscale.", "SYS_DATABASE_ERROR");
 		}
 	}
 
@@ -108,8 +111,8 @@ public class AutenticazioneService
 		}
 		catch (SQLException e)
 		{
-
-			throw new AuthException("Errore durante la registrazione del paziente: " + e.getMessage(), "AUTH_REGISTRA_PAZIENTE_ERROR");
+			e.printStackTrace();
+			throw new AuthException("Errore durante la registrazione del paziente. L'email potrebbe essere già registrata.", "AUTH_REGISTRAZIONE_FALLITA");
 		}
 	}
 
@@ -122,7 +125,8 @@ public class AutenticazioneService
 		}
 		catch (SQLException e)
 		{
-			throw new AuthException("Errore durante la registrazione del medico: " + e.getMessage(), "AUTH_REGISTRA_MEDICO_ERROR");
+			e.printStackTrace();
+			throw new AuthException("Errore durante la registrazione del medico. L'email o la P.IVA potrebbero essere già registrate.", "AUTH_REGISTRAZIONE_FALLITA");
 		}
 	}
 
@@ -134,7 +138,8 @@ public class AutenticazioneService
 		}
 		catch (SQLException e)
 		{
-			throw new AuthException("Errore durante il recupero dei tipi di certificati: ", "AUTH_TIPIC_ERROR");
+			e.printStackTrace();
+			throw new AuthException("Errore del sistema nel recupero dei tipi di certificato.", "SYS_DATABASE_ERROR");
 		}
 	}
 
@@ -146,7 +151,8 @@ public class AutenticazioneService
 		}
 		catch (SQLException e)
 		{
-			throw new AuthException("Errore durante il recupero dei regimi fiscali supportati: ", "AUTH_REGFIS_ERROR");
+			e.printStackTrace();
+			throw new AuthException("Errore del sistema nel recupero dei regimi fiscali.", "SYS_DATABASE_ERROR");
 		}
 	}
 
@@ -160,7 +166,7 @@ public class AutenticazioneService
 			}
 			catch (SQLException e)
 			{
-
+				e.printStackTrace();
 			}
 		}
 	}
@@ -170,11 +176,11 @@ public class AutenticazioneService
 		try
 		{
 			return adminDAO.insert(a);
-
 		}
 		catch (SQLException e)
 		{
-			throw new AuthException("Errore durante la registrazione dell'amministratore: " + e.getMessage(), "AUTH_REGISTRA_ADMIN_ERROR");
+			e.printStackTrace();
+			throw new AuthException("Errore durante la registrazione dell'amministratore.", "AUTH_REGISTRAZIONE_FALLITA");
 		}
 	}
 
@@ -182,19 +188,18 @@ public class AutenticazioneService
 	{
 		try
 		{
-			Utente u = utenteDAO.findByEmail(email).get();
+			Utente u = utenteDAO.findByEmail(email).orElse(null);
 			if (u != null && PasswordUtils.checkPassword(vecchia, u.getPassword()))
 			{
 				utenteDAO.updatePassword(u.getId(), nuova);
 				return true;
 			}
-
-			return false;
+			throw new AuthException("La vecchia password inserita non è corretta.", "AUTH_BAD_CREDENTIALS");
 		}
 		catch (SQLException e)
 		{
-			throw new AuthException("Errore durante il cambio password per l'email " + email + ": " + e.getMessage(), "AUTH_CAMBIA_PASSWORD_ERROR");
+			e.printStackTrace();
+			throw new AuthException("Errore del sistema durante il cambio password.", "SYS_DATABASE_ERROR");
 		}
-
 	}
 }

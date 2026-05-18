@@ -49,7 +49,8 @@ public class RicercaService
 		}
 		catch (SQLException e)
 		{
-			throw new RicercaException("Errore durante la ricerca dei medici: " + e.getMessage(), "RICERCA_MEDICI_CARDS_ERROR");
+			e.printStackTrace();
+			throw new RicercaException("Errore del sistema durante la ricerca dei medici.", "SYS_DATABASE_ERROR");
 		}
 	}
 
@@ -73,9 +74,9 @@ public class RicercaService
 			for (ErogazionePrestazione ep : prestazioni)
 			{
 				Studio studioCorrente = studioDAO.findById(ep.getStudioId())
-						.orElseThrow(() -> new RicercaException("Studio non trovato con ID: " + ep.getStudioId(), "RICERCA_DETTAGLI_PROFILO_MEDICO_STUDIO_NOT_FOUND"));
+						.orElseThrow(() -> new RicercaException("Studio medico di riferimento non trovato.", "RICERCA_STUDIO_NON_TROVATO"));
 				CatalogoPrestazioni prestazioneCorrente = catalogoDAO.findById(ep.getCatalogoPrestazioniId())
-						.orElseThrow(() -> new RicercaException("Prestazione non trovata con ID: " + ep.getCatalogoPrestazioniId(), "RICERCA_DETTAGLI_PROFILO_MEDICO_PRESTAZIONE_NOT_FOUND"));
+						.orElseThrow(() -> new RicercaException("Prestazione medica non trovata.", "RICERCA_PRESTAZIONE_NON_TROVATA"));
 
 				ep.setStudio(studioCorrente);
 				ep.setCatalogoPrestazioni(prestazioneCorrente);
@@ -90,7 +91,8 @@ public class RicercaService
 		}
 		catch (SQLException e)
 		{
-			throw new RicercaException("Errore durante il recupero dei dettagli del profilo medico con ID " + idMedico + ": " + e.getMessage(), "RICERCA_DETTAGLI_PROFILO_MEDICO_ERROR");
+			e.printStackTrace();
+			throw new RicercaException("Errore del sistema nel recupero dei dettagli del profilo medico.", "SYS_DATABASE_ERROR");
 		}
 
 		profiloMedico.setStudi(studi);
@@ -106,7 +108,8 @@ public class RicercaService
 		}
 		catch (SQLException e)
 		{
-			throw new RicercaException("Errore durante la ricerca delle disponibilità per il medico con ID " + IdMedico + ": " + e.getMessage(), "RICERCA_DISPONIBILITA_BY_MEDICO_ERROR");
+			e.printStackTrace();
+			throw new RicercaException("Errore del sistema nel recupero delle disponibilità del medico.", "SYS_DATABASE_ERROR");
 		}
 	}
 
@@ -118,7 +121,8 @@ public class RicercaService
 		}
 		catch (SQLException e)
 		{
-			throw new RicercaException("Errore durante la ricerca delle prestazioni per il medico con ID " + IdMedico + ": " + e.getMessage(), "RICERCA_PRESTAZIONI_BY_MEDICO_ERROR");
+			e.printStackTrace();
+			throw new RicercaException("Errore del sistema nel recupero delle prestazioni del medico.", "SYS_DATABASE_ERROR");
 		}
 	}
 
@@ -126,11 +130,12 @@ public class RicercaService
 	{
 		try
 		{
-			return medicoDAO.findById(medicoId).orElseThrow(() -> new RicercaException("Medico non trovato con ID: " + medicoId, "RICERCA_GET_MEDICO_BY_ID_NOT_FOUND"));
+			return medicoDAO.findById(medicoId).orElseThrow(() -> new RicercaException("Profilo medico non trovato.", "RICERCA_MEDICO_NON_TROVATO"));
 		}
 		catch (SQLException e)
 		{
-			throw new RicercaException("Errore durante il recupero del medico con ID " + medicoId + ": " + e.getMessage(), "RICERCA_GET_MEDICO_BY_ID_ERROR");
+			e.printStackTrace();
+			throw new RicercaException("Errore del sistema nel recupero del medico.", "SYS_DATABASE_ERROR");
 		}
 	}
 
@@ -142,7 +147,8 @@ public class RicercaService
 		}
 		catch (SQLException e)
 		{
-			throw new RicercaException("Errore durante il recupero dei medici consigliati: " + e.getMessage(), "RICERCA_GET_MEDICI_CONSIGLIATI_ERROR");
+			e.printStackTrace();
+			throw new RicercaException("Errore del sistema nel recupero dei medici suggeriti.", "SYS_DATABASE_ERROR");
 		}
 	}
 
@@ -154,7 +160,8 @@ public class RicercaService
 		}
 		catch (SQLException e)
 		{
-			throw new RicercaException("Errore durante il recupero delle categorie: " + e.getMessage(), "RICERCA_GET_CATEGORIE_ERROR");
+			e.printStackTrace();
+			throw new RicercaException("Errore del sistema nel recupero delle categorie.", "SYS_DATABASE_ERROR");
 		}
 	}
 }

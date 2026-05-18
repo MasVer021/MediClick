@@ -71,7 +71,8 @@ public class MedicoService
 		}
 		catch (SQLException e)
 		{
-			throw new MedicoException("Errore nel controllo delle disponibilità.", "MEDICO_DB_ERROR");
+			e.printStackTrace();
+			throw new MedicoException("Errore di sistema nel controllo delle disponibilità.", "SYS_DATABASE_ERROR");
 		}
 
 		LocalDateTime tempo = dataIn;
@@ -101,7 +102,8 @@ public class MedicoService
 		}
 		catch (SQLException e)
 		{
-			throw new MedicoException("Errore durante la configurazione dell'orario per il medico con ID " + medicoId + ": " + e.getMessage(), "MEDICO_CONFIGURA_ORARIO_ERROR");
+			e.printStackTrace();
+			throw new MedicoException("Errore di sistema durante la configurazione dell'orario.", "SYS_DATABASE_ERROR");
 		}
 	}
 
@@ -121,8 +123,8 @@ public class MedicoService
 		}
 		catch (SQLException e)
 		{
-			throw new MedicoException("Errore durante l'associazione della prestazione con ID " + catalogoId + " al medico con ID " + medicoId + ": " + e.getMessage(),
-					"MEDICO_ASSOCIA_PRESTAZIONE_ERROR");
+			e.printStackTrace();
+			throw new MedicoException("Errore di sistema durante l'associazione della prestazione.", "SYS_DATABASE_ERROR");
 		}
 
 	}
@@ -135,7 +137,8 @@ public class MedicoService
 		}
 		catch (SQLException e)
 		{
-			throw new MedicoException("Errore durante la rimozione dell'associazione della prestazione con ID " + erogazioneId + ": " + e.getMessage(), "MEDICO_RIMUOVI_PRESTAZIONE_ERROR");
+			e.printStackTrace();
+			throw new MedicoException("Errore di sistema durante la rimozione della prestazione.", "SYS_DATABASE_ERROR");
 		}
 
 	}
@@ -155,7 +158,8 @@ public class MedicoService
 		}
 		catch (SQLException e)
 		{
-			throw new MedicoException("Errore durante il recupero delle prestazioni del medico con ID " + medicoId + ": " + e.getMessage(), "MEDICO_GET_MIE_PRESTAZIONI_ERROR");
+			e.printStackTrace();
+			throw new MedicoException("Errore di sistema nel recupero delle tue prestazioni.", "SYS_DATABASE_ERROR");
 		}
 	}
 
@@ -167,7 +171,8 @@ public class MedicoService
 		}
 		catch (SQLException e)
 		{
-			throw new MedicoException("Errore nel recupero del catalogo prestazioni: " + e.getMessage(), "CATALOGO_ERROR");
+			e.printStackTrace();
+			throw new MedicoException("Errore di sistema nel recupero del catalogo delle prestazioni.", "SYS_DATABASE_ERROR");
 		}
 	}
 
@@ -176,7 +181,7 @@ public class MedicoService
 		try
 		{
 
-			Medico m = medicoDAO.findById(medicoId).orElseThrow(() -> new MedicoException("Medico non trovato con id: " + medicoId, "MEDICO_NOT_FOUND"));
+			Medico m = medicoDAO.findById(medicoId).orElseThrow(() -> new MedicoException("Profilo medico non trovato.", "MEDICO_NON_TROVATO"));
 
 			if (cognome != null)
 			{
@@ -217,7 +222,8 @@ public class MedicoService
 		}
 		catch (SQLException e)
 		{
-			throw new MedicoException("Errore durante l'aggiornamento parziale del profilo: " + e.getMessage(), "PROFILO_UPDATE_ERROR");
+			e.printStackTrace();
+			throw new MedicoException("Errore di sistema durante l'aggiornamento del profilo.", "SYS_DATABASE_ERROR");
 		}
 	}
 
@@ -233,7 +239,8 @@ public class MedicoService
 		}
 		catch (SQLException e)
 		{
-			throw new MedicoException("Errore durante il recupero dell'agenda del medico con ID " + medicoId + ": " + e.getMessage(), "MEDICO_GET_AGENDA_ERROR");
+			e.printStackTrace();
+			throw new MedicoException("Errore di sistema nel recupero dell'agenda.", "SYS_DATABASE_ERROR");
 		}
 
 	}
@@ -293,7 +300,8 @@ public class MedicoService
 		}
 		catch (SQLException e)
 		{
-			throw new MedicoException("Errore durante la generazione dell'agenda: " + e.getMessage(), "MEDICO_GET_AGENDA_GIORNALIERA_ERROR");
+			e.printStackTrace();
+			throw new MedicoException("Errore di sistema nella generazione dell'agenda giornaliera.", "SYS_DATABASE_ERROR");
 		}
 	}
 
@@ -301,11 +309,12 @@ public class MedicoService
 	{
 		try
 		{
-			return medicoDAO.findById(medicoId).orElseThrow(() -> new MedicoException("Impossibile trovare il medico con id: " + medicoId, "MEDICO_NOT_FOUND"));
+			return medicoDAO.findById(medicoId).orElseThrow(() -> new MedicoException("Profilo medico non trovato.", "MEDICO_NON_TROVATO"));
 		}
 		catch (SQLException e)
 		{
-			throw new MedicoException("Errore durante la ricerca del medico:  " + e.getMessage(), "MEDICO_SEARCH_ERROR");
+			e.printStackTrace();
+			throw new MedicoException("Errore di sistema nel recupero del profilo medico.", "SYS_DATABASE_ERROR");
 		}
 	}
 
@@ -313,11 +322,12 @@ public class MedicoService
 	{
 		try
 		{
-			return studioDAO.findById(studioId).orElseThrow(() -> new MedicoException("Impossibile trovare lo studio", "STUDIO_NOT_FOUND"));
+			return studioDAO.findById(studioId).orElseThrow(() -> new MedicoException("Studio medico non trovato.", "STUDIO_NON_TROVATO"));
 		}
 		catch (SQLException e)
 		{
-			throw new MedicoException("Errore durante la ricerca dello studio: " + e.getMessage(), "STUDIO_SEARCH_ERROR");
+			e.printStackTrace();
+			throw new MedicoException("Errore di sistema nel recupero dello studio.", "SYS_DATABASE_ERROR");
 		}
 	}
 
@@ -329,7 +339,8 @@ public class MedicoService
 		}
 		catch (SQLException e)
 		{
-			throw new MedicoException("Errore durante la ricerca degli studi: " + e.getMessage(), "STUDI_SEARCH_ERROR");
+			e.printStackTrace();
+			throw new MedicoException("Errore di sistema nel recupero dell'elenco degli studi.", "SYS_DATABASE_ERROR");
 		}
 	}
 
@@ -337,17 +348,18 @@ public class MedicoService
 	{
 		try
 		{
-			Disponibilita d = disponibilitaDAO.findById(disponibilitId).orElseThrow(() -> new MedicoException("Disponibilita non trovata", "DISPONIBILITA_NOT_FOUND"));
+			Disponibilita d = disponibilitaDAO.findById(disponibilitId).orElseThrow(() -> new MedicoException("Slot di disponibilità non trovato.", "DISPONIBILITA_NON_TROVATA"));
 
 			if (d.getMedicoId() != medicoId)
 			{
-				throw new MedicoException("Non hai il permesso di rimuovere questa disponibilita", "UNAUTHORIZED");
+				throw new MedicoException("Non hai i permessi per rimuovere questo slot di disponibilità.", "AUTH_ACCESSO_NEGATO");
 			}
 			disponibilitaDAO.deleteLogic(disponibilitId);
 		}
 		catch (SQLException e)
 		{
-			throw new MedicoException("Errore la rimozione dello slot di disponibilita" + e.getMessage(), "DISPONIBILITA_SEARCH_ERROR");
+			e.printStackTrace();
+			throw new MedicoException("Errore di sistema durante la rimozione dello slot di disponibilità.", "SYS_DATABASE_ERROR");
 		}
 	}
 
@@ -359,7 +371,8 @@ public class MedicoService
 		}
 		catch (SQLException e)
 		{
-			throw new MedicoException("Errore nel recupero dei regimi fiscali: " + e.getMessage(), "REGIMI_FISCALI_ERROR");
+			e.printStackTrace();
+			throw new MedicoException("Errore di sistema nel recupero dei regimi fiscali.", "SYS_DATABASE_ERROR");
 		}
 	}
 
@@ -371,7 +384,8 @@ public class MedicoService
 		}
 		catch (SQLException e)
 		{
-			throw new MedicoException("Errore nel recupero dei tipi di certificato: " + e.getMessage(), "TIPO_CERT_ERROR");
+			e.printStackTrace();
+			throw new MedicoException("Errore di sistema nel recupero dei tipi di certificato.", "SYS_DATABASE_ERROR");
 		}
 	}
 
@@ -388,7 +402,8 @@ public class MedicoService
 		}
 		catch (SQLException e)
 		{
-			throw new MedicoException("Errore nel recupero dei tuoi certificati: " + e.getMessage(), "MIE_CERT_ERROR");
+			e.printStackTrace();
+			throw new MedicoException("Errore di sistema nel recupero dei certificati caricati.", "SYS_DATABASE_ERROR");
 		}
 	}
 
@@ -396,13 +411,14 @@ public class MedicoService
 	{
 		try
 		{
-			Certificato c = certificatoDAO.findById(id).orElseThrow(() -> new MedicoException("Certificato non trovato", "CERT_NOT_FOUND"));
+			Certificato c = certificatoDAO.findById(id).orElseThrow(() -> new MedicoException("Certificato non trovato.", "CERTIFICATO_NON_TROVATO"));
 			certificatoDAO.getCompleto(c);
 			return c;
 		}
 		catch (SQLException e)
 		{
-			throw new MedicoException("Errore nel recupero del certificato: " + e.getMessage(), "CERT_DB_ERROR");
+			e.printStackTrace();
+			throw new MedicoException("Errore di sistema nel recupero del certificato.", "SYS_DATABASE_ERROR");
 		}
 	}
 
@@ -431,7 +447,8 @@ public class MedicoService
 		}
 		catch (SQLException e)
 		{
-			throw new MedicoException("Errore nel salvataggio del certificato: " + e.getMessage(), "CERT_SAVE_ERROR");
+			e.printStackTrace();
+			throw new MedicoException("Errore di sistema durante il salvataggio del certificato.", "SYS_DATABASE_ERROR");
 		}
 	}
 
@@ -445,7 +462,7 @@ public class MedicoService
 				Certificato c = certOpt.get();
 				if (c.getMedicoId() != medicoId)
 				{
-					throw new MedicoException("Non hai i permessi per cancellare questo certificato.", "UNAUTHORIZED_CERT");
+					throw new MedicoException("Non hai i permessi per eliminare questo certificato.", "AUTH_ACCESSO_NEGATO");
 				}
 
 				certificatoDAO.updateStato(certificatoId, Certificato.Stato.ELIMINATO);
@@ -453,7 +470,8 @@ public class MedicoService
 		}
 		catch (SQLException e)
 		{
-			throw new MedicoException("Errore nella cancellazione del certificato: " + e.getMessage(), "CERT_DELETE_ERROR");
+			e.printStackTrace();
+			throw new MedicoException("Errore di sistema durante l'eliminazione del certificato.", "SYS_DATABASE_ERROR");
 		}
 	}
 

@@ -29,21 +29,21 @@ public class RecensioneService
 	{
 		try
 		{
-			Prenotazione p = prenotazioneDAO.findById(prenotazioneId).orElseThrow(() -> new RecensioneException("Prenotazione con id: " + prenotazioneId + " non trovata", "PRENOTAZIONE_NOT_FOUND"));
+			Prenotazione p = prenotazioneDAO.findById(prenotazioneId).orElseThrow(() -> new RecensioneException("Prenotazione non trovata.", "RECENSIONE_NON_TROVATA"));
 
 			if (p.getPazienteId() != pazienteId)
 			{
-				throw new RecensioneException("Non hai i permessi per recensire.", "AUTH_ERROR");
+				throw new RecensioneException("Non hai i permessi per recensire questa prenotazione.", "AUTH_ACCESSO_NEGATO");
 			}
 
 			if (p.getStato() != Prenotazione.Stato.COMPLETATA && p.getStato() != Prenotazione.Stato.CONFERMATA)
 			{
-				throw new RecensioneException("Stato non valido.", "STATO_ERROR");
+				throw new RecensioneException("Impossibile recensire una visita non ancora completata.", "RECENSIONE_STATO_INVALIDO");
 			}
 
 			if (p.isFutura())
 			{
-				throw new RecensioneException("Visita non ancora avvenuta.", "DATA_ERROR");
+				throw new RecensioneException("Impossibile recensire una visita non ancora avvenuta.", "RECENSIONE_STATO_INVALIDO");
 			}
 
 			ErogazionePrestazioneDAO erogazionePrestazioneDAO = new ErogazionePrestazioneDAO(_contex);
@@ -55,7 +55,8 @@ public class RecensioneService
 		}
 		catch (SQLException e)
 		{
-			throw new RecensioneException("Errore durante il recupero della prenotazione: " + e.getMessage(), "PRENOTAZIONE_ERROR");
+			e.printStackTrace();
+			throw new RecensioneException("Errore del sistema nel recupero della prenotazione.", "SYS_DATABASE_ERROR");
 		}
 	}
 
@@ -65,10 +66,10 @@ public class RecensioneService
 		{
 			if (voto < 1 || voto > 5)
 			{
-				throw new RecensioneException("Voto deve essere tra 1 e 5", "RECENSIONE_VOTO_INVALIDO");
+				throw new RecensioneException("Il voto inserito deve essere compreso tra 1 e 5.", "RECENSIONE_VOTO_INVALIDO");
 			}
 
-			Prenotazione p = prenotazioneDAO.findById(prenotazioneId).orElseThrow(() -> new RecensioneException("Prenotazione non trovata", "PRENOTAZIONE_NOT_FOUND"));
+			Prenotazione p = prenotazioneDAO.findById(prenotazioneId).orElseThrow(() -> new RecensioneException("Prenotazione non trovata.", "RECENSIONE_NON_TROVATA"));
 
 			Recensione r = new Recensione();
 			r.setPrenotazioneId(prenotazioneId);
@@ -81,7 +82,8 @@ public class RecensioneService
 		}
 		catch (SQLException e)
 		{
-			throw new RecensioneException("Errore durante l'inserimento della recensione: " + e.getMessage(), "RECENSIONE_INSERT_ERROR");
+			e.printStackTrace();
+			throw new RecensioneException("Errore del sistema durante il salvataggio della recensione.", "SYS_DATABASE_ERROR");
 		}
 
 	}
@@ -94,7 +96,8 @@ public class RecensioneService
 		}
 		catch (SQLException e)
 		{
-			throw new RecensioneException("Errore durante il recupero della recensione per la prenotazione con ID " + prenotazionId + ": " + e.getMessage(), "RECENSIONE_GET_BY_MEDICO_ERROR");
+			e.printStackTrace();
+			throw new RecensioneException("Errore del sistema nel recupero della recensione.", "SYS_DATABASE_ERROR");
 		}
 	}
 
@@ -106,7 +109,8 @@ public class RecensioneService
 		}
 		catch (SQLException e)
 		{
-			throw new RecensioneException("Errore durante il recupero delle recensioni per il medico con ID " + medicoId + ": " + e.getMessage(), "RECENSIONE_GET_BY_MEDICO_ERROR");
+			e.printStackTrace();
+			throw new RecensioneException("Errore del sistema nel recupero delle recensioni del medico.", "SYS_DATABASE_ERROR");
 		}
 	}
 
@@ -118,7 +122,8 @@ public class RecensioneService
 		}
 		catch (SQLException e)
 		{
-			throw new RecensioneException("Errore durante la moderazione della recensione con ID " + recensioneId + ": " + e.getMessage(), "RECENSIONE_MODERA_ERROR");
+			e.printStackTrace();
+			throw new RecensioneException("Errore del sistema durante la moderazione della recensione.", "SYS_DATABASE_ERROR");
 		}
 	}
 }

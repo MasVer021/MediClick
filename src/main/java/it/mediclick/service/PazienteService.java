@@ -26,13 +26,14 @@ public class PazienteService
 	{
 		try
 		{
-			Paziente p = pazienteDAO.findById(pazienteId).orElseThrow(() -> new PazienteException("Paziente non trovato", "PAZIENTE_NOT_FOUND"));
+			Paziente p = pazienteDAO.findById(pazienteId).orElseThrow(() -> new PazienteException("Profilo paziente non trovato.", "PAZIENTE_NOT_FOUND"));
 			pazienteDAO.getCompleto(p);
 			return p;
 		}
 		catch (SQLException e)
 		{
-			throw new PazienteException("Errore durante il recupero dei dati del paziente: " + e.getMessage(), "PAZIENTE_ERROR");
+			e.printStackTrace();
+			throw new PazienteException("Errore del sistema nel recupero dei dati del paziente.", "SYS_DATABASE_ERROR");
 		}
 	}
 
@@ -46,7 +47,8 @@ public class PazienteService
 		}
 		catch (SQLException e)
 		{
-			throw new PazienteException("Errore durante la modifica del numero di telefono: " + e.getMessage(), "PAZIENTE_TEL_MOD_ERROR");
+			e.printStackTrace();
+			throw new PazienteException("Errore del sistema durante la modifica del numero di telefono.", "SYS_DATABASE_ERROR");
 		}
 	}
 
@@ -58,7 +60,8 @@ public class PazienteService
 		}
 		catch (SQLException e)
 		{
-			throw new PazienteException("Errore durante la modifica della password: " + e.getMessage(), "PAZIENTE_PASS_MOD_ERROR");
+			e.printStackTrace();
+			throw new PazienteException("Errore del sistema durante la modifica della password.", "SYS_DATABASE_ERROR");
 		}
 	}
 

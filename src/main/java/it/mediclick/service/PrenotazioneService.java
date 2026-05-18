@@ -58,11 +58,12 @@ public class PrenotazioneService
 		try
 		{
 			return impostazioniSistemaDAO.findValueByKey("COMMISSIONE_PIATTAFORMA_PCT")
-					.orElseThrow(() -> new PrenotazioneException("Impostazione trattenuta piattaforma non trovata", "IMPOSTAZIONE_NOT_FOUND"));
+					.orElseThrow(() -> new PrenotazioneException("Impostazione commissione piattaforma non trovata.", "IMPOSTAZIONE_NON_TROVATA"));
 		}
 		catch (SQLException e)
 		{
-			throw new PrenotazioneException("Errore nel recupero della trattenuta: " + e.getMessage(), "TRATTENUTA_ERROR");
+			e.printStackTrace();
+			throw new PrenotazioneException("Errore di sistema nel recupero della commissione.", "SYS_DATABASE_ERROR");
 		}
 	}
 
@@ -74,7 +75,8 @@ public class PrenotazioneService
 		}
 		catch (SQLException e)
 		{
-			throw new PrenotazioneException("Errore durante la validazione dello sconto: " + e.getMessage(), "SCONTO_VALIDATION_ERROR");
+			e.printStackTrace();
+			throw new PrenotazioneException("Errore di sistema durante la validazione dello sconto.", "SYS_DATABASE_ERROR");
 		}
 	}
 
@@ -82,11 +84,12 @@ public class PrenotazioneService
 	{
 		try
 		{
-			return codiceScontoDAO.findByCodice(codice).orElseThrow(() -> new PrenotazioneException("Codice sconto non trovato", "SCONTO_NOT_FOUND"));
+			return codiceScontoDAO.findByCodice(codice).orElseThrow(() -> new PrenotazioneException("Codice sconto non trovato o non valido.", "SCONTO_NON_TROVATO"));
 		}
 		catch (SQLException e)
 		{
-			throw new PrenotazioneException("Errore durante la ricerca del sconto", "SCONTO_SEARCH_ERROR");
+			e.printStackTrace();
+			throw new PrenotazioneException("Errore di sistema nella ricerca dello sconto.", "SYS_DATABASE_ERROR");
 		}
 
 	}
@@ -99,9 +102,9 @@ public class PrenotazioneService
 			try
 			{
 
-				Disponibilita slotIniziale = disponibilitaDAO.findById(disponibilitaId).orElseThrow(() -> new PrenotazioneException("Disponibilità non trovata", "DISPONIBILITA_NOT_FOUND"));
+				Disponibilita slotIniziale = disponibilitaDAO.findById(disponibilitaId).orElseThrow(() -> new PrenotazioneException("Slot di disponibilità non trovato.", "DISPONIBILITA_NON_TROVATA"));
 
-				ErogazionePrestazione prestazione = erogazionePrestazioneDAO.findById(erogazioneId).orElseThrow(() -> new PrenotazioneException("Prestazione non trovata", "PRESTAZIONE_NOT_FOUND"));
+				ErogazionePrestazione prestazione = erogazionePrestazioneDAO.findById(erogazioneId).orElseThrow(() -> new PrenotazioneException("Prestazione non trovata.", "PRESTAZIONE_NON_TROVATA"));
 
 				int durata = prestazione.getDurata();
 
@@ -119,7 +122,7 @@ public class PrenotazioneService
 
 					if (!isDisponibile && !isBloccoScaduto)
 					{
-						throw new PrenotazioneException("Uno o più slot consecutivi necessari non sono liberi o già prenotati.", "SLOTS_NOT_AVAILABLE");
+						throw new PrenotazioneException("Uno o più slot necessari non sono liberi o sono già occupati.", "SLOT_NON_DISPONIBILE");
 					}
 
 					java.time.Duration slotDur = java.time.Duration.between(d.getDataOraInizio(), d.getDataOraFine());
@@ -128,7 +131,7 @@ public class PrenotazioneService
 
 				if (minutiTotaliDisponibili < durata)
 				{
-					throw new PrenotazioneException("Non ci sono abbastanza slot consecutivi disponibili per coprire la durata della prestazione (" + durata + " minuti)", "INSUFFICIENT_SLOTS");
+					throw new PrenotazioneException("Non ci sono abbastanza slot consecutivi disponibili per coprire la durata della visita.", "SLOT_INSUFFICIENTI");
 				}
 
 				for (Disponibilita d : slotNecessari)
@@ -147,7 +150,8 @@ public class PrenotazioneService
 		}
 		catch (SQLException e)
 		{
-			throw new PrenotazioneException("Errore durante il blocco degli slot: " + e.getMessage(), "BLOCCO_ERROR");
+			e.printStackTrace();
+			throw new PrenotazioneException("Errore di sistema durante il blocco degli slot temporanei.", "SYS_DATABASE_ERROR");
 		}
 	}
 
@@ -155,9 +159,9 @@ public class PrenotazioneService
 	{
 		try
 		{
-			Disponibilita slotIniziale = disponibilitaDAO.findById(disponibilitaId).orElseThrow(() -> new PrenotazioneException("Disponibilità non trovata", "DISPONIBILITA_NOT_FOUND"));
+			Disponibilita slotIniziale = disponibilitaDAO.findById(disponibilitaId).orElseThrow(() -> new PrenotazioneException("Slot di disponibilità non trovato.", "DISPONIBILITA_NON_TROVATA"));
 
-			ErogazionePrestazione prestazione = erogazionePrestazioneDAO.findById(erogazioneId).orElseThrow(() -> new PrenotazioneException("Prestazione non trovata", "PRESTAZIONE_NOT_FOUND"));
+			ErogazionePrestazione prestazione = erogazionePrestazioneDAO.findById(erogazioneId).orElseThrow(() -> new PrenotazioneException("Prestazione non trovata.", "PRESTAZIONE_NON_TROVATA"));
 
 			int durata = prestazione.getDurata();
 			LocalDateTime dataInizio = slotIniziale.getDataOraInizio();
@@ -172,7 +176,8 @@ public class PrenotazioneService
 		}
 		catch (SQLException e)
 		{
-			throw new PrenotazioneException("Errore durante lo sblocco degli slot: " + e.getMessage(), "SBLOCCO_ERROR");
+			e.printStackTrace();
+			throw new PrenotazioneException("Errore di sistema durante lo sblocco degli slot.", "SYS_DATABASE_ERROR");
 		}
 	}
 
@@ -182,13 +187,13 @@ public class PrenotazioneService
 		{
 			RiepilogoPrenotazioneDTO dto = new RiepilogoPrenotazioneDTO();
 
-			Disponibilita disponibilita = disponibilitaDAO.findById(idDisponibilita).orElseThrow(() -> new PrenotazioneException("Disponibilità non trovata", "DISPONIBILITA_NOT_FOUND"));
-			ErogazionePrestazione prestazione = erogazionePrestazioneDAO.findById(idPrestazione).orElseThrow(() -> new PrenotazioneException("Prestazione non trovata", "PRESTAZIONE_NOT_FOUND"));
-			Studio studio = studioDAO.findById(idStudio).orElseThrow(() -> new PrenotazioneException("Studio non trovato", "STUDIO_NOT_FOUND"));
+			Disponibilita disponibilita = disponibilitaDAO.findById(idDisponibilita).orElseThrow(() -> new PrenotazioneException("Slot di disponibilità non trovato.", "DISPONIBILITA_NON_TROVATA"));
+			ErogazionePrestazione prestazione = erogazionePrestazioneDAO.findById(idPrestazione).orElseThrow(() -> new PrenotazioneException("Prestazione non trovata.", "PRESTAZIONE_NON_TROVATA"));
+			Studio studio = studioDAO.findById(idStudio).orElseThrow(() -> new PrenotazioneException("Studio medico non trovato.", "STUDIO_NON_TROVATO"));
 
 			CatalogoPrestazioni catalogo = catalogoPrestazioniDAO.findById(prestazione.getCatalogoPrestazioniId())
-					.orElseThrow(() -> new PrenotazioneException("Catalogo prestazioni non trovato", "CATALOGO_PRESTAZIONI_NOT_FOUND"));
-			Medico medico = medicoDAO.findById(prestazione.getMedicoId()).orElseThrow(() -> new PrenotazioneException("Medico non trovato", "MEDICO_NOT_FOUND"));
+					.orElseThrow(() -> new PrenotazioneException("Prestazione a catalogo non trovata.", "PRESTAZIONE_NON_TROVATA"));
+			Medico medico = medicoDAO.findById(prestazione.getMedicoId()).orElseThrow(() -> new PrenotazioneException("Profilo medico non trovato.", "MEDICO_NON_TROVATO"));
 
 			dto.setCatalogoPrestazioni(catalogo);
 			dto.setMedico(medico);
@@ -200,7 +205,8 @@ public class PrenotazioneService
 		}
 		catch (SQLException e)
 		{
-			throw new PrenotazioneException("Errore durante il recupero del riepilogo prenotazione: " + e.getMessage(), "RIEPILOGO_ERROR");
+			e.printStackTrace();
+			throw new PrenotazioneException("Errore di sistema nel recupero del riepilogo della prenotazione.", "SYS_DATABASE_ERROR");
 		}
 	}
 
@@ -212,9 +218,9 @@ public class PrenotazioneService
 			conn.setAutoCommit(false);
 			try
 			{
-				Disponibilita slotIniziale = disponibilitaDAO.findById(disponibilitaId).orElseThrow(() -> new PrenotazioneException("Disponibilità non trovata", "DISPONIBILITA_NOT_FOUND"));
+				Disponibilita slotIniziale = disponibilitaDAO.findById(disponibilitaId).orElseThrow(() -> new PrenotazioneException("Slot di disponibilità non trovato.", "DISPONIBILITA_NON_TROVATA"));
 
-				ErogazionePrestazione prestazione = erogazionePrestazioneDAO.findById(idErogazione).orElseThrow(() -> new PrenotazioneException("Prestazione non trovata", "PRESTAZIONE_NOT_FOUND"));
+				ErogazionePrestazione prestazione = erogazionePrestazioneDAO.findById(idErogazione).orElseThrow(() -> new PrenotazioneException("Prestazione non trovata.", "PRESTAZIONE_NON_TROVATA"));
 
 				int durata = prestazione.getDurata();
 				LocalDateTime dataInizio = slotIniziale.getDataOraInizio();
@@ -227,13 +233,13 @@ public class PrenotazioneService
 				for (Disponibilita d : slotNecessari)
 				{
 					if (d.getStato() != Disponibilita.Stato.BLOCCATA)
-						throw new PrenotazioneException("Uno o più slot non sono bloccati per la transazione", "DISPONIBILITA_NOT_BLOCKED");
+						throw new PrenotazioneException("Uno o più slot non sono bloccati per la prenotazione.", "PRENOTAZIONE_SLOT_NON_BLOCCATO");
 
 					if (d.getPazienteId() < 0 || d.getPazienteId() != pazienteId)
-						throw new PrenotazioneException("Tentativo di prenotazione su slot bloccati da un altro utente", "BLOCKED_BY_OTHER_USER");
+						throw new PrenotazioneException("Tentativo di prenotazione su slot bloccati da un altro utente.", "AUTH_ACCESSO_NEGATO");
 
 					if (d.getTimestampBlocco() != null && d.getTimestampBlocco().plusMinutes(15).isBefore(LocalDateTime.now()))
-						throw new PrenotazioneException("Il blocco temporaneo di 15 minuti di uno slot è scaduto", "BLOCCO_SCADUTO");
+						throw new PrenotazioneException("Il blocco temporaneo dello slot è scaduto. Riprova.", "PRENOTAZIONE_BLOCCO_SCADUTO");
 				}
 
 				Prenotazione p = new Prenotazione();
@@ -273,12 +279,14 @@ public class PrenotazioneService
 			catch (SQLException e)
 			{
 				conn.rollback();
-				throw new PrenotazioneException("Errore transazione prenotazione: " + e.getMessage(), "PRENOTAZIONE_TRANSACTION_ERROR");
+				e.printStackTrace();
+				throw new PrenotazioneException("Errore del sistema durante la persistenza della prenotazione.", "SYS_DATABASE_ERROR");
 			}
 		}
 		catch (SQLException e)
 		{
-			throw new PrenotazioneException("Errore connessione database: " + e.getMessage(), "DB_CONNECTION_ERROR");
+			e.printStackTrace();
+			throw new PrenotazioneException("Errore di sistema nella connessione al database.", "SYS_DATABASE_ERROR");
 		}
 	}
 
@@ -316,15 +324,15 @@ public class PrenotazioneService
 			conn.setAutoCommit(false);
 			try
 			{
-				Prenotazione p = prenotazioneDAO.findById(prenotazioneId).orElseThrow(() -> new PrenotazioneException("Prenotazione non trovata", "PRENOTAZIONE_NOT_FOUND"));
+				Prenotazione p = prenotazioneDAO.findById(prenotazioneId).orElseThrow(() -> new PrenotazioneException("Prenotazione non trovata.", "PRENOTAZIONE_NON_TROVATA"));
 
 				if (p.getPazienteId() != pazienteIdConnesso)
 				{
-					throw new PrenotazioneException("Non hai i permessi per disdire questa prenotazione", "AUTH_ERROR");
+					throw new PrenotazioneException("Non hai i permessi per disdire questa prenotazione.", "AUTH_ACCESSO_NEGATO");
 				}
 				if (p.getStato() == Prenotazione.Stato.CANCELLATA)
 				{
-					throw new PrenotazioneException("Prenotazione già cancellata", "PRENOTAZIONE_ALREADY_CANCELLED");
+					throw new PrenotazioneException("Prenotazione già cancellata.", "PRENOTAZIONE_GIA_CANCELLATA");
 				}
 
 				prenotazioneDAO.getCompleto(p);
@@ -354,12 +362,14 @@ public class PrenotazioneService
 			catch (Exception e)
 			{
 				conn.rollback();
-				throw new PrenotazioneException("Errore durante la disdetta: " + e.getMessage(), "DISDETTA_ERROR");
+				e.printStackTrace();
+				throw new PrenotazioneException("Errore del sistema durante la disdetta della prenotazione.", "SYS_DATABASE_ERROR");
 			}
 		}
 		catch (SQLException e)
 		{
-			throw new PrenotazioneException("Errore connessione database: " + e.getMessage(), "DB_CONNECTION_ERROR");
+			e.printStackTrace();
+			throw new PrenotazioneException("Errore di sistema nella connessione al database.", "SYS_DATABASE_ERROR");
 		}
 	}
 
@@ -371,7 +381,8 @@ public class PrenotazioneService
 		}
 		catch (SQLException e)
 		{
-			throw new PrenotazioneException("Errore nel recupero dei dettagli del medico: " + e.getMessage(), "MEDICO_DETAILS_ERROR");
+			e.printStackTrace();
+			throw new PrenotazioneException("Errore di sistema nel recupero dei dettagli del medico.", "SYS_DATABASE_ERROR");
 		}
 	}
 
@@ -394,7 +405,8 @@ public class PrenotazioneService
 		}
 		catch (SQLException e)
 		{
-			throw new PrenotazioneException("Errore durante il recupero delle prenotazioni: " + e.getMessage(), "PRENOTAZIONI_NOT_FOUND");
+			e.printStackTrace();
+			throw new PrenotazioneException("Errore di sistema nel recupero delle prenotazioni.", "SYS_DATABASE_ERROR");
 		}
 
 		return prenotazioni;
@@ -407,14 +419,14 @@ public class PrenotazioneService
 			conn.setAutoCommit(false);
 			try
 			{
-				Prenotazione p = prenotazioneDAO.findById(prenotazioneId).orElseThrow(() -> new PrenotazioneException("Prenotazione non trovata", "PRENOTAZIONE_NOT_FOUND"));
+				Prenotazione p = prenotazioneDAO.findById(prenotazioneId).orElseThrow(() -> new PrenotazioneException("Prenotazione non trovata.", "PRENOTAZIONE_NON_TROVATA"));
 
 				prenotazioneDAO.getCompleto(p);
 				erogazionePrestazioneDAO.getCompleto(p.getErogazionePrestazione());
 
 				if (p.getDisponibilita() == null || p.getDisponibilita().getMedicoId() != medicoId)
 				{
-					throw new PrenotazioneException("Operazione non autorizzata per questo medico.", "UNAUTHORIZED");
+					throw new PrenotazioneException("Non hai i permessi per concludere questa visita.", "AUTH_ACCESSO_NEGATO");
 				}
 
 				LocalDateTime dataInizio = p.getDisponibilita().getDataOraInizio();
@@ -436,12 +448,18 @@ public class PrenotazioneService
 			catch (Exception e)
 			{
 				conn.rollback();
-				throw e;
+				e.printStackTrace();
+				if (e instanceof PrenotazioneException)
+				{
+					throw (PrenotazioneException) e;
+				}
+				throw new PrenotazioneException("Errore del sistema durante la conclusione della visita.", "SYS_DATABASE_ERROR");
 			}
 		}
 		catch (SQLException e)
 		{
-			throw new PrenotazioneException("Errore durante la conclusione della visita: " + e.getMessage(), "VISITA_CONCLUSION_ERROR");
+			e.printStackTrace();
+			throw new PrenotazioneException("Errore di sistema nella connessione al database.", "SYS_DATABASE_ERROR");
 		}
 	}
 
@@ -452,18 +470,18 @@ public class PrenotazioneService
 			conn.setAutoCommit(false);
 			try
 			{
-				Prenotazione p = prenotazioneDAO.findById(prenotazioneId).orElseThrow(() -> new PrenotazioneException("Prenotazione non trovata", "PRENOTAZIONE_NOT_FOUND"));
+				Prenotazione p = prenotazioneDAO.findById(prenotazioneId).orElseThrow(() -> new PrenotazioneException("Prenotazione non trovata.", "PRENOTAZIONE_NON_TROVATA"));
 
 				prenotazioneDAO.getCompleto(p);
 				erogazionePrestazioneDAO.getCompleto(p.getErogazionePrestazione());
 
 				if (p.getErogazionePrestazione().getMedicoId() != medicoIdConnesso)
 				{
-					throw new PrenotazioneException("Non hai i permessi per disdire questa prenotazione", "AUTH_ERROR");
+					throw new PrenotazioneException("Non hai i permessi per annullare questa prenotazione.", "AUTH_ACCESSO_NEGATO");
 				}
 				if (p.getStato() == Prenotazione.Stato.CANCELLATA)
 				{
-					throw new PrenotazioneException("Prenotazione già cancellata", "PRENOTAZIONE_ALREADY_CANCELLED");
+					throw new PrenotazioneException("Prenotazione già cancellata.", "PRENOTAZIONE_GIA_CANCELLATA");
 				}
 
 				LocalDateTime dataInizio = p.getDisponibilita().getDataOraInizio();
@@ -490,12 +508,14 @@ public class PrenotazioneService
 			catch (Exception e)
 			{
 				conn.rollback();
-				throw new PrenotazioneException("Errore durante la disdetta: " + e.getMessage(), "DISDETTA_ERROR");
+				e.printStackTrace();
+				throw new PrenotazioneException("Errore del sistema durante l'annullamento della prenotazione.", "SYS_DATABASE_ERROR");
 			}
 		}
 		catch (SQLException e)
 		{
-			throw new PrenotazioneException("Errore connessione database: " + e.getMessage(), "DB_CONNECTION_ERROR");
+			e.printStackTrace();
+			throw new PrenotazioneException("Errore di sistema nella connessione al database.", "SYS_DATABASE_ERROR");
 		}
 	}
 
@@ -530,7 +550,8 @@ public class PrenotazioneService
 		}
 		catch (SQLException e)
 		{
-			throw new PrenotazioneException("Errore nel calcolo delle statistiche: " + e.getMessage(), "STATS_ERROR");
+			e.printStackTrace();
+			throw new PrenotazioneException("Errore di sistema nel recupero delle statistiche.", "SYS_DATABASE_ERROR");
 		}
 	}
 }
