@@ -7,35 +7,63 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/**
- * Servlet implementation class ApprovazioneMediciServlet
- */
-@WebServlet("/ApprovazioneMediciServlet")
-public class ApprovazioneMediciServlet extends HttpServlet {
+import it.mediclick.exception.AmministratoreException;
+import it.mediclick.exception.ErrorInfo;
+import it.mediclick.model.bean.Utente;
+import it.mediclick.service.AmministrazioneService;
+import it.mediclick.util.Contex;
+import it.mediclick.util.ValidationUtils;
+
+@WebServlet("/admin/approvaMedico")
+public class ApprovazioneMediciServlet extends HttpServlet
+{
 	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public ApprovazioneMediciServlet() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
+	AmministrazioneService amministrazioneService;
+
+	public void init() throws ServletException
+	{
+		Contex contex = (Contex) getServletContext().getAttribute("contex");
+		amministrazioneService = new AmministrazioneService(contex);
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
-	}
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+	{
+		try
+		{
+			try
+			{
 
+				boolean approva = ValidationUtils.parseBoolean(request.getParameter("approvato"), "approvato");
+
+				int certificatoId = ValidationUtils.parseInt(request.getParameter("certificatoId"), -1);
+
+				if (certificatoId > 0)
+				{
+
+					Utente admin = (Utente) request.getSession(false).getAttribute("utente");
+					int adminId = admin.getId();
+
+					amministrazioneService.gestisciCertificato(certificatoId, approva, adminId);
+				}
+				else
+				{
+					int medicoId = ValidationUtils.parseInt(request.getParameter("medicoId"), "Id medico");
+
+					amministrazioneService.approvaMedico(medicoId, approva);
+				}
+			}
+			catch (IllegalArgumentException e)
+			{
+				throw new AmministratoreException(e.getMessage(), "PARAMETRI_NON_VALIDI");
+			}
+
+			response.sendRedirect(request.getContextPath() + "/admin/dashboard");
+		}
+		catch (AmministratoreException e)
+		{
+			request.getSession().setAttribute("errore", new ErrorInfo(e));
+			response.sendRedirect(request.getContextPath() + "/admin/dashboard");
+		}
+	}
 }

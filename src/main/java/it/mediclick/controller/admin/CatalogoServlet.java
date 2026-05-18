@@ -1,41 +1,109 @@
 package it.mediclick.controller.admin;
 
 import java.io.IOException;
+import java.util.List;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/**
- * Servlet implementation class CatalogoServlet
- */
-@WebServlet("/CatalogoServlet")
-public class CatalogoServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public CatalogoServlet() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
+import it.mediclick.exception.AmministratoreException;
+import it.mediclick.exception.ErrorInfo;
+import it.mediclick.model.bean.CatalogoPrestazioni;
+import it.mediclick.model.bean.Categoria;
+import it.mediclick.service.AmministrazioneService;
+import it.mediclick.util.Contex;
+import it.mediclick.util.ValidationUtils;
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
+@WebServlet("/admin/catalogo")
+public class CatalogoServlet extends HttpServlet
+{
+	private static final long serialVersionUID = 1L;
+	private AmministrazioneService amministrazioneService;
+
+	public void init() throws ServletException
+	{
+		Contex contex = (Contex) getServletContext().getAttribute("contex");
+		amministrazioneService = new AmministrazioneService(contex);
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+	{
+		try
+		{
+			List<Categoria> categorie = amministrazioneService.findAllCategorie();
+			List<CatalogoPrestazioni> prestazioni = amministrazioneService.findAllPrestazioni();
+
+			request.setAttribute("categorie", categorie);
+			request.setAttribute("prestazioni", prestazioni);
+
+			if (request.getSession().getAttribute("errore") != null)
+			{
+				request.setAttribute("errore", request.getSession().getAttribute("errore"));
+				request.getSession().removeAttribute("errore");
+			}
+
+			request.getRequestDispatcher("/WEB-INF/view/admin/catalogo.jsp").forward(request, response);
+		}
+		catch (AmministratoreException e)
+		{
+			request.setAttribute("errore", new ErrorInfo(e));
+			request.getRequestDispatcher("/WEB-INF/view/admin/catalogo.jsp").forward(request, response);
+		}
+	}
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+	{
+		try
+		{
+			String action = request.getParameter("action");
+
+			if ("aggiungiCategoria".equalsIgnoreCase(action))
+			{
+				String nome = request.getParameter("nomeCategoria");
+
+				if (nome == null || nome.isBlank())
+				{
+					throw new AmministratoreException("Il nome della categoria non può essere vuoto.", "PARAM_ERROR");
+				}
+
+				Categoria c = new Categoria();
+				c.setNome(nome.trim());
+				amministrazioneService.aggiungiCategoria(c);
+				request.getSession().setAttribute("successo", "Nuova categoria '" + nome + "' aggiunta con successo!");
+			}
+			else
+				if ("aggiungiPrestazione".equalsIgnoreCase(action))
+				{
+					String nome = request.getParameter("nomePrestazione");
+					String descrizione = request.getParameter("descrizione");
+					int categoriaId = ValidationUtils.parseInt(request.getParameter("categoriaId"), "Categoria");
+
+					if (nome == null || nome.isBlank())
+					{
+						throw new AmministratoreException("Il nome della prestazione non può essere vuoto.", "PARAM_ERROR");
+					}
+					CatalogoPrestazioni cp = new CatalogoPrestazioni();
+					cp.setNome(nome.trim());
+					cp.setDescrizione(descrizione != null ? descrizione.trim() : "");
+					cp.setCategoriaId(categoriaId);
+					cp.setStato(CatalogoPrestazioni.Stato.ATTIVA);
+					amministrazioneService.aggiungiAlCatalogo(cp);
+					request.getSession().setAttribute("successo", "Nuova prestazione '" + nome + "' aggiunta al catalogo!");
+				}
+				else
+				{
+					throw new AmministratoreException("Azione non supportata.", "ACTION_NOT_SUPPORTED");
+				}
+			response.sendRedirect(request.getContextPath() + "/admin/catalogo");
+		}
+		catch (AmministratoreException e)
+		{
+			request.getSession().setAttribute("errore", new ErrorInfo(e));
+			response.sendRedirect(request.getContextPath() + "/admin/catalogo");
+		}
 	}
 
 }

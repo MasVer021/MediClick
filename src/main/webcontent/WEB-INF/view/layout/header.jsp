@@ -39,9 +39,9 @@
 	    <!-- ADMIN -->
 	    <c:if test="${sessionScope.utente.ruolo.codice == 'ADMIN'}">
 	        <a href="${pageContext.request.contextPath}/admin/dashboard">Home</a>
-	        <a href="${pageContext.request.contextPath}/admin/medici">Contabilità</a>
-	        <a href="${pageContext.request.contextPath}/admin/catalogo">Approvazione</a>
-	        <a href="${pageContext.request.contextPath}/settings">Impostazioni</a>
+	        <a href="${pageContext.request.contextPath}/admin/catalogo">Catalogo prestazioni</a>
+	        <a href="${pageContext.request.contextPath}/admin/medici">Medici</a>
+	        <a href="${pageContext.request.contextPath}/admin/impostazioni">Impostazioni</a>
 	    </c:if>
     </div>
     
@@ -65,7 +65,6 @@
 	
 	    <!-- ADMIN -->
 	    <c:if test="${sessionScope.utente.ruolo.codice == 'ADMIN'}">
-	        <a href="${pageContext.request.contextPath}/admin/profilo">Il mio profilo</a>
 	        <a href="${pageContext.request.contextPath}/logout">Esci</a>
 	    </c:if>
     </div>
