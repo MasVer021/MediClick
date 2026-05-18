@@ -91,8 +91,7 @@ public class AmministrazioneService
 		}
 		catch (SQLException e)
 		{
-			e.printStackTrace();
-			throw new AmministratoreException("Errore durante il salvataggio della nuova prestazione nel catalogo.", "ADM_CATALOGO_ERRORE");
+			throw new AmministratoreException("Errore di comunicazione con il database del catalogo.", "SYS_DATABASE_ERROR");
 		}
 	}
 
@@ -104,8 +103,7 @@ public class AmministrazioneService
 		}
 		catch (SQLException e)
 		{
-			e.printStackTrace();
-			throw new AmministratoreException("Errore durante la modifica dello stato della prestazione.", "ADM_CATALOGO_ERRORE");
+			throw new AmministratoreException("Errore durante la modifica dello stato della prestazione.", "SYS_DATABASE_ERROR");
 		}
 	}
 
@@ -117,8 +115,7 @@ public class AmministrazioneService
 		}
 		catch (SQLException e)
 		{
-			e.printStackTrace();
-			throw new AmministratoreException("Errore del sistema durante la modifica dello stato dell'account utente.", "SYS_DATABASE_ERROR");
+			throw new AmministratoreException("Errore durante il blocco dell'utente con ID " + utenteId + ": " + e.getMessage(), "AMMINISTRATORE_BLOCCA_UTENTE_ERROR");
 		}
 	}
 
@@ -130,8 +127,7 @@ public class AmministrazioneService
 		}
 		catch (SQLException e)
 		{
-			e.printStackTrace();
-			throw new AmministratoreException("Errore del sistema nel caricamento dei medici in attesa di approvazione.", "SYS_DATABASE_ERROR");
+			throw new AmministratoreException("Errore durante il recupero dei medici in attesa: " + e.getMessage(), "AMMINISTRATORE_GET_MEDICI_IN_ATTESA_ERROR");
 		}
 	}
 
@@ -147,8 +143,7 @@ public class AmministrazioneService
 		}
 		catch (SQLException e)
 		{
-			e.printStackTrace();
-			throw new AmministratoreException("Errore del sistema nel recupero delle statistiche complessive.", "SYS_DATABASE_ERROR");
+			throw new AmministratoreException("Errore nel recupero delle statistiche complessive: " + e.getMessage(), "STATS_PIATTAFORMA_ERROR");
 		}
 	}
 
@@ -163,8 +158,7 @@ public class AmministrazioneService
 		}
 		catch (SQLException e)
 		{
-			e.printStackTrace();
-			throw new AmministratoreException("Errore del sistema durante l'approvazione o il rifiuto del certificato.", "SYS_DATABASE_ERROR");
+			throw new AmministratoreException("Errore nella gestione dello stato del certificato: " + e.getMessage(), "AMMINISTRATORE_GESTISCI_CERT_ERROR");
 		}
 	}
 
@@ -176,8 +170,7 @@ public class AmministrazioneService
 		}
 		catch (SQLException e)
 		{
-			e.printStackTrace();
-			throw new AmministratoreException("Errore durante la creazione della nuova categoria.", "ADM_CATALOGO_ERRORE");
+			throw new AmministratoreException("Errore durante l'aggiunta della categoria: " + e.getMessage(), "AMMINISTRATORE_AGGIUNGI_CATEGORIA_ERROR");
 		}
 	}
 
@@ -189,8 +182,7 @@ public class AmministrazioneService
 		}
 		catch (SQLException e)
 		{
-			e.printStackTrace();
-			throw new AmministratoreException("Errore del sistema nel caricamento delle categorie.", "SYS_DATABASE_ERROR");
+			throw new AmministratoreException("Errore nel recupero delle categorie: " + e.getMessage(), "AMMINISTRATORE_GET_CATEGORIE_ERROR");
 		}
 	}
 
@@ -207,8 +199,7 @@ public class AmministrazioneService
 		}
 		catch (SQLException e)
 		{
-			e.printStackTrace();
-			throw new AmministratoreException("Errore del sistema nel caricamento delle prestazioni.", "SYS_DATABASE_ERROR");
+			throw new AmministratoreException("Errore nel recupero delle prestazioni: " + e.getMessage(), "AMMINISTRATORE_GET_PRESTAZIONI_ERROR");
 		}
 	}
 
@@ -226,8 +217,7 @@ public class AmministrazioneService
 		}
 		catch (SQLException e)
 		{
-			e.printStackTrace();
-			throw new AmministratoreException("Errore del sistema nel caricamento dell'elenco dei medici.", "SYS_DATABASE_ERROR");
+			throw new AmministratoreException("Errore nel recupero dei medici: " + e.getMessage(), "AMMINISTRATORE_GET_MEDICI_ERROR");
 		}
 	}
 
@@ -244,8 +234,7 @@ public class AmministrazioneService
 		}
 		catch (SQLException e)
 		{
-			e.printStackTrace();
-			throw new AmministratoreException("Errore del sistema nel caricamento delle configurazioni.", "SYS_DATABASE_ERROR");
+			throw new AmministratoreException("Errore nel recupero delle impostazioni: " + e.getMessage(), "AMMINISTRATORE_GET_IMPOSTAZIONI_ERROR");
 		}
 	}
 
@@ -257,8 +246,7 @@ public class AmministrazioneService
 		}
 		catch (SQLException e)
 		{
-			e.printStackTrace();
-			throw new AmministratoreException("Errore durante il salvataggio dell'impostazione di sistema.", "ADM_IMPOSTAZIONE_ERRORE");
+			throw new AmministratoreException("Errore nell'aggiornamento dell'impostazione: " + e.getMessage(), "AMMINISTRATORE_UPDATE_IMPOSTAZIONE_ERROR");
 		}
 	}
 
