@@ -9,72 +9,69 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-<nav id="main-menu">
-	<div class="nav-left">
-	    <a href="${pageContext.request.contextPath}/"><img src = "${pageContext.request.contextPath}/img/ColFullLogo.svg" alt="Logo completo colorato"></a>
-	</div>
-	
-	<div class="nav-center">
-    <!-- Utente NON loggato -->
-	    <c:if test="${empty sessionScope.utente}">
-	        <a href="${pageContext.request.contextPath}/">Home</a>
-	        <a href="${pageContext.request.contextPath}/search">Trova medico</a>
-	    </c:if>
-	
-	    <!-- PAZIENTE -->
-	    <c:if test="${sessionScope.utente.ruolo.codice == 'PAZIENTE'}">
-	        <a href="${pageContext.request.contextPath}/">Home</a>
-	        <a href="${pageContext.request.contextPath}/paziente/prenotazioni">Prenotazioni</a>
-	        <a href="${pageContext.request.contextPath}/search">Medico</a>
-	    </c:if>
-	
-	    <!-- MEDICO -->
-	    <c:if test="${sessionScope.utente.ruolo.codice == 'MEDICO'}">
-	        <a href="${pageContext.request.contextPath}/medico/agenda">Home</a>
-	        <a href="${pageContext.request.contextPath}/medico/certificati">Documenti</a>
-	        <a href="${pageContext.request.contextPath}/medico/disponibilita">Disponibilità</a>
-	        <a href="${pageContext.request.contextPath}/medico/dashboard">Contabilità</a>
-	    </c:if>
-	
-	    <!-- ADMIN -->
-	    <c:if test="${sessionScope.utente.ruolo.codice == 'ADMIN'}">
-	        <a href="${pageContext.request.contextPath}/admin/dashboard">Home</a>
-	        <a href="${pageContext.request.contextPath}/admin/catalogo">Catalogo prestazioni</a>
-	        <a href="${pageContext.request.contextPath}/admin/medici">Medici</a>
-	        <a href="${pageContext.request.contextPath}/admin/impostazioni">Impostazioni</a>
-	    </c:if>
-    </div>
-    
-    <div class="nav-right">
-	    <c:if test="${empty sessionScope.utente}">
-	        <a href="${pageContext.request.contextPath}/login">Accedi</a>
-	        <a href="${pageContext.request.contextPath}/singin">Registrati</a>
-	    </c:if>
-	
-	    <!-- PAZIENTE -->
-	    <c:if test="${sessionScope.utente.ruolo.codice == 'PAZIENTE'}">
-	        <a href="${pageContext.request.contextPath}/paziente/profilo">Il mio profilo</a>
-	        <a href="${pageContext.request.contextPath}/logout">Esci</a>
-	    </c:if>
-	
-	    <!-- MEDICO -->
-	    <c:if test="${sessionScope.utente.ruolo.codice == 'MEDICO'}">
-	        <a href="${pageContext.request.contextPath}/medico/profilo">Il mio profilo</a>
-	        <a href="${pageContext.request.contextPath}/logout">Esci</a>
-	    </c:if>
-	
-	    <!-- ADMIN -->
-	    <c:if test="${sessionScope.utente.ruolo.codice == 'ADMIN'}">
-	        <a href="${pageContext.request.contextPath}/logout">Esci</a>
-	    </c:if>
-    </div>
-    
-    
-    
-    
-</nav>
+	<nav id="mc-main-menu">
+		<div class="mc-main-menu__left">
+		    <a href="${pageContext.request.contextPath}/"><img src = "${pageContext.request.contextPath}/img/ColFullLogo.svg" alt="Logo completo colorato"></a>
+		</div>
+		
+		<div class="mc-main-menu__center">
+		    <c:if test="${sessionScope.utente.ruolo.codice == 'PAZIENTE'}">
+		        <a href="${pageContext.request.contextPath}/">Home</a>
+		        <a href="${pageContext.request.contextPath}/paziente/prenotazioni">Prenotazioni</a>
+		        <a href="${pageContext.request.contextPath}/search">Medico</a>
+		    </c:if>
+		
+		   
+		    <c:if test="${sessionScope.utente.ruolo.codice == 'MEDICO'}">
+		        <a href="${pageContext.request.contextPath}/medico/agenda">Home</a>
+		        <a href="${pageContext.request.contextPath}/medico/certificati">Documenti</a>
+		        <a href="${pageContext.request.contextPath}/medico/disponibilita">Disponibilità</a>
+		        <a href="${pageContext.request.contextPath}/medico/dashboard">Contabilità</a>
+		    </c:if>
+		
+		    
+		    <c:if test="${sessionScope.utente.ruolo.codice == 'ADMIN'}">
+		        <a href="${pageContext.request.contextPath}/admin/dashboard">Home</a>
+		        <a href="${pageContext.request.contextPath}/admin/catalogo">Catalogo prestazioni</a>
+		        <a href="${pageContext.request.contextPath}/admin/medici">Medici</a>
+		        <a href="${pageContext.request.contextPath}/admin/impostazioni">Impostazioni</a>
+		    </c:if>
+	    </div>
+	    
+	    <div class="mc-main-menu__right">
+		    <c:if test="${empty sessionScope.utente}">
+		        <a href="${pageContext.request.contextPath}/login">Accedi</a>
+		        <a href="${pageContext.request.contextPath}/singin">Registrati</a>
+		    </c:if>
+		
+		    
+		    <c:if test="${sessionScope.utente.ruolo.codice == 'PAZIENTE'}">
+		        <a href="${pageContext.request.contextPath}/paziente/profilo">Il mio profilo</a>
+		        <a href="${pageContext.request.contextPath}/logout">Esci</a>
+		    </c:if>
+		
+		    
+		    <c:if test="${sessionScope.utente.ruolo.codice == 'MEDICO'}">
+		        <a href="${pageContext.request.contextPath}/medico/profilo">Il mio profilo</a>
+		        <a href="${pageContext.request.contextPath}/logout">Esci</a>
+		    </c:if>
+		
+		   
+		    <c:if test="${sessionScope.utente.ruolo.codice == 'ADMIN'}">
+		        <a href="${pageContext.request.contextPath}/logout">Esci</a>
+		    </c:if>
+	    </div>
+	</nav>
 
-<!-- Messaggi di feedback globali -->
-<c:if test="${not empty requestScope.errore}">
-    <div class="alert alert-error">${requestScope.errore.messaggio}</div>
+ 	
+
+<c:if test="${not empty errore}">
+   <div class="mc-message mc-message--error">
+ 		<p class="mc-message__code">
+ 		${errore.codiceErrore}
+ 		</p>
+ 		<p class="mc-message__message">
+ 		${errore.messaggio}
+ 		</p>
+ 	</div>
 </c:if>
