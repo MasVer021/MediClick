@@ -4,7 +4,7 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>MediClick</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />    <title>MediClick</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>

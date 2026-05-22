@@ -75,11 +75,18 @@ main {
 	border-radius: var(--radius);
 	transition: all 0.3s ease;
 	cursor: pointer;
+	border:none;
 }
 
 .mc-btn--primary {
+	font-size: var(--font-base);
 	background-color: var(--colore-secondario);
 	color: white;
+}
+
+.mc-medico-paziente
+{
+	margin-top:10px;
 }
 
 .mc-btn--primary:hover {
@@ -225,223 +232,575 @@ main {
 }
 
 
+/* 1. Global Forms & Custom Selects */
 
+select {
+	appearance: none;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232D3748' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-position: right 1rem center;
+	background-size: 1.2rem;
+	padding-right: 2.5rem;
+	cursor: pointer;
+}
 
+.mc-select-left {
+	align-self: flex-start;
+	max-width: 400px;
+	width: auto;
+}
 
+/* 2. Custom File Upload Elements */
+.mc-file-input {
+	display: none !important;
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-.card-login {
-	border: 2px solid black;
-	background-color: var(--colore-primario);
-	opacity: 0.8;
+.mc-btn-upload {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	background-color: white;
+	color: var(--testo-principale);
+	border: 1px solid var(--sfondo-alternativo);
+	padding: 0.6rem 1.2rem;
 	border-radius: var(--radius);
-	aspect-ratio: 9/11;
-	width: 24vw;
-	height: auto;
+	cursor: pointer;
+	font-weight: 500;
+	transition: all 0.3s ease;
+}
+
+.mc-btn-upload:hover {
+	background-color: var(--sfondo-principale);
+	border-color: var(--colore-primario);
+}
+
+.mc-photo-upload {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	justify-content: space-evenly;
-	margin: 10vh;
+	gap: 1rem;
+	margin: 1.5rem 0;
 }
 
-.card-login form {
-	width: 100%;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: space-evenly;
-	gap: 2rem;
+.mc-image-preview {
+	width: 150px;
+	height: 150px;
+	border-radius: var(--radius);
+	object-fit: cover;
+	border: 3px solid white;
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+	background-color: var(--sfondo-principale);
 }
 
-.card-login form select, .card-login form input {
-	width: 80%;
-	padding: 1rem 3rem 1rem 1rem;
-	font-size: var(--font-base);
-	border-radius: 30px;
+/* 3. Reusable Buttons (.mc-btn) */
+.mc-btn--secondary {
+	background-color: var(--colore-primario);
+	color: white;
 	border: none;
+}
+
+.mc-btn--secondary:hover {
+	filter: brightness(0.95);
+	box-shadow: 0 4px 12px rgba(108, 93, 211, 0.2);
+}
+
+.mc-btn--outline {
+	background-color: transparent;
+	color: var(--colore-primario);
+	border: 2px solid var(--colore-primario);
+}
+
+.mc-btn--outline:hover {
+	background-color: var(--colore-primario);
+	color: white;
+}
+
+.mc-btn--success {
+	background-color: #10B981;
+	color: white;
+	border: none;
+}
+
+.mc-btn--success:hover {
+	background-color: #059669;
+	box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+
+.mc-btn--danger {
+	background-color: #EF4444;
+	color: white;
+	border: none;
+}
+
+.mc-btn--danger:hover {
+	background-color: #DC2626;
+	box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}
+
+.mc-btn--warning {
+	background-color: #F59E0B;
+	color: white;
+	border: none;
+}
+
+.mc-btn--warning:hover {
+	background-color: #D97706;
+	box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+}
+
+.mc-btn--sm {
+	padding: 0.5rem 1rem;
+	font-size: var(--font-xs);
+}
+
+.mc-btn--lg {
+	padding: 1rem 2.2rem;
+	font-size: var(--font-base);
+}
+
+.mc-btn--block {
+	display: flex;
+	width: 100%;
+}
+
+/* 4. Cards System (.mc-card) */
+.mc-card {
+	border-radius: var(--radius);
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+	padding: 2rem;
+	display: flex;
+	flex-direction: column;
+	transition: transform 0.3s ease, box-shadow 0.3s ease;
+	border: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.mc-card--genric
+{
+	background-color: white;
+}
+
+.mc-card--login
+{
+	background-color: var(--colore-primario);
+}
+
+.mc-card--login__subtitle {
+	font-size: var(--font-xs);
+	color: white;
+}
+
+.mc-card:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+
+.mc-card--small {
+	width: 100%;
+	max-width: 450px;
+	margin: 2rem auto;
+}
+
+.mc-card--medium {
+	width: 100%;
+	max-width: 750px;
+	margin: 2rem auto;
+}
+
+.mc-card--large {
+	width: 100%;
+	max-width: 1100px;
+	margin: 2rem auto;
+}
+
+.mc-card--primary {
+	border: 5px solid var(--colore-primario);
+}
+
+.mc-card--secondary {
+	border: 5px solid var(--colore-secondario);
+}
+
+.mc-card__header {
+	padding-bottom: 1.5rem;
+	border-bottom: 1px solid var(--sfondo-principale);
+	margin-bottom: 1.5rem;
+}
+
+.mc-card__title {
+	font-size: var(--font-md);
+	font-weight: 700;
+	color: var(--testo-principale);
+	margin-bottom: 0.5rem;
+}
+
+.mc-card__subtitle {
+	font-size: var(--font-xs);
+	color: var(--testo-alternativo);
+}
+
+.mc-card__body {
+	flex: 1;
+}
+
+.mc-card__footer {
+	padding-top: 1.5rem;
+	border-top: 1px solid var(--sfondo-principale);
+	margin-top: 1.5rem;
+	display: flex;
+	justify-content: flex-end;
+	gap: 1rem;
+}
+
+/* 5. Tables System (.mc-table) */
+.mc-table-container {
+	width: 100%;
+	overflow-x: auto;
+	border-radius: var(--radius);
+	border: 1px solid #E2E8F0;
+	background-color: white;
+	margin: 1.5rem 0;
+}
+
+.mc-table {
+	width: 100%;
+	border-collapse: collapse;
+	text-align: left;
+	font-size: var(--font-sm);
+}
+
+.mc-table th {
+	background-color: #F8FAFC;
+	color: var(--testo-principale);
+	font-weight: 600;
+	padding: 1rem 1.25rem;
+	border-bottom: 2px solid #E2E8F0;
+}
+
+.mc-table td {
+	padding: 1rem 1.25rem;
+	border-bottom: 1px solid #E2E8F0;
+	color: var(--testo-principale);
+	vertical-align: middle;
+}
+
+.mc-table--zebra tbody tr:nth-child(even) {
+	background-color: #F8FAFC;
+}
+
+.mc-table tbody tr:hover {
+	background-color: #F1F5F9;
+}
+
+.mc-table tbody tr:last-child td {
+	border-bottom: none;
+}
+
+.mc-table-action-cell {
+	display: flex;
+	gap: 0.5rem;
+	justify-content: flex-end;
+}
+
+/* 6. Form Layouts and Field Controls */
+.mc-form-group {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	margin-bottom: 1.5rem;
+	width: 100%;
+}
+
+.mc-label {
+	font-size: var(--font-xs);
+	font-weight: 600;
+	color: var(--testo-principale);
+}
+
+.mc-link
+{
+	margin-top:2px;
+	text-decoration: none;
+	font-size: var(--font-xs);
+	font-weight: 600;
+	color: var(--testo-principale);
+}
+
+
+.mc-input,
+.mc-textarea,
+.mc-select {
+	width: 100%;
+	padding: 0.8rem 1rem;
+	font-size: var(--font-sm);
+	font-family: inherit;
+	color: var(--testo-principale);
+	background-color: white;
+	border: 1px solid #CBD5E1;
+	border-radius: var(--radius);
+	outline: none;
+	transition: all 0.3s ease;
 	box-sizing: border-box;
 }
 
-.card-login form button {
-	width: 80%;
-	padding: 1rem;
-	font-size: var(--font-md);
-	font-weight: bold;
-	color: white;
-	background-color: var(--colore-secondario);
-	border: 2px solid black;
-	border-radius: var(--radius);
+.mc-input:focus,
+.mc-textarea:focus,
+.mc-select:focus {
+	border-color: var(--colore-primario);
+	box-shadow: 0 0 0 3px rgba(108, 93, 211, 0.15);
+}
+
+.mc-textarea {
+	min-height: 100px;
+	resize: vertical;
+}
+
+.mc-input--error {
+	border-color: #EF4444;
+}
+
+.mc-input--error:focus {
+	border-color: #EF4444;
+	box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+}
+
+.mc-input-error-text {
+	font-size: var(--font-xs);
+	color: #EF4444;
+	margin-top: 0.25rem;
+}
+
+.mc-input-group {
+	position: relative;
+	display: flex;
+	align-items: center;
+	width: 100%;
+}
+
+.mc-input-group .mc-input {
+	padding-right: 3rem;
+}
+
+.mc-input-group__icon {
+	position: absolute;
+	right: 1rem;
+	color: var(--testo-alternativo);
 	cursor: pointer;
 	display: flex;
-	justify-content: center;
 	align-items: center;
+	justify-content: center;
 }
 
-
-/*
-footer {
-	background-color: var(--colore-primario);
-	color: white;
-	display: flex;
-	align-items: stretch;
-	font-size: var(--font-xs);
-	border-radius: var(--radius) var(--radius) 0 0;
+/* 7. KPI Metrics Cards (.mc-kpi) */
+.mc-kpi-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+	gap: 1.5rem;
+	margin-bottom: 2rem;
+	width: 100%;
 }
 
-footer a {
-	text-decoration: none;
-	color: white;
-}
-
-.footer-left, .footer-center-left, .footer-center-right, .footer-right {
-	flex: 1;
+.mc-kpi-card {
+	background-color: white;
+	border-radius: var(--radius);
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+	padding: 1.5rem;
 	display: flex;
 	flex-direction: column;
+	border-left: 4px solid var(--colore-primario);
+	transition: transform 0.3s ease;
+}
+
+.mc-kpi-card:hover {
+	transform: translateY(-2px);
+}
+
+.mc-kpi-card--orange {
+	border-left-color: var(--colore-secondario);
+}
+
+.mc-kpi-card--green {
+	border-left-color: #10B981;
+}
+
+.mc-kpi-card--blue {
+	border-left-color: #3B82F6;
+}
+
+.mc-kpi-card__title {
+	font-size: var(--font-xs);
+	color: var(--testo-alternativo);
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	margin-bottom: 0.5rem;
+}
+
+.mc-kpi-card__value {
+	font-size: var(--font-lg);
+	font-weight: 700;
+	color: var(--testo-principale);
+	margin-bottom: 0.25rem;
+}
+
+.mc-kpi-card__subtitle {
+	font-size: var(--font-xs);
+	color: var(--testo-alternativo);
+}
+
+/* 8. Status Badges (.mc-badge) */
+.mc-badge {
+	display: inline-flex;
 	align-items: center;
-	justify-content: space-evenly;
-	padding: 1.5rem;
+	padding: 0.25rem 0.75rem;
+	font-size: var(--font-xs);
+	font-weight: 600;
+	border-radius: 50px;
+	text-transform: capitalize;
 }
 
-.footer-center-left, .footer-center-right, .footer-right {
-	border-left: 1px solid var(--testo-principale);
+.mc-badge--success {
+	background-color: #D1FAE5;
+	color: #065F46;
 }
 
-footer>span:first-child {
-	border-radius: var(--radius) 0 0 0;
+.mc-badge--warning {
+	background-color: #FEF3C7;
+	color: #92400E;
 }
 
-footer>span:last-child {
-	border-radius: 0 var(--radius) 0 0;
+.mc-badge--danger {
+	background-color: #FEE2E2;
+	color: #991B1B;
 }
 
-.footer-left img {
-	height: clamp(1rem, 4vw, 5rem);
-	width: auto;
+.mc-badge--info {
+	background-color: #DBEAFE;
+	color: #1E40AF;
 }
 
-.social-links {
+.mc-badge--secondary {
+	background-color: #F1F5F9;
+	color: #475569;
+}
+
+/* 9. Grid and Container Layout Helpers */
+.mc-container {
+	width: 100%;
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 0 1.5rem;
+}
+
+.mc-grid {
+	display: grid;
+	gap: 1.5rem;
+}
+
+.mc-grid-2 {
+	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.mc-grid-3 {
+	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.mc-grid-4 {
+	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.mc-flex-row {
 	display: flex;
 	flex-direction: row;
-	gap: 2rem;
+	flex-wrap: wrap;
+	gap: 1rem;
 }
 
-.social-icon {
-	height: 2.5rem;
-	width: auto;
-	max-height: 2.5rem;
+.mc-align-center {
+	align-items: center;
 }
 
-/* card ricerca*/
-.card {
-	
-}
-
-/* card medico*/
-.risultati {
-	flex: 1;
-	background-color: var(--sfondo-alternativo);
-	border-radius: var(--radius);
-	max-height: 100vh;
-	margin: 20px;
-	padding: 20px;
-	overflow: auto;
-	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-	gap: 20px;
-}
-
-.card-medico {
-	display: flex;
-	flex-direction: column;
-	background-color: trasparent;
-	border-radius: var(--radius);
-	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-	transition: transform 1s ease, box-shadow 1s ease;
-}
-
-.card-medico:hover {
-	transform: translateY(-5px);
-	box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-}
-
-.card-body {
-	padding: 15px;
-	display: flex;
-	flex-direction: column;
-	flex: 1;
+.mc-justify-between {
 	justify-content: space-between;
 }
 
-/* Stili per l'avatar del medico (immagine quadrata in alto) */
-.medico-avatar {
-	width: 100%;
-	aspect-ratio: 1/1;
-	object-fit: cover;
-	border: none;
-	border-radius: var(--radius) var(--radius) 0 0;
-}
+/* 10. Spacing & Margin Utilities */
+.mc-mt-sm { margin-top: 0.5rem; }
+.mc-mt-md { margin-top: 1rem; }
+.mc-mt-lg { margin-top: 1.5rem; }
+.mc-mt-xl { margin-top: 2rem; }
 
-.medico-avatar-placeholder {
-	width: 100%;
-	height: 100%;
-	border-radius: 50%;
-	background: var(--colore-secondario);
-	color: white;
+.mc-mb-sm { margin-bottom: 0.5rem; }
+.mc-mb-md { margin-bottom: 1rem; }
+.mc-mb-lg { margin-bottom: 1.5rem; }
+.mc-mb-xl { margin-bottom: 2rem; }
+
+/* 11. Padding Utilities */
+.mc-p-sm { padding: 0.5rem; }
+.mc-p-md { padding: 1rem; }
+.mc-p-lg { padding: 1.5rem; }
+.mc-p-xl { padding: 2rem; }
+
+/* 12. Text Utilities */
+.mc-text-center { text-align: center; }
+.mc-text-right { text-align: right; }
+.mc-text-left { text-align: left; }
+.mc-text-muted { color: var(--testo-alternativo); }
+.mc-text-bold { font-weight: 700; }
+
+/* 13. Layout & Flex Direction Utilities */
+.mc-flex-col {
+	display: flex;
+	flex-direction: column;
+}
+.mc-gap-sm { gap: 0.5rem; }
+.mc-gap-md { gap: 1rem; }
+.mc-gap-lg { gap: 1.5rem; }
+
+/* 14. Doctor Cards Custom Sub-layouts */
+.mc-card__avatar-box {
+	padding: 20px 0 10px 0;
 	display: flex;
 	justify-content: center;
-	align-items: center;
-	font-size: var(--font-lg);
-	font-weight: bold;
-	margin: 0 auto 15px auto;
-	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-	border: 3px solid white;
+	background-color: var(--sfondo-principale);
 }
 
-.btn-prenota {
-	text-decoration: none;
-	padding: 10px;
-	display: flex;
-	justify-content: center;
-	color: white;
-	background-color: var(--colore-secondario);
+.mc-card__avatar-box .medico-avatar-placeholder {
+	width: 120px;
+	height: 120px;
+	margin: 0;
+}
+
+.mc-card__highlight-box {
+	background-color: var(--sfondo-principale);
+	padding: 0.6rem 0.8rem;
 	border-radius: var(--radius);
+	font-size: var(--font-xs);
+	margin: 0.5rem 0;
+}
+
+/* 15. Search Page Split Layout (Sidebar + Results Grid) */
+.mc-search-layout {
+	display: flex;
+	flex-direction: column;
+	gap: 2rem;
+	width: 100%;
+}
+
+@media (min-width: 992px) {
+	.mc-search-layout {
+		flex-direction: row;
+		align-items: flex-start;
+	}
+	
+	.mc-search-layout__sidebar {
+		flex: 0 0 350px;
+		position: sticky;
+		top: 2rem;
+	}
+	
+	.mc-search-layout__results {
+		flex: 1;
+	}
 }
