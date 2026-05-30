@@ -24,7 +24,7 @@
 			
 			
 			<div class="mc-flex-row mc-align-center" style="margin-bottom: 1.5rem;">
-				<input type="checkbox" name="rememberMe" id="rememberMe" style="cursor: pointer; width: 18px; height: 18px;">
+				<input type="checkbox" name="rememberMe" value="true" id="rememberMe" style="cursor: pointer; width: 18px; height: 18px;">
 				<label for="rememberMe" style="cursor: pointer; font-size: var(--font-xs); color: var(--testo-principale); font-weight: 500;">
 					Ricordami su questo dispositivo
 				</label>

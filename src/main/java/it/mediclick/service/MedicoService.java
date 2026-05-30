@@ -143,6 +143,20 @@ public class MedicoService
 
 	}
 
+	public void AttivaPrestazione(int erogazioneId) throws MedicoException
+	{
+		try
+		{
+			erogazioneDAO.updateStato(erogazioneId, ErogazionePrestazione.Stato.ATTIVA);
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			throw new MedicoException("Errore di sistema durante la rimozione della prestazione.", "SYS_DATABASE_ERROR");
+		}
+
+	}
+
 	public List<ErogazionePrestazione> getMiePrestazioni(int medicoId) throws MedicoException
 	{
 		try

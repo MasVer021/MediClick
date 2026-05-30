@@ -1,0 +1,37 @@
+@charset "UTF-8";
+
+:root {
+	--colore-primario: #6C5DD3;
+	--colore-secondario: #FF754C;
+	--sfondo-principale: #F4F7F6;
+	--sfondo-alternativo: #CAC4D0;
+	--testo-principale: #2D3748;
+	--testo-alternativo: #6C757D;
+	--radius: 12px;
+	--font-xs: 0.875rem;
+	--font-sm: 1rem;
+	--font-base: 1.125rem;
+	--font-md: 1.25rem;
+	--font-lg: clamp(1.5rem, 2.5vw, 2rem);
+	--font-xl: clamp(2rem, 4vw, 3rem);
+}
+
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+html {
+	font-size: 18px;
+}
+
+body {
+	font-family: 'Inter', sans-serif;
+	background-color: var(--sfondo-principale);
+	color: var(--testo-principale);
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+	margin: 0;
+}

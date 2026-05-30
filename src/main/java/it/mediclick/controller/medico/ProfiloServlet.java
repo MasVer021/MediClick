@@ -111,6 +111,7 @@ public class ProfiloServlet extends HttpServlet
 					int catalogoId = ValidationUtils.parseInt(request.getParameter("catalogoId"), -1);
 					int durata = ValidationUtils.parseInt(request.getParameter("durata"), 30);
 					double prezzo = ValidationUtils.parseDouble(request.getParameter("prezzo"), 0.0);
+					int erogazioneId;
 
 					medicoService.associaPrestazione(m.getId(), catalogoId, studioId, prezzo, durata);
 
@@ -118,10 +119,19 @@ public class ProfiloServlet extends HttpServlet
 					break;
 
 				case "rimuovi-prestazione":
-					int erogazioneId = ValidationUtils.parseInt(request.getParameter("erogazioneId"), -1);
+					erogazioneId = ValidationUtils.parseInt(request.getParameter("erogazioneId"), -1);
 					if (erogazioneId > 0)
 					{
 						medicoService.rimuoviPrestazione(erogazioneId);
+						successoMsg = "Prestazione rimossa/sospesa con successo!";
+					}
+					break;
+
+				case "attiva-prestazione":
+					erogazioneId = ValidationUtils.parseInt(request.getParameter("erogazioneId"), -1);
+					if (erogazioneId > 0)
+					{
+						medicoService.AttivaPrestazione(erogazioneId);
 						successoMsg = "Prestazione rimossa/sospesa con successo!";
 					}
 					break;

@@ -1,0 +1,108 @@
+.mc-hero {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+}
+
+.mc-hero__title {
+	font-size: var(--font-xl);
+	color: var(--testo-principale);
+	font-weight: 700;
+	line-height: 1.2;
+	margin-bottom: 0.5rem;
+}
+
+.mc-hero__subtitle {
+	font-size: var(--font-base);
+	color: var(--testo-alternativo);
+	line-height: 1.6;
+	max-width: 600px;
+	margin-bottom: 1.5rem;
+}
+
+.mc-medico-paziente {
+	margin-top: 10px;
+}
+
+.mc-card__avatar-box {
+	padding: 1.5rem 0 0.5rem 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: transparent;
+}
+
+.medico-avatar-placeholder {
+	width: 120px;
+	height: 120px;
+	border-radius: var(--radius);
+	border: 3px solid white;
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+	background: linear-gradient(135deg, var(--colore-primario), #8b7eff);
+	color: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: 700;
+	font-size: 1.75rem;
+	letter-spacing: 1px;
+	margin: 0 auto;
+	text-transform: uppercase;
+}
+
+.mc-card__highlight-box {
+	background-color: var(--sfondo-principale);
+	padding: 0.6rem 0.8rem;
+	border-radius: var(--radius);
+	font-size: var(--font-xs);
+	margin: 0.5rem 0;
+}
+
+.mc-search-layout {
+	display: flex;
+	flex-direction: column;
+	gap: 2rem;
+	width: 100%;
+}
+
+.opzione-orario input[type="radio"] {
+	display: none;
+}
+
+.opzione-orario label {
+	display: inline-block;
+	padding: 0.6rem 1.2rem;
+	border: 1px solid var(--sfondo-alternativo);
+	border-radius: var(--radius);
+	cursor: pointer;
+	font-weight: 500;
+	transition: all 0.2s ease;
+}
+
+.opzione-orario label:hover {
+	border-color: var(--colore-primario);
+}
+
+.opzione-orario input[type="radio"]:checked + label {
+	background-color: var(--colore-primario);
+	color: white;
+	border-color: var(--colore-primario);
+}
+
+@media (min-width: 992px) {
+	.mc-search-layout {
+		flex-direction: row;
+		align-items: flex-start;
+	}
+	
+	.mc-search-layout__sidebar {
+		flex: 0 0 350px;
+		position: sticky;
+		top: 2rem;
+	}
+	
+	.mc-search-layout__results {
+		flex: 1;
+	}
+}

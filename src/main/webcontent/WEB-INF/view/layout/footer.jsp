@@ -13,9 +13,9 @@
 		<p>La tua salute in un click.</p>
 		
 		<div class="mc-footer__social-links">
-			<a href="www.instatgram/mediclick"><img src = "${pageContext.request.contextPath}/img/instagramBlackLogo.svg" class="social-icon" alt="Logo istagram nero"></a>
-			<a href="www.facebook/mediclick/"><img src = "${pageContext.request.contextPath}/img/facebookBlackLogo.svg" class="social-icon" alt="Logo facebook nero"></a>
-			<a href="www.x/mediclick//"><img src = "${pageContext.request.contextPath}/img/xBlackLogo.svg" class="social-icon" alt="Logo x nero"></a>	
+			<a href="https://www.instagram.com/mediclick" target="_blank"><img src="${pageContext.request.contextPath}/img/instagramBlackLogo.svg" class="social-icon" alt="Logo Instagram nero"></a>
+			<a href="https://www.facebook.com/mediclick" target="_blank"><img src="${pageContext.request.contextPath}/img/facebookBlackLogo.svg" class="social-icon" alt="Logo Facebook nero"></a>
+			<a href="https://www.x.com/mediclick" target="_blank"><img src="${pageContext.request.contextPath}/img/xBlackLogo.svg" class="social-icon" alt="Logo X nero"></a>	
 		</div>
 		
 	</div>
