@@ -1,8 +1,10 @@
 package it.mediclick.controller.Auth;
 
 import java.io.IOException;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,8 +32,9 @@ public class LoginServlet extends HttpServlet
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
-
 		HttpSession session = request.getSession(false);
+
+		session = request.getSession(false);
 
 		if (session != null && session.getAttribute("utente") != null)
 		{
@@ -51,8 +54,22 @@ public class LoginServlet extends HttpServlet
 			{
 				String email = ValidationUtils.parseString(request.getParameter("email"), "Email");
 				String password = ValidationUtils.parseString(request.getParameter("password"), "Password");
+				boolean keepLogin = ValidationUtils.parseBoolean(request.getParameter("rememberMe"), false);
+
+				System.out.print(keepLogin);
 
 				Utente utente = autenticazioneService.login(email.trim(), password);
+
+				if (keepLogin)
+				{
+					String token = autenticazioneService.inserToken(utente.getId());
+					Cookie cookie = new Cookie("tokenID", token);
+					cookie.setPath(request.getContextPath());
+					cookie.setMaxAge(365 * 24 * 60 * 60);
+					cookie.setHttpOnly(true);
+					response.addCookie(cookie);
+
+				}
 
 				if (!utente.isAccountAttivo())
 				{
@@ -89,7 +106,7 @@ public class LoginServlet extends HttpServlet
 		}
 	}
 
-	private void redirectByRole(Utente utente, HttpServletResponse response,HttpServletRequest request) throws IOException
+	private void redirectByRole(Utente utente, HttpServletResponse response, HttpServletRequest request) throws IOException
 	{
 		int ruolo = utente.getRuoloId();
 

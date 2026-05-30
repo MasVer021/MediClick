@@ -1,6 +1,7 @@
 package it.mediclick.service;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 
 import it.mediclick.exception.AuthException;
@@ -9,6 +10,7 @@ import it.mediclick.model.bean.Certificato;
 import it.mediclick.model.bean.Medico;
 import it.mediclick.model.bean.Paziente;
 import it.mediclick.model.bean.RegimeFiscale;
+import it.mediclick.model.bean.SessioneToken;
 import it.mediclick.model.bean.TipoCertificato;
 import it.mediclick.model.bean.Utente;
 import it.mediclick.model.dao.AmministratoreDAO;
@@ -16,6 +18,7 @@ import it.mediclick.model.dao.CertificatoDAO;
 import it.mediclick.model.dao.MedicoDAO;
 import it.mediclick.model.dao.PazienteDAO;
 import it.mediclick.model.dao.RuoloDAO;
+import it.mediclick.model.dao.SessioneTokenDAO;
 import it.mediclick.model.dao.UtenteDAO;
 import it.mediclick.util.Contex;
 import it.mediclick.util.PasswordUtils;
@@ -29,6 +32,7 @@ public class AutenticazioneService
 	private final AmministratoreDAO adminDAO;
 	private final CertificatoDAO certificatoDAO;
 	private final RuoloDAO ruoloDAO;
+	private final SessioneTokenDAO sessioneTokenDAO;
 	private final Contex _contex;
 
 	public AutenticazioneService(Contex contex)
@@ -41,6 +45,7 @@ public class AutenticazioneService
 		this.adminDAO = new AmministratoreDAO(_contex);
 		this.ruoloDAO = new RuoloDAO(_contex);
 		this.certificatoDAO = new CertificatoDAO(_contex);
+		this.sessioneTokenDAO = new SessioneTokenDAO(_contex);
 	}
 
 	public Utente login(String email, String password) throws AuthException
@@ -56,11 +61,59 @@ public class AutenticazioneService
 			{
 				throw new AuthException("Email o password non valide.", "AUTH_BAD_CREDENTIALS");
 			}
+
 		}
 		catch (SQLException e)
 		{
 			e.printStackTrace();
 			throw new AuthException("Errore di sistema durante l'accesso.", "SYS_DATABASE_ERROR");
+		}
+	}
+
+	public Utente tokenLogin(String token) throws AuthException
+	{
+		try
+		{
+			SessioneToken st = sessioneTokenDAO.getTokenbyToken(token).orElseThrow(() -> new AuthException("Token non valido", "AUTH_INVALID_TOKEN"));
+			if (st.getScadenza().isAfter(LocalDate.now()))
+			{
+				return utenteDAO.findById(st.getUtenteId()).orElseThrow(() -> new AuthException("Utente non trovato", "AUTH_ERROR"));
+			}
+			else
+			{
+				return null;
+			}
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			throw new AuthException("Errore di sistema durante l'accesso.", "SYS_DATABASE_ERROR");
+		}
+	}
+
+	public String inserToken(int utenteId) throws AuthException
+	{
+		try
+		{
+			return sessioneTokenDAO.insertToken(utenteId);
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			throw new AuthException("Errore di sistema durante la registrazione del token.", "TOKEN_ERROR");
+		}
+	}
+
+	public void revocaToken(String token) throws AuthException
+	{
+		try
+		{
+			sessioneTokenDAO.deleteToken(token);
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			throw new AuthException("Errore durante la revoca del token.", "SYS_DATABASE_ERROR");
 		}
 	}
 

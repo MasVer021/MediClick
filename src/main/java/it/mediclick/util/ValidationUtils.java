@@ -92,6 +92,16 @@ public class ValidationUtils
 		return Boolean.parseBoolean(valore);
 	}
 
+	public static Boolean parseBoolean(String valore, boolean valoreDiDefault)
+	{
+		if (valore == null || valore.isBlank())
+		{
+			return valoreDiDefault;
+		}
+
+		return Boolean.parseBoolean(valore);
+	}
+
 	public static String parseStringOpz(String valore, String valoreDiDefault)
 	{
 		if (valore == null || valore.isBlank())

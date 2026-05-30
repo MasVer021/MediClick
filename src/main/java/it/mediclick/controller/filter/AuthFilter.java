@@ -1,6 +1,7 @@
-package it.mediclick.controller;
+package it.mediclick.controller.filter;
 
 import java.io.IOException;
+
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -8,11 +9,12 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpFilter;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import it.mediclick.model.bean.Ruolo;
 import it.mediclick.model.bean.Utente;
-
-import javax.servlet.http.*;
 
 @WebFilter(
 { "/paziente/*", "/medico/*", "/admin/*" })

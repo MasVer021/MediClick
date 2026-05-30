@@ -1,11 +1,3 @@
--- ============================================================
--- MediClick - Schema SQL
--- Generato dall'analisi del diagramma ER
--- ============================================================
-
--- ============================================================
--- TABELLE BASE (senza dipendenze esterne)
--- ============================================================
 Drop DATABASE MediClick;
 Create DAtabase MediClick;
 
@@ -27,7 +19,6 @@ CREATE TABLE Ruolo (
     PRIMARY KEY (ID)
 );
 
--- Relazione N:N tra Ruolo e Permesso
 CREATE TABLE Caratterizzato (
     Ruolo_ID    INT NOT NULL,
     Permesso_ID INT NOT NULL,
@@ -94,10 +85,6 @@ CREATE TABLE Regime_Fiscale (
     PRIMARY KEY (ID)
 );
 
--- ============================================================
--- UTENTI SPECIALIZZATI
--- ============================================================
-
 CREATE TABLE Amministratore (
     ID           INT NOT NULL,
     Dipartimento_ID INT,
@@ -134,11 +121,6 @@ CREATE TABLE Paziente (
     CONSTRAINT fk_paziente_utente        FOREIGN KEY (ID)        REFERENCES Utente(ID)       ON DELETE RESTRICT
 
 );
-
-
--- ============================================================
--- STUDIO, DISPONIBILITÀ E PRESTAZIONI
--- ============================================================
 
 CREATE TABLE Studio (
     ID              INT             NOT NULL AUTO_INCREMENT,
@@ -183,9 +165,6 @@ CREATE TABLE ErogazionePrestazione (
     CONSTRAINT fk_erp_studio    FOREIGN KEY (Studio_ID)             REFERENCES Studio(ID)             ON DELETE SET NULL
 );
 
--- ============================================================
--- CERTIFICATI
--- ============================================================
 CREATE TABLE ImpostazioniSistema (
     ID           INT          NOT NULL AUTO_INCREMENT,
     Chiave       VARCHAR(100) NOT NULL UNIQUE,
@@ -216,10 +195,6 @@ CREATE TABLE Certificato (
     CONSTRAINT fk_cert_tipo   FOREIGN KEY (TipoCertificato_ID) REFERENCES TipoCertificato(ID) ON DELETE RESTRICT,
     CONSTRAINT fk_cert_amm   FOREIGN KEY (Approved_by) REFERENCES Amministratore(ID) ON DELETE RESTRICT
 );
-
--- ============================================================
--- PRENOTAZIONI E PAGAMENTI
--- ============================================================
 
 CREATE TABLE CodiceSconto (
     ID               INT             NOT NULL AUTO_INCREMENT,
@@ -254,10 +229,6 @@ CREATE TABLE Prenotazione (
     CONSTRAINT fk_pren_sconto     FOREIGN KEY (CodiceSconto_ID)         REFERENCES CodiceSconto(ID)         ON DELETE SET NULL
 );
 
--- ============================================================
--- RECENSIONI
--- ============================================================
-
 CREATE TABLE Recensione (
     ID                  INT             NOT NULL AUTO_INCREMENT,
     Prenotazione_ID     INT             NOT NULL UNIQUE,
@@ -271,9 +242,15 @@ CREATE TABLE Recensione (
     CONSTRAINT fk_recen_prenotazione FOREIGN KEY (Prenotazione_ID) REFERENCES Prenotazione(ID) ON DELETE CASCADE
 );
 
--- ============================================================
--- INDICI UTILI PER LE QUERY PIÙ COMUNI
--- ============================================================
+CREATE TABLE SessioneToken (
+    ID              INT             NOT NULL AUTO_INCREMENT,
+    Utente_ID       INT             NOT NULL,
+    Token           VARCHAR(255)    NOT NULL UNIQUE,
+    Scadenza        DATE       NOT NULL,
+
+    PRIMARY KEY (ID),
+    CONSTRAINT fk_sessione_utente FOREIGN KEY (Utente_ID) REFERENCES Utente(ID) ON DELETE CASCADE
+);
 
 CREATE INDEX idx_utente_email         ON Utente(Email);
 CREATE INDEX idx_medico_stato_verifica ON Medico(Stato_verifica);
@@ -287,3 +264,4 @@ CREATE INDEX idx_erp_catalogo          ON ErogazionePrestazione(CatalogoPrestazi
 CREATE INDEX idx_recen_prenotazione    ON Recensione(Prenotazione_ID);
 CREATE INDEX idx_catalogo_categoria    ON CatalogoPrestazioni(Categoria_ID);
 CREATE INDEX idx_cert_medico           ON Certificato(Medico_ID);
+CREATE INDEX idx_sessione_token        ON SessioneToken(Token);
