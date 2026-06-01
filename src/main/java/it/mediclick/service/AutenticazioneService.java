@@ -70,6 +70,19 @@ public class AutenticazioneService
 		}
 	}
 
+	public boolean verificaEmailEsistente(String email) throws AuthException
+	{
+		try
+		{
+			return utenteDAO.findByEmail(email).isPresent();
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			throw new AuthException("Errore di sistema durante la verifica dell'e-mail.", "SYS_DATABASE_ERROR");
+		}
+	}
+
 	public Utente tokenLogin(String token) throws AuthException
 	{
 		try
