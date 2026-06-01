@@ -38,7 +38,7 @@
 		
 			<c:if test="${modificaTelefono}">
 			
-		    	<form action="${pageContext.request.contextPath}/paziente/profilo?edit=telefono" method="post">
+		    	<form action="${pageContext.request.contextPath}/paziente/profilo?edit=telefono" method="post" id="form-telefono-paziente">
 		    	
 					<div class="mc-form-group">
 						<label class="mc-text-muted mc-font-xs" for="nuovoTelefono">Numero di telefono</label>
@@ -60,7 +60,7 @@
 			</c:if>
 			
 			<c:if test="${modificaPassword}">
-		    	<form action="${pageContext.request.contextPath}/paziente/profilo?edit=password" method="post">
+		    	<form action="${pageContext.request.contextPath}/paziente/profilo?edit=password" method="post" id="form-password-paziente">
 		    		<div class="mc-form-group">
 						<label class="mc-text-muted mc-font-xs" for="attualePassword">Password attuale</label>
 			            <input class="mc-input" type="password" name="attualePassword" id="attualePassword" required>
@@ -96,4 +96,6 @@
 		
 	</div>
 </main>
+<script src="${pageContext.request.contextPath}/js/validation-utils.js"></script>
+<script src="${pageContext.request.contextPath}/js/profilo-paziente.js"></script> 
 <jsp:include page="/WEB-INF/view/layout/footer.jsp"/>

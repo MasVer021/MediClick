@@ -7,7 +7,7 @@
 		        <h2 class="mc-card__title">Dati Personali e Fiscali</h2>
 		    </div>
 			<div class="mc-card__body">
-				<form action="${pageContext.request.contextPath}/medico/profilo" method="POST">
+				<form action="${pageContext.request.contextPath}/medico/profilo" method="POST" id="form-profilo-medico">
 		            <input type="hidden" name="action" value="salva-dati">
 		            
 		            <div class="mc-form-group">
@@ -117,7 +117,7 @@
 		
 	        <h2 >Aggiungi una nuova prestazione in uno studio</h2>
 	    
-			<form action="${pageContext.request.contextPath}/medico/profilo" method="POST">
+			<form action="${pageContext.request.contextPath}/medico/profilo" method="POST" id="form-prestazioni-medico">
 	            <input type="hidden" name="action" value="associa-prestazione">
 	            
 	            <div class="mc-form-group">
@@ -155,4 +155,6 @@
 		</div>
 	</div>  
 </main>
+<script src="${pageContext.request.contextPath}/js/validation-utils.js"></script>
+<script src="${pageContext.request.contextPath}/js/profilo-medico.js"></script>
 <jsp:include page="/WEB-INF/view/layout/footer.jsp"/>

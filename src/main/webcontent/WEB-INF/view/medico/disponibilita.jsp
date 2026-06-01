@@ -7,7 +7,7 @@
 	        <h2 class="mc-card__title">Inserisci nuove Disponibilità</h2>
 	    </div>
 		<div class="mc-card__body">
-			<form action="${pageContext.request.contextPath}/medico/disponibilita" method="POST">
+			<form action="${pageContext.request.contextPath}/medico/disponibilita" method="POST" id="disponibilita-medico">
 			
 		        <div class="mc-form-group">
 					<label class="mc-label" for="dataGiornata">Data:</label>
@@ -34,9 +34,11 @@
 		                </select>
 				</div>
 		         
-		        <button class="mc-btn mc-btn--outline"type="submit">Salva Disponibilità</button> 
+		        <button class="mc-btn mc-btn--outline" type="submit">Salva Disponibilità</button> 
 		    </form>
 		</div>
 	</div>
 </main>
+<script src="${pageContext.request.contextPath}/js/validation-utils.js"></script>
+<script src="${pageContext.request.contextPath}/js/disponibilita-medico.js"></script>
 <jsp:include page="/WEB-INF/view/layout/footer.jsp"/>

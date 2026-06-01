@@ -1,8 +1,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <jsp:include page="/WEB-INF/view/layout/header.jsp"/>
 <main class="mc-container">
     <div class="mc-card mc-card--small mc-card--primary mc-card--generic">
-        <form method="post" action="${pageContext.request.contextPath}/singin?medico=${isMedico}" enctype="multipart/form-data" class="mc-card__body">
+        <form method="post" id ="registrazioneForm" action="${pageContext.request.contextPath}/singin?medico=${isMedico}" enctype="multipart/form-data" class="mc-card__body">
 
 
             <div class="mc-form-group">
@@ -106,5 +107,7 @@
     </div>
 
 </main>
-<script src="${pageContext.request.contextPath}/js/preview-foto.js"></script>  
+<script src="${pageContext.request.contextPath}/js/preview-foto.js"></script> 
+<script src="${pageContext.request.contextPath}/js/validation-utils.js"></script>
+<script src="${pageContext.request.contextPath}/js/singin.js"></script> 
 <jsp:include page="/WEB-INF/view/layout/footer.jsp"/>
