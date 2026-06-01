@@ -5,6 +5,7 @@
  		${successo}
  		</p>
  	</div>
+ <c:remove var="successo" scope="session" />
 </c:if>
 <footer class="mc-footer">
 	<div class="mc-footer__item">

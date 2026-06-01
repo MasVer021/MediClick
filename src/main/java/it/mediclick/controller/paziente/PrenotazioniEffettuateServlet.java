@@ -86,7 +86,8 @@ public class PrenotazioniEffettuateServlet extends HttpServlet
 
 					prenotazioniService.disdiciPrenotazione(prenotazioneId, p.getUtente().getId());
 
-					response.sendRedirect(request.getContextPath() + "/paziente/prenotazioni?msg=Disdetta+effettuata");
+					request.getSession().setAttribute("successo", "Prenotazione disdetta con successo!");
+					response.sendRedirect(request.getContextPath() + "/paziente/prenotazioni");
 					return;
 				}
 				catch (PrenotazioneException | IllegalArgumentException e)

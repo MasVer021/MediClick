@@ -4,7 +4,7 @@
 
 	 <div class="mc-message mc-message--error mc-mb-lg">
 		<span class="mc-message__message">
-			Completa il pagamento entro (da inserire un timer ) per confermare la tua prenotazione
+			Completa il pagamento entro <strong id="timer">15:00</strong> per confermare la tua prenotazione
 		</span>
 	</div>
 	
@@ -16,7 +16,7 @@
 		        <h2 class="mc-card__title">Riepilogo Prenotazione</h2>
 		    </div>
 		    
-		    <div class="mc-card__body mc-flex-col mc-gap-md">
+		    <div id="cardRiepilogo" class="mc-card__body mc-flex-col mc-gap-md">
 		    
 		        <div class="mc-flex-col">
 		            <span class="mc-text-muted mc-font-xs">Medico Specialistico</span>
@@ -33,7 +33,7 @@
 		            <span>${riepilogo.disponibilita.dataOraInizio}</span>
 		        </div>
 		        
-		        <div class="mc-flex-col">
+		        <div id="riepilogo-prezzo" class="mc-flex-col">
 		            <span class="mc-text-muted mc-font-xs">Prezzo</span>
 		            <span class="mc-text-bold mc-font-md">${riepilogo.prestazione.prezzoLordoListino} &euro;</span>
 		        </div>
@@ -55,12 +55,6 @@
 	    
 	    <div class="mc-card__body">
 	        <form method="post" action='<%=response.encodeUrl(request.getContextPath() +"/paziente/prenotazione")%>' class="mc-flex-col mc-gap-md">
-	            
-	            <c:if test="${not empty Errore}">
-	                <div class="mc-message mc-message--error">
-	                    <span class="mc-message__message">${Errore}</span>
-	                </div>
-	            </c:if>
 	            
 	            <div class="mc-flex-col mc-gap-sm">
 	                <label class="mc-label">Metodo di Pagamento</label>
@@ -94,7 +88,7 @@
 	                <label for="codiceSconto" class="mc-label">Codice Sconto</label>
 	                <div class="mc-flex-row mc-gap-sm">
 	                    <input type="text" class="mc-input" name="codiceSconto" id="codiceSconto" placeholder="Es. CLICK10" style="flex: 1;">
-	                    <button type="button" class="mc-btn mc-btn--outline mc-btn--sm">Applica</button>
+	                    <button id="btn-codice-sconto" type="button" class="mc-btn mc-btn--outline mc-btn--sm">Applica</button>
 	                </div>
 	            </div>
 	            
@@ -105,4 +99,6 @@
 </div>
 	</div>
 </main>
+<script src="${pageContext.request.contextPath}/js/validation-utils.js"></script>
+<script src="${pageContext.request.contextPath}/js/conferma-prenotazione.js"></script>
 <jsp:include page="/WEB-INF/view/layout/footer.jsp"/>

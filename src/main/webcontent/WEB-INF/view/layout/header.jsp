@@ -75,4 +75,5 @@
  		${errore.messaggio}
  		</p>
  	</div>
+ 	<c:remove var="errore" scope="session" />
 </c:if>
