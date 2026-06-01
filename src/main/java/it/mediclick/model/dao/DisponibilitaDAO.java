@@ -85,6 +85,27 @@ public class DisponibilitaDAO
 		}
 	}
 
+	public List<Disponibilita> findByMedicoEStudio(int medicoId, int studioId) throws SQLException
+	{
+		try
+		{
+			String sql = """
+							   SELECT *
+							   FROM Disponibilita
+							   WHERE Medico_ID = ?
+							   AND Studio_ID = ?
+							   AND (Stato = 'Disponibile' OR (Stato = 'Bloccata' AND Timestamp_Blocco < DATE_SUB(NOW(), INTERVAL 15 MINUTE)))
+							   AND Data_Ora_Inizio > NOW()
+							""";
+
+			return _contex.eseguiSelect(sql, disponibilitaMapper, medicoId, studioId);
+		}
+		catch (SQLException e)
+		{
+			throw new SQLException("Errore nella ricerca della disponibilita con ID medico " + medicoId + " e studio " + studioId, e);
+		}
+	}
+
 	public List<Disponibilita> findDisponibili(int medicoId) throws SQLException
 	{
 		try

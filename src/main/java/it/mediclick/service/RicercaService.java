@@ -54,6 +54,24 @@ public class RicercaService
 		}
 	}
 
+	public List<ErogazionePrestazione> cercaPrestazioniByMedicoEStudio(int idMedico, int idStudio) throws RicercaException
+	{
+		try
+		{
+			List<ErogazionePrestazione> erogazioni = erogazioneDAO.findByMedicoEStudio(idMedico, idStudio);
+			for (ErogazionePrestazione ep : erogazioni)
+			{
+				erogazioneDAO.getCompleto(ep);
+			}
+			return erogazioni;
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			throw new RicercaException("Errore del sistema nel recupero delle prestazioni del medico per lo studio.", "SYS_DATABASE_ERROR");
+		}
+	}
+
 	public ProfiloMedicoPubblicoDTO dettagliProfiloMedico(int idMedico) throws RicercaException
 	{
 
@@ -73,8 +91,7 @@ public class RicercaService
 		{
 			for (ErogazionePrestazione ep : prestazioni)
 			{
-				Studio studioCorrente = studioDAO.findById(ep.getStudioId())
-						.orElseThrow(() -> new RicercaException("Studio medico di riferimento non trovato.", "RICERCA_STUDIO_NON_TROVATO"));
+				Studio studioCorrente = studioDAO.findById(ep.getStudioId()).orElseThrow(() -> new RicercaException("Studio medico di riferimento non trovato.", "RICERCA_STUDIO_NON_TROVATO"));
 				CatalogoPrestazioni prestazioneCorrente = catalogoDAO.findById(ep.getCatalogoPrestazioniId())
 						.orElseThrow(() -> new RicercaException("Prestazione medica non trovata.", "RICERCA_PRESTAZIONE_NON_TROVATA"));
 
@@ -105,6 +122,19 @@ public class RicercaService
 		try
 		{
 			return disponibilitaDAO.findDisponibili(IdMedico);
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			throw new RicercaException("Errore del sistema nel recupero delle disponibilità del medico.", "SYS_DATABASE_ERROR");
+		}
+	}
+
+	public List<Disponibilita> cercaDisponibilitaByMedicoeStudio(int IdMedico, int studioId) throws RicercaException
+	{
+		try
+		{
+			return disponibilitaDAO.findByMedicoEStudio(IdMedico, studioId);
 		}
 		catch (SQLException e)
 		{
