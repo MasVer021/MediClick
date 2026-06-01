@@ -91,6 +91,24 @@ public class CertificatiServlet extends HttpServlet
 
 						if (certificatoPart != null && certificatoPart.getSize() > 0)
 						{
+							String nomeFile = certificatoPart.getSubmittedFileName().toLowerCase();
+							String contentType = certificatoPart.getContentType();
+
+							String estensione = "";
+							int lastDot = nomeFile.lastIndexOf('.');
+							if (lastDot >= 0)
+							{
+								estensione = nomeFile.substring(lastDot);
+							}
+
+							boolean isEstensioneValida = estensione.equals(".pdf") || estensione.equals(".png") || estensione.equals(".jpg") || estensione.equals(".jpeg");
+
+							boolean isMimeValido = contentType.equals("application/pdf") || contentType.equals("image/png") || contentType.equals("image/jpeg");
+
+							if (!isEstensioneValida || !isMimeValido)
+							{
+								throw new Exception("Il file non è supportato. Caricare solo file PDF, PNG o JPG/JPEG.");
+							}
 							byte[] fotoBytes = certificatoPart.getInputStream().readAllBytes();
 
 							medicoService.caricaCertificato(m.getId(), tipoCertificatoId, certificatoPart.getSubmittedFileName(), fotoBytes, certificatoPart.getContentType(), dataScadenza);

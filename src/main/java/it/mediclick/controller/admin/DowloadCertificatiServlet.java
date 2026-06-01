@@ -1,6 +1,7 @@
 package it.mediclick.controller.admin;
 
 import java.io.IOException;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -49,9 +50,20 @@ public class DowloadCertificatiServlet extends HttpServlet
 				return;
 			}
 
-			response.setContentType(c.getMimeType() != null ? c.getMimeType() : "application/octet-stream");
+			String mimeType = c.getMimeType() != null ? c.getMimeType() : "application/octet-stream";
+			response.setContentType(mimeType);
 			response.setContentLength(c.getDatiDocumento().length);
-			response.setHeader("Content-Disposition", "inline; filename=\"" + c.getNomeFile() + "\"");
+
+			String nomeFileCodificato = java.net.URLEncoder.encode(c.getNomeFile(), "UTF-8").replaceAll("\\+", "%20");
+
+			String disposizione = "inline";
+
+			if (!mimeType.equals("application/pdf") && !mimeType.startsWith("image/"))
+			{
+				disposizione = "attachment";
+			}
+
+			response.setHeader("Content-Disposition", disposizione + "; filename*=UTF-8''" + nomeFileCodificato);
 
 			response.getOutputStream().write(c.getDatiDocumento());
 			response.getOutputStream().flush();
