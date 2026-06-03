@@ -25,14 +25,15 @@
 							    </select>
 							</div>
 							
-							<div class="mc-form-group">
+							<div class="mc-form-group" id="medici-input-search-group">
 								<label class="mc-label" for="querySpecialista">Nome Specialista</label>
-								<input class="mc-input" type="text" placeholder="Es. Mario Rossi" id="querySpecialista" name="querySpecialista">
+								<input class="mc-input" type="text" placeholder="Es. Mario Rossi" id="querySpecialista" name="querySpecialista" autocomplete="off">
+								
 							</div>
 							
-							<div class="mc-form-group">
+							<div class="mc-form-group" id="citta-input-search-group">
 								<label class="mc-label" for="citta">Citt&agrave;</label>
-								<input class="mc-input" type="text" id="citta" name="citta" placeholder="Roma">
+								<input class="mc-input" type="text" id="citta" name="citta" placeholder="Roma" autocomplete="off">
 							</div>
 							
 							<button class="mc-btn mc-btn--secondary mc-btn--block" type="submit">Aggiorna Ricerca</button>
@@ -112,14 +113,15 @@
 					    </select>
 					</div>
 					
-					<div class="mc-form-group">
+					<div class="mc-form-group" id="medici-input-search-group">
 						<label class="mc-label" for="querySpecialista">Nome Specialista</label>
-						<input class="mc-input" type="text" placeholder="Es. Mario Rossi" id="querySpecialista" name="querySpecialista">
+						<input class="mc-input" type ="text" placeholder="Es. Mario Rossi" id="querySpecialista" name="querySpecialista" autocomplete="off">
 					</div>
 					
-					<div class="mc-form-group">
+					
+					<div class="mc-form-group" id="citta-input-search-group">
 						<label class="mc-label" for="citta">Citt&agrave;</label>
-						<input class="mc-input" type="text" id="citta" name="citta" placeholder="Es. Roma">
+						<input class="mc-input" type="text" id="citta" name="citta" placeholder="Roma"  list="citta-suggest" autocomplete="off">
 					</div>
 					
 					<button class="mc-btn mc-btn--secondary mc-btn--block" type="submit">Cerca</button>
@@ -131,4 +133,7 @@
 	
 </main>
 
+
+<script src="${pageContext.request.contextPath}/js/validation-utils.js"></script>
+<script src="${pageContext.request.contextPath}/js/search.js"></script> 
 <jsp:include page="/WEB-INF/view/layout/footer.jsp"/>

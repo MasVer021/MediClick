@@ -8,22 +8,19 @@ document.addEventListener("DOMContentLoaded", function()
 	const urlParams = new URLSearchParams(window.location.search);
 	const medicoId = urlParams.get("id");
 	
-	const getContextPath = () => {
-		const path = window.location.pathname;
-		const index = path.indexOf("/", 1);
-		return index !== -1 ? path.substring(0, index) : "";
-	};
 	const contextPath = getContextPath();
 	
-	studioSelect.addEventListener("change", function() {
+	studioSelect.addEventListener("change", function() 
+	{
 	    const studioId = this.value; 
 	    if (!studioId) return;
 
 	   
 	    slotsContainer.innerHTML = '<p class="mc-text-muted">Caricamento in corso...</p>';
 	  
-	    const url = `${contextPath}/paziente/api/serviziStudio?studioId=${studioId}&medicoId=${medicoId}`;
-
+	    const url = `${contextPath}/api/serviziStudio?studioId=${studioId}&medicoId=${medicoId}`;
+		console.log(url);
+		
 	    fetch(url)
 	        .then(response => 
 			{
@@ -49,7 +46,8 @@ document.addEventListener("DOMContentLoaded", function()
 	            slotsContainer.innerHTML = "";
 
 	            
-	            if (data.disponibilita.length === 0) {
+	            if (data.disponibilita.length === 0) 
+				{
 	                slotsContainer.innerHTML = '<p class="mc-text-muted">Nessun orario disponibile per questo studio.</p>';
 	                btnConferma.disabled = true;
 	                return;

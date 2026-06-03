@@ -21,7 +21,7 @@ import it.mediclick.service.RicercaService;
 import it.mediclick.util.Contex;
 import it.mediclick.util.ValidationUtils;
 
-@WebServlet("/paziente/api/serviziStudio")
+@WebServlet("/api/serviziStudio")
 public class ServiziStudioServletAPI extends HttpServlet
 {
 	private static final long serialVersionUID = 1L;

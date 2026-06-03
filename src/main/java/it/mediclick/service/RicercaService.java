@@ -2,8 +2,12 @@ package it.mediclick.service;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import com.google.gson.Gson;
 
 import it.mediclick.exception.RicercaException;
 import it.mediclick.model.DTO.MedicoCardDTO;
@@ -45,7 +49,7 @@ public class RicercaService
 	{
 		try
 		{
-			return medicoDAO.findCards(query, categoriaId, citta);
+			return medicoDAO.findCards(categoriaId, citta, query.split("\\s+"));
 		}
 		catch (SQLException e)
 		{
@@ -194,4 +198,36 @@ public class RicercaService
 			throw new RicercaException("Errore del sistema nel recupero delle categorie.", "SYS_DATABASE_ERROR");
 		}
 	}
+
+	public String getMedicoCittaSuggestJson(String query, String citta) throws RicercaException
+	{
+		String _query = query != null ? query : "";
+		String _citta = citta != null ? citta : "";
+
+		try
+		{
+
+			List<Map<String, Object>> suggerimentiCitta = medicoDAO.findCittaSuggest(_query, _citta);
+			List<Map<String, Object>> suggerimentiMedico = medicoDAO.findMedicoSuggest(_query, _citta);
+
+			List<String> cittaSuggerite = suggerimentiCitta.stream().map(s -> s.get("Citta").toString()).toList();
+			List<String> mediciSuggeriti = suggerimentiMedico.stream().map(s -> s.get("cognome").toString() + " " + s.get("nome").toString()).toList();
+
+			Map<String, Object> responseData = new HashMap<String, Object>();
+
+			responseData.put("citta", cittaSuggerite);
+			responseData.put("medici", mediciSuggeriti);
+
+			return new Gson().toJson(responseData);
+
+		}
+		catch (Exception e)
+		{
+
+			e.printStackTrace();
+			throw new RicercaException("Errore del sistema nel recupero dei suggerimenti.", "SYS_ERROR");
+		}
+
+	}
+
 }

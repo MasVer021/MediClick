@@ -23,14 +23,6 @@ document.addEventListener("DOMContentLoaded",function()
 			
 			if (email === "" || !validators.email(email)) return;
 			
-			
-			const getContextPath = () => 
-			{
-				const path = window.location.pathname;
-				const index = path.indexOf("/", 1);
-				return index !== -1 ? path.substring(0, index) : "";
-			};
-			
 			const contextPath = getContextPath();
 			
 			const url = `${contextPath}/api/checkEmail?email=${encodeURIComponent(email)}`;

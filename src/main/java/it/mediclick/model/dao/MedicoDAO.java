@@ -79,53 +79,70 @@ public class MedicoDAO
 		}
 	}
 
-	public List<Medico> findAllAttivi(String query, Integer categoriaId, String citta) throws SQLException
+	/*
+	 * public List<Medico> findAllAttivi(String query, Integer categoriaId, String
+	 * citta) throws SQLException { StringBuilder sql = new
+	 * StringBuilder("SELECT DISTINCT M.* FROM Medico M ");
+	 * 
+	 * if (categoriaId != null) {
+	 * sql.append("JOIN ErogazionePrestazione EP ON M.ID = EP.Medico_ID "); sql.
+	 * append("JOIN CatalogoPrestazioni CP ON EP.CatalogoPrestazioni_ID = CP.ID ");
+	 * }
+	 * 
+	 * if (citta != null && !citta.isEmpty()) { if (categoriaId == null) {
+	 * sql.append("JOIN ErogazionePrestazione EP ON M.ID = EP.Medico_ID "); }
+	 * sql.append("JOIN Studio S ON EP.Studio_ID = S.ID "); }
+	 * 
+	 * sql.append("WHERE M.Stato_verifica = 'Approvato' ");
+	 * 
+	 * List<Object> params = new ArrayList<>();
+	 * 
+	 * if (query != null && !query.isEmpty()) {
+	 * sql.append("AND (M.Cognome LIKE ? OR M.Nome LIKE ?) "); params.add("%" +
+	 * query + "%"); params.add("%" + query + "%"); }
+	 * 
+	 * if (categoriaId != null) { sql.append("AND CP.Categoria_ID = ? ");
+	 * params.add(categoriaId); }
+	 * 
+	 * if (citta != null && !citta.isEmpty()) { sql.append("AND S.Citta like ? ");
+	 * params.add("%" + citta + "%"); }
+	 * 
+	 * sql.append("ORDER BY M.Cognome, M.Nome");
+	 * 
+	 * try { return _contex.eseguiSelect(sql.toString(), medicoMapper,
+	 * params.toArray()); } catch (SQLException e) { throw new
+	 * SQLException("Errore nella ricerca filtrata dei medici: " + e.getMessage(),
+	 * e); } }
+	 */
+
+	/*
+	 * public List<Medico> findAllAttivi() throws SQLException { return
+	 * findAllAttivi(null, null, null); }
+	 */
+
+	public List<Map<String, Object>> findMedicoSuggest(String query, String citta) throws SQLException
 	{
-		StringBuilder sql = new StringBuilder("SELECT DISTINCT M.* FROM Medico M ");
+		String sql = """
+						SELECT DISTINCT M.cognome, M.nome
+						FROM Studio S
+						JOIN ErogazionePrestazione EP ON S.ID = EP.Studio_ID
+						JOIN CatalogoPrestazioni CP ON EP.CatalogoPrestazioni_ID = CP.ID
+						JOIN medico M on M.ID = ep.Medico_ID
+						where (CONCAT( M.Nome, ' ', M.Cognome) LIKE ?
+						OR CONCAT( M.Cognome, ' ', M.Nome) LIKE ?)
+						AND s.Citta like ?
+						AND M.Stato_verifica = 'Approvato'
+						group by  M.cognome, M.nome
+						ORDER BY Cognome , nome
+						LIMIT 5
+						""";
 
-		if (categoriaId != null)
-		{
-			sql.append("JOIN ErogazionePrestazione EP ON M.ID = EP.Medico_ID ");
-			sql.append("JOIN CatalogoPrestazioni CP ON EP.CatalogoPrestazioni_ID = CP.ID ");
-		}
-
-		if (citta != null && !citta.isEmpty())
-		{
-			if (categoriaId == null)
-			{
-				sql.append("JOIN ErogazionePrestazione EP ON M.ID = EP.Medico_ID ");
-			}
-			sql.append("JOIN Studio S ON EP.Studio_ID = S.ID ");
-		}
-
-		sql.append("WHERE M.Stato_verifica = 'Approvato' ");
-
-		List<Object> params = new ArrayList<>();
-
-		if (query != null && !query.isEmpty())
-		{
-			sql.append("AND (M.Cognome LIKE ? OR M.Nome LIKE ?) ");
-			params.add("%" + query + "%");
-			params.add("%" + query + "%");
-		}
-
-		if (categoriaId != null)
-		{
-			sql.append("AND CP.Categoria_ID = ? ");
-			params.add(categoriaId);
-		}
-
-		if (citta != null && !citta.isEmpty())
-		{
-			sql.append("AND S.Citta = ? ");
-			params.add(citta);
-		}
-
-		sql.append("ORDER BY M.Cognome, M.Nome");
+		query = "%".concat(query).concat("%");
+		citta = "%".concat(citta).concat("%");
 
 		try
 		{
-			return _contex.eseguiSelect(sql.toString(), medicoMapper, params.toArray());
+			return _contex.eseguiSelect(sql.toString(), query, query, citta);
 		}
 		catch (SQLException e)
 		{
@@ -133,9 +150,34 @@ public class MedicoDAO
 		}
 	}
 
-	public List<Medico> findAllAttivi() throws SQLException
+	public List<Map<String, Object>> findCittaSuggest(String query, String citta) throws SQLException
 	{
-		return findAllAttivi(null, null, null);
+		String sql = """
+						SELECT DISTINCT S.Citta
+						FROM Studio S
+						JOIN ErogazionePrestazione EP ON S.ID = EP.Studio_ID
+						JOIN CatalogoPrestazioni CP ON EP.CatalogoPrestazioni_ID = CP.ID
+						JOIN medico M on M.ID = ep.Medico_ID
+						where (CONCAT( M.Nome, ' ', M.Cognome) LIKE ?
+						OR CONCAT( M.Cognome, ' ', M.Nome) LIKE ?)
+						AND s.Citta like ?
+						AND M.Stato_verifica = 'Approvato'
+						group by S.Citta
+						ORDER BY Citta
+						LIMIT 5
+						""";
+
+		query = "%".concat(query).concat("%");
+		citta = "%".concat(citta).concat("%");
+
+		try
+		{
+			return _contex.eseguiSelect(sql.toString(), query, query, citta);
+		}
+		catch (SQLException e)
+		{
+			throw new SQLException("Errore nella ricerca filtrata dei medici: " + e.getMessage(), e);
+		}
 	}
 
 	public List<Medico> findAll() throws SQLException
@@ -154,49 +196,53 @@ public class MedicoDAO
 		}
 	}
 
-	public List<MedicoCardDTO> findCards(String query, Integer categoriaId, String citta) throws SQLException
+	public List<MedicoCardDTO> findCards(Integer categoriaId, String citta, String... query) throws SQLException
 	{
 		StringBuilder sql = new StringBuilder("""
-												        SELECT
-												            M.*,
-												            MIN(C.ID) as Cat_ID,
-												            MIN(C.Nome) as Categoria_Nome,
-												    		MIN(S.Indirizzo_Maps) as Indirizzo_Studio,
-												            MIN(S.Citta) as Citta_Studio,
-												    		MIN(EP.Prezzo_Lordo_Listino) as Costo,
-												            (
-												    		    SELECT COALESCE(AVG(R.Voto), 0) FROM Recensione R
+												     SELECT
+												         M.*,
+												         MIN(C.ID) as Cat_ID,
+												         MIN(C.Nome) as Categoria_Nome,
+												 		MIN(S.Indirizzo_Maps) as Indirizzo_Studio,
+												         MIN(S.Citta) as Citta_Studio,
+												 		MIN(EP.Prezzo_Lordo_Listino) as Costo,
+												         (
+												 		    SELECT COALESCE(AVG(R.Voto), 0) FROM Recensione R
 												    JOIN Prenotazione P ON R.Prenotazione_ID = P.ID
 												    JOIN Disponibilita D ON P.Disponibilita_ID = D.ID
 												    WHERE D.Medico_ID = M.ID
 												) as Media_Recensioni,
-												            (
-												                SELECT COUNT(*) FROM Recensione R
-												                JOIN Prenotazione P ON R.Prenotazione_ID = P.ID
-												                JOIN Disponibilita D ON P.Disponibilita_ID = D.ID
-												                WHERE D.Medico_ID = M.ID
-												            ) as Num_Recensioni,
-												            (
-												                SELECT MIN(Data_Ora_Inizio)
-												                FROM Disponibilita D
-												                WHERE D.Medico_ID = M.ID AND D.Stato = 'Disponibile'
-												                AND D.Data_Ora_Inizio > NOW()
-												            ) as Prima_Disponibilita
-												        FROM Medico M
-												        JOIN ErogazionePrestazione EP ON M.ID = EP.Medico_ID
-												        JOIN CatalogoPrestazioni CP ON EP.CatalogoPrestazioni_ID = CP.ID
-												        JOIN Categoria C ON CP.Categoria_ID = C.ID
-												        JOIN Studio S ON EP.Studio_ID = S.ID
-												        WHERE M.Stato_verifica = 'Approvato'
-												    """);
+												         (
+												             SELECT COUNT(*) FROM Recensione R
+												             JOIN Prenotazione P ON R.Prenotazione_ID = P.ID
+												             JOIN Disponibilita D ON P.Disponibilita_ID = D.ID
+												             WHERE D.Medico_ID = M.ID
+												         ) as Num_Recensioni,
+												         (
+												             SELECT MIN(Data_Ora_Inizio)
+												             FROM Disponibilita D
+												             WHERE D.Medico_ID = M.ID AND D.Stato = 'Disponibile'
+												             AND D.Data_Ora_Inizio > NOW()
+												         ) as Prima_Disponibilita
+												     FROM Medico M
+												     JOIN ErogazionePrestazione EP ON M.ID = EP.Medico_ID
+												     JOIN CatalogoPrestazioni CP ON EP.CatalogoPrestazioni_ID = CP.ID
+												     JOIN Categoria C ON CP.Categoria_ID = C.ID
+												     JOIN Studio S ON EP.Studio_ID = S.ID
+												     WHERE M.Stato_verifica = 'Approvato'
+												 """);
 
 		List<Object> params = new ArrayList<>();
 
-		if (query != null && !query.isEmpty())
+		if (query != null)
 		{
-			sql.append("AND (M.Cognome LIKE ? OR M.Nome LIKE ?) ");
-			params.add("%" + query + "%");
-			params.add("%" + query + "%");
+			for (String q : query)
+			{
+				sql.append("AND CONCAT( M.Nome, ' ', M.Cognome) LIKE ?");
+				params.add("%" + q + "%");
+
+			}
+
 		}
 
 		if (categoriaId != null && categoriaId > 0)

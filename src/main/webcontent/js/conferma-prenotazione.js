@@ -7,14 +7,7 @@ document.addEventListener("DOMContentLoaded",function()
 	}
 	
 	let tempo_rimanente = 15*60;
-	
-	const getContextPath = () => 
-	{
-       const path = window.location.pathname;
-       const index = path.indexOf("/", 1);
-       return index !== -1 ? path.substring(0, index) : "";
-   };
-   
+
    const contextPath = getContextPath();
    
    const interval = setInterval(function()

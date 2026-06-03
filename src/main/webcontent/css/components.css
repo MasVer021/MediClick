@@ -351,6 +351,16 @@
 	margin-top: 0.25rem;
 }
 
+.mc-input-suggerimenti
+{
+	  border: 2px solid orange;
+	  border-radius: 10px 10px 10px 10px;
+	  font-size: 18px;
+	  padding: 5px;
+	  height: 35px;
+	  width: 350px;
+}
+
 .mc-input-group {
 	position: relative;
 	display: flex;
@@ -443,3 +453,29 @@ select {
 .mc-file-input {
 	display: none !important;
 }
+
+.mc-suggest{
+	border: 1px solid var(--sfondo-alternativo);
+	border-radius: var(--radius);
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	align-content: center;
+	justify-content: space-around;
+	gap:2px;
+	text-align: center;
+}
+
+.mc-suggest p{
+	color: var(--testo-alternativo);
+	padding:5px;
+	text-transform: capitalize;
+}
+
+.mc-suggest p:hover{
+	background-color:var(--sfondo-alternativo);
+	cursor: pointer; 
+	overflow-wrap: break-word;
+	color: white;
+}
+
