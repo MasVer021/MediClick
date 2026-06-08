@@ -1,7 +1,6 @@
 package it.mediclick.util;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -13,33 +12,33 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
+
 public class Contex
 {
-	private String url;
-	private String userName;
-	private String password;
+	private DataSource dataSource;
 
-	public Contex(String dbUrl, String userName, String password)
+	public Contex()
 	{
-		this.url = dbUrl;
-		this.userName = userName;
-		this.password = password;
-
 		try
 		{
-			Class.forName("com.mysql.cj.jdbc.Driver");
+			javax.naming.Context initCtx = new InitialContext();
+			javax.naming.Context envCtx = (javax.naming.Context) initCtx.lookup("java:comp/env");
+			this.dataSource = (DataSource) envCtx.lookup("jdbc/MediClickDB");
 		}
-		catch (ClassNotFoundException e)
+		catch (NamingException e)
 		{
 			e.printStackTrace();
+			throw new RuntimeException("Impossibile trovare il DataSource JNDI jdbc/MediClickDB", e);
 		}
 	}
 
 	public int eseguiUpdate(String sql, Object... params) throws SQLException
 	{
 		boolean isInsert = sql.trim().toUpperCase().startsWith("INSERT");
-		try (Connection conn = DriverManager.getConnection(this.url, this.userName, this.password);
-				PreparedStatement pstmt = isInsert ? conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) : conn.prepareStatement(sql);)
+		try (Connection conn = dataSource.getConnection(); PreparedStatement pstmt = isInsert ? conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) : conn.prepareStatement(sql);)
 		{
 			for (int i = 0; i < params.length; i++)
 			{
@@ -88,14 +87,14 @@ public class Contex
 
 	public Connection getConnection() throws SQLException
 	{
-		return DriverManager.getConnection(this.url, this.userName, this.password);
+		return dataSource.getConnection();
 	}
 
 	public List<Map<String, Object>> eseguiSelect(String sql, Object... params) throws SQLException
 	{
 		List<Map<String, Object>> risultati = new ArrayList<>();
 
-		try (Connection conn = DriverManager.getConnection(this.url, this.userName, this.password); PreparedStatement pstmt = conn.prepareStatement(sql);)
+		try (Connection conn = dataSource.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql);)
 		{
 			for (int i = 0; i < params.length; i++)
 			{

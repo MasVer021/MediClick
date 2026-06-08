@@ -13,11 +13,7 @@ public class AppContexListener implements ServletContextListener
 	{
 		ServletContext ctx = sce.getServletContext();
 
-		String dbUrl = ctx.getInitParameter("dbUrl");
-		String dbUser = ctx.getInitParameter("dbUser");
-		String dbPassword = ctx.getInitParameter("dbPassword");
-
-		Contex contex = new Contex(dbUrl, dbUser, dbPassword);
+		Contex contex = new Contex();
 
 		ctx.setAttribute("contex", contex);
 	}
