@@ -1,0 +1,23 @@
+@charset "UTF-8";
+
+@media print
+{
+	header, footer, .mc-header, .mc-footer, .no-print, #mc-main-menu {
+        display: none !important;
+    }
+    
+    @page {
+        margin: 0; 
+    }
+    
+    body 
+    {
+    	background-color: white;
+        margin: 1.5cm; 
+    }
+    
+    img{
+    	height: 100px;
+    	width: auto;
+    }
+}
