@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.gson.Gson;
-
 import it.mediclick.exception.RicercaException;
 import it.mediclick.model.DTO.MedicoCardDTO;
 import it.mediclick.model.DTO.ProfiloMedicoPubblicoDTO;
@@ -199,7 +197,7 @@ public class RicercaService
 		}
 	}
 
-	public String getMedicoCittaSuggestJson(String query, String citta) throws RicercaException
+	public Map<String, Object> getMedicoCittaSuggestJson(String query, String citta) throws RicercaException
 	{
 		String _query = query != null ? query : "";
 		String _citta = citta != null ? citta : "";
@@ -218,7 +216,7 @@ public class RicercaService
 			responseData.put("citta", cittaSuggerite);
 			responseData.put("medici", mediciSuggeriti);
 
-			return new Gson().toJson(responseData);
+			return responseData;
 
 		}
 		catch (Exception e)

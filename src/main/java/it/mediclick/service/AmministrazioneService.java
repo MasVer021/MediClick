@@ -1,6 +1,8 @@
 package it.mediclick.service;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import it.mediclick.exception.AmministratoreException;
@@ -10,6 +12,7 @@ import it.mediclick.model.bean.Categoria;
 import it.mediclick.model.bean.Certificato;
 import it.mediclick.model.bean.ImpostazioniSistema;
 import it.mediclick.model.bean.Medico;
+import it.mediclick.model.bean.Prenotazione;
 import it.mediclick.model.bean.TipoCertificato;
 import it.mediclick.model.bean.Utente;
 import it.mediclick.model.dao.CatalogoPrestazioniDAO;
@@ -81,6 +84,40 @@ public class AmministrazioneService
 			throw new AmministratoreException("Errore del sistema durante l'aggiornamento dello stato del medico.", "SYS_DATABASE_ERROR");
 		}
 
+	}
+
+	public List<Prenotazione> findPrenotazioniPiattaforma(String codiceFiscale, String dataInizioStr, String dataFineStr) throws AmministratoreException
+	{
+		try
+		{
+			LocalDateTime dataInizio = null;
+			LocalDateTime dataFine = null;
+
+			if (dataInizioStr != null && !dataInizioStr.isBlank())
+			{
+				dataInizio = LocalDate.parse(dataInizioStr).atStartOfDay();
+			}
+			if (dataFineStr != null && !dataFineStr.isBlank())
+			{
+				dataFine = LocalDate.parse(dataFineStr).atTime(23, 59, 59);
+			}
+
+			return prenotazioneDAO.findAllWithFilters(codiceFiscale, dataInizio, dataFine);
+		}
+		catch (Exception e)
+		{
+			throw new AmministratoreException("Errore nel recupero delle prenotazioni: " + e.getMessage(), "DB_ERROR");
+		}
+	}
+
+	public void aggiungiAlCatalogo(String nome, String descrizione, int categoriaId) throws AmministratoreException
+	{
+		CatalogoPrestazioni cp = new CatalogoPrestazioni();
+		cp.setNome(nome.trim());
+		cp.setDescrizione(descrizione != null ? descrizione.trim() : "");
+		cp.setCategoriaId(categoriaId);
+		cp.setStato(CatalogoPrestazioni.Stato.ATTIVA);
+		aggiungiAlCatalogo(cp);
 	}
 
 	public void aggiungiAlCatalogo(CatalogoPrestazioni cp) throws AmministratoreException
@@ -160,6 +197,13 @@ public class AmministrazioneService
 		{
 			throw new AmministratoreException("Errore nella gestione dello stato del certificato: " + e.getMessage(), "AMMINISTRATORE_GESTISCI_CERT_ERROR");
 		}
+	}
+
+	public void aggiungiCategoria(String nome) throws AmministratoreException
+	{
+		Categoria c = new Categoria();
+		c.setNome(nome.trim());
+		aggiungiCategoria(c);
 	}
 
 	public void aggiungiCategoria(Categoria c) throws AmministratoreException

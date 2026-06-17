@@ -226,10 +226,8 @@ public class PrenotazioneService
 				LocalDateTime dataInizio = slotIniziale.getDataOraInizio();
 				LocalDateTime dataFine = dataInizio.plusMinutes(durata);
 
-				// Recuperiamo tutti gli slot che coprono la prestazione
 				List<Disponibilita> slotNecessari = disponibilitaDAO.findDisponibiliFilterDate(slotIniziale.getMedicoId(), dataInizio, dataFine);
 
-				// Verifichiamo lo stato del blocco per tutti gli slot necessari
 				for (Disponibilita d : slotNecessari)
 				{
 					if (d.getStato() != Disponibilita.Stato.BLOCCATA)
@@ -259,10 +257,8 @@ public class PrenotazioneService
 				p.setTasseStimateEuro(prezzo_tasse);
 				p.setTrattenutaPiattaformaEuro(prezzo_trattenuta);
 
-				// Inseriamo la prenotazione
 				prenotazioneDAO.insert(p, conn);
 
-				// Impostiamo tutti gli slot necessari come PRENOTATI
 				for (Disponibilita d : slotNecessari)
 				{
 					disponibilitaDAO.updateStato(d.getId(), Disponibilita.Stato.PRENOTATA, conn);
@@ -410,6 +406,33 @@ public class PrenotazioneService
 		}
 
 		return prenotazioni;
+	}
+
+	public Prenotazione getPrenotazionePaziente(int pazienteId, int prenotazioneId) throws PrenotazioneException
+	{
+
+		try
+		{
+			Prenotazione p = prenotazioneDAO.findById(prenotazioneId).orElseThrow(() -> new PrenotazioneException("Prenotazione non trovata", "PRENOTAZIONE_NOT_FOUND"));
+
+			if (p.getPazienteId() == pazienteId)
+			{
+				prenotazioneDAO.getCompleto(p);
+				erogazionePrestazioneDAO.getCompleto(p.getErogazionePrestazione());
+				medicoDAO.getCompleto(p.getErogazionePrestazione().getMedico());
+				return p;
+			}
+			else
+			{
+				throw new PrenotazioneException("Prenotazione non disponibile alla consultazione", "AUTH_ERROR");
+			}
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			throw new PrenotazioneException("Errore del sistema durante il recupero della prenotazione.", "SYS_DATABASE_ERROR");
+		}
+
 	}
 
 	public boolean concludiVisita(int prenotazioneId, int medicoId) throws PrenotazioneException

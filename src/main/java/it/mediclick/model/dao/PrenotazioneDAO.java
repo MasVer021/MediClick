@@ -128,6 +128,44 @@ public class PrenotazioneDAO
 		}
 	}
 
+	public List<Prenotazione> findAllWithFilters(String codiceFiscale, LocalDateTime dataInizio, LocalDateTime dataFine) throws SQLException
+	{
+		String sql = """
+						    SELECT P.*
+						    FROM Prenotazione P
+						    JOIN Paziente PAZ ON P.Paziente_ID = PAZ.ID
+						    JOIN Disponibilita D ON P.Disponibilita_ID = D.ID
+						    WHERE 1=1
+						""";
+		List<Object> params = new java.util.ArrayList<>();
+
+		if (codiceFiscale != null && !codiceFiscale.isBlank())
+		{
+			sql += " AND PAZ.Codice_Fiscale = ?";
+			params.add(codiceFiscale.trim());
+		}
+		if (dataInizio != null)
+		{
+			sql += " AND D.Data_Ora_Inizio >= ?";
+			params.add(Timestamp.valueOf(dataInizio));
+		}
+		if (dataFine != null)
+		{
+			sql += " AND D.Data_Ora_Inizio <= ?";
+			params.add(Timestamp.valueOf(dataFine));
+		}
+
+		sql += " ORDER BY P.Data_Pagamento DESC";
+
+		List<Prenotazione> prenotazioni = _contex.eseguiSelect(sql.toString(), prenotazioneMapper, params.toArray());
+		for (Prenotazione p : prenotazioni)
+		{
+			getCompleto(p);
+			erogazionePrestazioneDAO.getCompleto(p.getErogazionePrestazione());
+		}
+		return prenotazioni;
+	}
+
 	public void insert(Prenotazione p) throws SQLException
 	{
 		try (Connection conn = _contex.getConnection())

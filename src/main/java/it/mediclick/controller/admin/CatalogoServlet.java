@@ -69,9 +69,7 @@ public class CatalogoServlet extends HttpServlet
 					throw new AmministratoreException("Il nome della categoria non può essere vuoto.", "PARAM_ERROR");
 				}
 
-				Categoria c = new Categoria();
-				c.setNome(nome.trim());
-				amministrazioneService.aggiungiCategoria(c);
+				amministrazioneService.aggiungiCategoria(nome.trim());
 				request.getSession().setAttribute("successo", "Nuova categoria '" + nome + "' aggiunta con successo!");
 			}
 			else
@@ -85,12 +83,7 @@ public class CatalogoServlet extends HttpServlet
 					{
 						throw new AmministratoreException("Il nome della prestazione non può essere vuoto.", "PARAM_ERROR");
 					}
-					CatalogoPrestazioni cp = new CatalogoPrestazioni();
-					cp.setNome(nome.trim());
-					cp.setDescrizione(descrizione != null ? descrizione.trim() : "");
-					cp.setCategoriaId(categoriaId);
-					cp.setStato(CatalogoPrestazioni.Stato.ATTIVA);
-					amministrazioneService.aggiungiAlCatalogo(cp);
+					amministrazioneService.aggiungiAlCatalogo(nome.trim(), descrizione, categoriaId);
 					request.getSession().setAttribute("successo", "Nuova prestazione '" + nome + "' aggiunta al catalogo!");
 				}
 				else
