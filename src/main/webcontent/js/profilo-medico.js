@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded",function()
 		    let isFormValido = true;
 		    
 		    
-		    if (durata && !validaCampo(durata,(val)=>validators.isStep30(0,val),"Inserisci una durata che sia multipla di 30 min")) 
+		    if (durata && !validaCampo(durata,(val)=>parseInt(val) >= 30 && parseInt(val) % 30 === 0,"Inserisci una durata che sia multipla di 30 min")) 
 			{
 		        isFormValido = false;
 		    }

@@ -9,7 +9,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import it.mediclick.exception.*;
+import it.mediclick.exception.ErrorInfo;
+import it.mediclick.exception.RicercaException;
 import it.mediclick.model.DTO.MedicoCardDTO;
 import it.mediclick.model.bean.Categoria;
 import it.mediclick.service.RicercaService;
@@ -48,6 +49,7 @@ public class SearchServlet extends HttpServlet
 		{
 			request.setAttribute("errore", new ErrorInfo(e));
 			request.getRequestDispatcher("/WEB-INF/view/search.jsp").forward(request, response);
+			return;
 		}
 
 		request.setAttribute("categorie", categorie);
@@ -86,6 +88,7 @@ public class SearchServlet extends HttpServlet
 			{
 				request.setAttribute("errore", new ErrorInfo(e));
 				request.getRequestDispatcher("/WEB-INF/view/search.jsp").forward(request, response);
+				return;
 			}
 
 			request.getRequestDispatcher("/WEB-INF/view/search.jsp").forward(request, response);

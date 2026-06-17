@@ -26,8 +26,8 @@ public class AgendaServlet extends HttpServlet
 {
 	private static final long serialVersionUID = 1L;
 
-	MedicoService medicoService;
-	PrenotazioneService prenotazioneService;
+	private MedicoService medicoService;
+	private PrenotazioneService prenotazioneService;
 
 	public void init() throws ServletException
 	{

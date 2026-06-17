@@ -30,7 +30,7 @@ public class ProfiloServlet extends HttpServlet
 {
 	private static final long serialVersionUID = 1L;
 
-	MedicoService medicoService;
+	private MedicoService medicoService;
 
 	public void init() throws ServletException
 	{
@@ -135,6 +135,11 @@ public class ProfiloServlet extends HttpServlet
 						successoMsg = "Prestazione rimossa/sospesa con successo!";
 					}
 					break;
+			}
+
+			if (successoMsg != null)
+			{
+				request.getSession().setAttribute("successo", successoMsg);
 			}
 
 			response.sendRedirect(request.getContextPath() + "/medico/profilo");

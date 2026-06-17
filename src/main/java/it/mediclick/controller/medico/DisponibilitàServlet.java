@@ -26,7 +26,7 @@ public class DisponibilitàServlet extends HttpServlet
 {
 	private static final long serialVersionUID = 1L;
 
-	MedicoService medicoService;
+	private MedicoService medicoService;
 
 	public void init() throws ServletException
 	{
@@ -87,7 +87,7 @@ public class DisponibilitàServlet extends HttpServlet
 		catch (MedicoException e)
 		{
 			request.setAttribute("errore", new ErrorInfo(e));
-			request.getRequestDispatcher("/WEB-INF/view/medico/disponibilita.jsp").forward(request, response);
+			doGet(request, response);
 			return;
 		}
 

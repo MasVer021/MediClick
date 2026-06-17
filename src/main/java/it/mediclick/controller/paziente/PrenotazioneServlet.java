@@ -88,8 +88,8 @@ public class PrenotazioneServlet extends HttpServlet
 		}
 		catch (PrenotazioneException e)
 		{
-			request.setAttribute("errore", new ErrorInfo(e));
-			request.getRequestDispatcher("/WEB-INF/view/medico_pubblic.jsp").forward(request, response);
+			request.getSession().setAttribute("errore", new ErrorInfo(e));
+			response.sendRedirect(request.getContextPath() + "/profiloMedico?id=" + request.getParameter("id"));
 			return;
 		}
 

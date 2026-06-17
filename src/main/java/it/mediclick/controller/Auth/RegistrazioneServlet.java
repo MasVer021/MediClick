@@ -242,7 +242,7 @@ public class RegistrazioneServlet extends HttpServlet
 		{
 			throw new AuthException("Il codice fiscale è obbligatorio.", "REG_CF_BLANK");
 		}
-		if (!codiceFiscale.matches("^[A-Z]{6}[0-9]{2}[A-Z][0-9]{2}[A-Z][0-9]{3}[A-Z]$"))
+		if (!codiceFiscale.matches("^(?i)[A-Z]{6}[0-9]{2}[A-Z][0-9]{2}[A-Z][0-9]{3}[A-Z]$"))
 		{
 			throw new AuthException("Formato codice fiscale non valido.", "REG_CF_INVALID");
 		}

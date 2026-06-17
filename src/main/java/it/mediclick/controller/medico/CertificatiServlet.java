@@ -33,7 +33,7 @@ public class CertificatiServlet extends HttpServlet
 {
 	private static final long serialVersionUID = 1L;
 
-	MedicoService medicoService;
+	private MedicoService medicoService;
 
 	public void init() throws ServletException
 	{
