@@ -1,2 +1,24 @@
+# File compilati Java
+*.class
+# Cartelle di build e distribuzione
 /build/
-
+/bin/
+/target/
+/dist/
+# File specifici di Eclipse (IDE)
+.metadata
+.recommenders
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+# Cartelle del Server (Tomcat)
+/Servers/
+*.war
+*.ear
+# Log files
+*.log
+# File di sistema operativo
+.DS_Store
+Thumbs.db
