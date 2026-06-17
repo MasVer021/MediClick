@@ -71,7 +71,7 @@ document.addEventListener("DOMContentLoaded",function()
 
 	if(birthInput)
 	{
-		birthInput.addEventListener("blur",() =>validaCampo(birthInput,validators.birthDate,"Inserire un data passata"));
+		birthInput.addEventListener("blur",() =>validaCampo(birthInput,validators.isPast,"Inserire un data passata"));
 	}
 
 	const form = document.getElementById("registrazioneForm");

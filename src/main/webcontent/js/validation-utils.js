@@ -17,7 +17,7 @@ const validators =
    
    codiceFiscale: function(value) 
    {
-       const re = /^[\\w.+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}$/;
+       const re = /^[A-Z]{6}[0-9LMNPQRSTUV]{2}[A-Z][0-9LMNPQRSTUV]{2}[A-Z][0-9LMNPQRSTUV]{3}[A-Z]$/i;
        return re.test(value);
    },
    
@@ -38,6 +38,17 @@ const validators =
        today.setHours(0, 0, 0, 0);
        return inputDate >= today;
    },
+   
+   isInRange: function(value,min,max) 
+      {
+         if (value<min || value > max)
+   		{
+   			return false;
+   	   	} 
+		
+		return true
+          
+      },
    
    isPast: function(value) 
    {
