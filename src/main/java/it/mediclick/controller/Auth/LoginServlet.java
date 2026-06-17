@@ -56,8 +56,6 @@ public class LoginServlet extends HttpServlet
 				String password = ValidationUtils.parseString(request.getParameter("password"), "Password");
 				boolean keepLogin = ValidationUtils.parseBoolean(request.getParameter("rememberMe"), false);
 
-				System.out.print(keepLogin);
-
 				Utente utente = autenticazioneService.login(email.trim(), password);
 
 				if (keepLogin)
@@ -67,8 +65,8 @@ public class LoginServlet extends HttpServlet
 					cookie.setPath(request.getContextPath());
 					cookie.setMaxAge(365 * 24 * 60 * 60);
 					cookie.setHttpOnly(true);
+					cookie.setSecure(true);
 					response.addCookie(cookie);
-
 				}
 
 				if (!utente.isAccountAttivo())

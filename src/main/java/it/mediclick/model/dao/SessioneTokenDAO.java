@@ -8,6 +8,7 @@ import java.util.UUID;
 import it.mediclick.model.bean.SessioneToken;
 import it.mediclick.util.Contex;
 import it.mediclick.util.MapRow;
+import it.mediclick.util.PasswordUtils;
 import it.mediclick.util.ResultMapper;
 
 public class SessioneTokenDAO
@@ -47,7 +48,7 @@ public class SessioneTokenDAO
 							  WHERE Token = ?
 							""";
 
-			return _contex.eseguiSelectSingolo(sql, tokenMapper, token);
+			return _contex.eseguiSelectSingolo(sql, tokenMapper, PasswordUtils.hashSHA256(token));
 		}
 		catch (SQLException e)
 		{
@@ -66,7 +67,7 @@ public class SessioneTokenDAO
 			String token = UUID.randomUUID().toString();
 			LocalDate scadenza = LocalDate.now().plusYears(1);
 
-			_contex.eseguiUpdate(sql, idUtente, token, scadenza);
+			_contex.eseguiUpdate(sql, idUtente, PasswordUtils.hashSHA256(token), scadenza);
 
 			return token;
 
@@ -85,7 +86,7 @@ public class SessioneTokenDAO
 						""";
 		try
 		{
-			_contex.eseguiUpdate(sql, token);
+			_contex.eseguiUpdate(sql, PasswordUtils.hashSHA256(token));
 		}
 		catch (SQLException e)
 		{
