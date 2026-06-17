@@ -7,7 +7,7 @@
 		</div>
 		<h1 class="mc-card__title mc-font-lg mc-mb-md">Congratulazioni!</h1>
 		<p class="mc-text-muted mc-mb-xl">La tua prenotazione è stata registrata ed effettuata correttamente nel nostro sistema.</p>
-		<a href="${pageContext.request.contextPath}/paziente/prenotazione" class="mc-btn mc-btn--primary mc-btn--block">Vai alle prenotazioni</a>
+		<a href="${pageContext.request.contextPath}/paziente/prenotazioni" class="mc-btn mc-btn--primary mc-btn--block">Vai alle prenotazioni</a>
 	</div>
 </main>
 <jsp:include page="/WEB-INF/view/layout/footer.jsp" />
