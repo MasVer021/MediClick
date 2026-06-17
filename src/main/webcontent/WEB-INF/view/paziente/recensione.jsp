@@ -39,7 +39,32 @@
 	</div>
 </main>
 <script src="${pageContext.request.contextPath}/js/validation-utils.js"></script>
-<script type="text/javascript">
-				document.getElementById("voto").addActionListener("blur " , validaCampo(t hi s, (val) => validators.isInRang e( v a l , 1 , 5), 'valore non valido'));
-	</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const form = document.querySelector("form");
+        const votoInput = document.getElementById("voto");
+        
+        function validaVoto() {
+            if (!votoInput){
+				return true;
+            }
+            return validaCampo(votoInput, (val) => {
+                const voto = parseInt(val, 10);
+                return validators.isInRange(voto, 1, 5);
+            }, 'Il voto deve essere compreso tra 1 e 5');
+        }
+
+        if (votoInput) {
+            votoInput.addEventListener("blur", validaVoto);
+        }
+
+        if (form) {
+            form.addEventListener("submit", function(event) {
+                if (!validaVoto()) {
+                    event.preventDefault();
+                }
+            });
+        }
+    });
+</script>
 <jsp:include page="/WEB-INF/view/layout/footer.jsp" />
