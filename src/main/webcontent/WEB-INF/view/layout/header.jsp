@@ -15,9 +15,7 @@
 			<a href="<c:url value="/" />"><img src="<c:url value="/img/ColFullLogo.svg" />" alt="Logo completo colorato"></a>
 		</div>
 		<button id="hamburger-menu" class="mc-menu-toggle" aria-label="Apri menu">
-			<span></span> 
-			<span></span>
-			 <span></span>
+			<span></span> <span></span> <span></span>
 		</button>
 		<div class="mc-main-menu__links" id="menuLinks">
 			<div class="mc-main-menu__center">
