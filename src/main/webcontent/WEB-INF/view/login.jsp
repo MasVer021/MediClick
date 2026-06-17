@@ -20,4 +20,6 @@
 		</form>
 	</div>
 </main>
+<script src="${pageContext.request.contextPath}/js/validation-utils.js"></script>
+<script src="${pageContext.request.contextPath}/js/login.js"></script>
 <jsp:include page="/WEB-INF/view/layout/footer.jsp" />
