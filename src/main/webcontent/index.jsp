@@ -6,7 +6,7 @@
     <section id="hero" class="mc-hero">
         <h1 class="mc-hero__title">Benvenuto in MediClick</h1>
         <p  class="mc-hero__subtitle">La tua salute in un click. Trova il medico giusto per te e prenota subito la tua visita.</p>
-        <a  class="mc-btn mc-btn--primary" href="${pageContext.request.contextPath}/search">Cerca uno Specialista</a>
+        <a  class="mc-btn mc-btn--primary" href="<c:url value='/search'/>">Cerca uno Specialista</a>
     </section>
    
 </main>

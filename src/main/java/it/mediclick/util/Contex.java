@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
@@ -24,8 +25,8 @@ public class Contex
 	{
 		try
 		{
-			javax.naming.Context initCtx = new InitialContext();
-			javax.naming.Context envCtx = (javax.naming.Context) initCtx.lookup("java:comp/env");
+			Context initCtx = new InitialContext();
+			Context envCtx = (Context) initCtx.lookup("java:comp/env");
 			this.dataSource = (DataSource) envCtx.lookup("jdbc/MediClickDB");
 		}
 		catch (NamingException e)

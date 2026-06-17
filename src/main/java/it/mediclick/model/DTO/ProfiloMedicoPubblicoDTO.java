@@ -1,9 +1,6 @@
 package it.mediclick.model.DTO;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import it.mediclick.model.bean.Disponibilita;
 import it.mediclick.model.bean.ErogazionePrestazione;
@@ -55,14 +52,5 @@ public class ProfiloMedicoPubblicoDTO
 	public void setDisponibilita(List<Disponibilita> disponibilita)
 	{
 		this.disponibilita = disponibilita;
-	}
-
-	// da rimuovere
-	public Map<LocalDate, List<Disponibilita>> getDisponibilitaRaggruppate()
-	{
-		if (disponibilita == null)
-			return new java.util.TreeMap<>();
-
-		return disponibilita.stream().collect(Collectors.groupingBy(d -> d.getDataOraInizio().toLocalDate(), java.util.TreeMap::new, Collectors.toList()));
 	}
 }

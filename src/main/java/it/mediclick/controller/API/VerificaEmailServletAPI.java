@@ -41,6 +41,7 @@ public class VerificaEmailServletAPI extends HttpServlet
 			String email = ValidationUtils.parseStringOpz(request.getParameter("email"), "").trim();
 
 			boolean emailEsistente = false;
+
 			if (!email.isEmpty())
 			{
 				emailEsistente = autenticazioneService.verificaEmailEsistente(email);

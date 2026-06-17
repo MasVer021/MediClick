@@ -10,7 +10,7 @@
 	        <p>MediClick è la piattaforma ideale per trovare il medico specialista che fa per te e prenotare una visita in pochi click. Cerca la specializzazione, inserisci la città, confronta i profili, le recensioni e prenota l'orario più comodo per le tue esigenze, direttamente online.</p>
 	        
 	        <h3>Cerca un medico o specializzazioni</h3>
-	        <p>Puoi cercare medici per nome, cognome oppure consultare tutte le nostre specializzazioni dalla barra di ricerca cliccando su <a href="${pageContext.request.contextPath}/search">Cerca uno Specialista</a>.</p>
+	        <p>Puoi cercare medici per nome, cognome oppure consultare tutte le nostre specializzazioni dalla barra di ricerca cliccando su <a href="<c:url value='/search'/>">Cerca uno Specialista</a>.</p>
 	    </section>
 	
 	    <section id="sei-un-medico" class="mc-card">

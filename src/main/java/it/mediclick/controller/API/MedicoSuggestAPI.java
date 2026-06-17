@@ -21,7 +21,7 @@ import it.mediclick.util.ValidationUtils;
 public class MedicoSuggestAPI extends HttpServlet
 {
 
-	RicercaService ricercaService;
+	private RicercaService ricercaService;
 
 	@Override
 	public void init() throws ServletException
@@ -37,8 +37,9 @@ public class MedicoSuggestAPI extends HttpServlet
 
 		try
 		{
+			Map<String, Object> suggerimenti = ricercaService.getMedicoCittaSuggestJson(queryMedico, citta);
 
-			response.getWriter().write(ricercaService.getMedicoCittaSuggestJson(queryMedico, citta));
+			response.getWriter().write(new Gson().toJson(suggerimenti));
 
 		}
 		catch (RicercaException e)
@@ -46,9 +47,7 @@ public class MedicoSuggestAPI extends HttpServlet
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
 			Map<String, String> error = new HashMap<String, String>();
-
-			error.put("error", "Parametri errati: " + e.getMessage());
-
+			error.put("error", e.getMessage());
 			response.getWriter().write(new Gson().toJson(error));
 
 		}

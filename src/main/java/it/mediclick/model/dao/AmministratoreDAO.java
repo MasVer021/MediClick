@@ -47,7 +47,7 @@ public class AmministratoreDAO
 		try
 		{
 			String sqlAmmnistratore = """
-										                  SELECT *
+										SELECT *
 										FROM dipartimento
 										WHERE id = ?
 										                """;

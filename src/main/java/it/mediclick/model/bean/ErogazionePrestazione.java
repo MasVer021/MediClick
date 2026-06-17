@@ -42,9 +42,6 @@ public class ErogazionePrestazione implements Serializable
 	private int id = -1;
 	private double prezzoLordoListino;
 
-	/**
-	 * Durata in minuti, approssimata alla mezz'ora successiva (es. 31 min → 60 min)
-	 */
 	private Integer durata;
 	private Stato stato;
 

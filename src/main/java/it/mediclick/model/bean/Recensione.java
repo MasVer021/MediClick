@@ -9,7 +9,7 @@ public class Recensione implements Serializable
 	private static final long serialVersionUID = 1L;
 
 	private int id = -1;
-	private int voto; // 1-5
+	private int voto;
 	private String commento;
 	private boolean isVisible;
 	private LocalDateTime dataPubblicazione;
