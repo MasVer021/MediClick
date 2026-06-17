@@ -23,7 +23,7 @@
 						<c:forEach var="slot" items="${agenda}">
 							<div class="mc-card mc-card--generic ${slot.statoSlot == 'Disponibile' ? 'mc-card--libera' : ''}">
 								<div class="mc-card__header">
-									<h2 class="mc-card__title mc-mb-none" style="display: inline">
+									<h2 class="mc-card__title mc-mb-none">
 										<fmt:parseDate value="${slot.dataOraInizio}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedInizio" type="both" />
 										<fmt:formatDate value="${parsedInizio}" pattern="HH:mm" />
 										-
@@ -42,15 +42,22 @@
 								<div class="mc-card__body">
 									<c:choose>
 										<c:when test="${slot.statoSlot == 'Prenotata' || slot.statoSlot == 'Completata'}">
-											<div class="mc-flex-col mc-mg-sm">
-												<span class="mc-text-muted mc-font-xs">Paziente</span> <span class="mc-text-bold mc-font-md">${slot.nomePaziente} ${slot.cognomePaziente}</span>
-											</div>
-											<div class="mc-flex-col">
-												<span class="mc-text-muted mc-font-xs">Prestazione</span> <span class="mc-text-bold mc-font-md">${slot.nomePrestazione}</span>
-											</div>
-											<div class="mc-flex-col">
-												<span class="mc-text-muted mc-font-xs">Telefono</span> <span class="mc-text-bold mc-font-md">${slot.telefonoPaziente}</span>
-											</div>
+											<c:choose>
+												<c:when test="${empty slot.nomePaziente}">
+													<p class="mc-text-muted">Slot visita precedente</p>
+												</c:when>
+												<c:otherwise>
+													<div class="mc-flex-col mc-mg-sm">
+														<span class="mc-text-muted mc-font-xs">Paziente</span> <span class="mc-text-bold mc-font-md">${slot.nomePaziente} ${slot.cognomePaziente}</span>
+													</div>
+													<div class="mc-flex-col">
+														<span class="mc-text-muted mc-font-xs">Prestazione</span> <span class="mc-text-bold mc-font-md">${slot.nomePrestazione}</span>
+													</div>
+													<div class="mc-flex-col">
+														<span class="mc-text-muted mc-font-xs">Telefono</span> <span class="mc-text-bold mc-font-md">${slot.telefonoPaziente}</span>
+													</div>
+												</c:otherwise>
+											</c:choose>
 										</c:when>
 										<c:otherwise>
 											<p class="mc-text-muted">Slot Libero</p>
@@ -60,14 +67,21 @@
 								<div class="mc-card__footer">
 									<c:choose>
 										<c:when test="${slot.statoSlot == 'Prenotata'}">
-											<form action="${pageContext.request.contextPath}/medico/agenda" method="POST">
-												<input type="hidden" name="action" value="completa"> <input type="hidden" name="prenotazioneId" value="${slot.prenotazioneId}"> <input type="hidden" name="data" value="${dataMostrata}">
-												<button class="mc-btn mc-btn--success" type="submit">Concludi Visita</button>
-											</form>
-											<form action="${pageContext.request.contextPath}/medico/agenda" method="POST">
-												<input type="hidden" name="action" value="annulla"> <input type="hidden" name="prenotazioneId" value="${slot.prenotazioneId}"> <input type="hidden" name="data" value="${dataMostrata}">
-												<button class="mc-btn mc-btn--danger" type="submit">Annulla</button>
-											</form>
+											<c:choose>
+												<c:when test="${empty slot.nomePaziente}">
+													<span class="mc-text-muted mc-font-xs">Gestione da slot iniziale </span>
+												</c:when>
+												<c:otherwise>
+													<form action="${pageContext.request.contextPath}/medico/agenda" method="POST">
+														<input type="hidden" name="action" value="completa"> <input type="hidden" name="prenotazioneId" value="${slot.prenotazioneId}"> <input type="hidden" name="data" value="${dataMostrata}">
+														<button class="mc-btn mc-btn--success mc-btn--block" type="submit">Concludi Visita</button>
+													</form>
+													<form action="${pageContext.request.contextPath}/medico/agenda" method="POST">
+														<input type="hidden" name="action" value="annulla"> <input type="hidden" name="prenotazioneId" value="${slot.prenotazioneId}"> <input type="hidden" name="data" value="${dataMostrata}">
+														<button class="mc-btn mc-btn--danger mc-btn--block" type="submit">Annulla</button>
+													</form>
+												</c:otherwise>
+											</c:choose>
 										</c:when>
 										<c:when test="${slot.statoSlot == 'Completata'}">
 											<p class="mc-text-muted">Visita Conclusa</p>
@@ -75,7 +89,7 @@
 										<c:otherwise>
 											<form action="${pageContext.request.contextPath}/medico/agenda" method="POST">
 												<input type="hidden" name="action" value="rimuovi"> <input type="hidden" name="disponibilitaId" value="${slot.disponibilitaId}"> <input type="hidden" name="data" value="${dataMostrata}">
-												<button class="mc-btn mc-btn--danger" type="submit">Rimuovi Slot</button>
+												<button class="mc-btn mc-btn--danger mc-btn--block" type="submit">Rimuovi Slot</button>
 											</form>
 										</c:otherwise>
 									</c:choose>

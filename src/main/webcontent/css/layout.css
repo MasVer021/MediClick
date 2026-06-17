@@ -279,7 +279,6 @@ main {
 		flex: none;
 	}
 
-	/* Hamburger Button */
 	.mc-menu-toggle {
 		display: flex;
 		flex-direction: column;
