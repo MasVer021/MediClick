@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import it.mediclick.exception.ErrorInfo;
 import it.mediclick.exception.MedicoException;
 import it.mediclick.model.bean.Certificato;
 import it.mediclick.service.AmministrazioneService;
@@ -21,8 +20,8 @@ public class DowloadCertificatiServlet extends HttpServlet
 {
 	private static final long serialVersionUID = 1L;
 
-	AmministrazioneService amministrazioneService;
-	MedicoService medicoService;
+	private AmministrazioneService amministrazioneService;
+	private MedicoService medicoService;
 
 	public void init() throws ServletException
 	{
@@ -36,6 +35,7 @@ public class DowloadCertificatiServlet extends HttpServlet
 		try
 		{
 			int certificatoId = ValidationUtils.parseInt(request.getParameter("id"), -1);
+
 			if (certificatoId <= 0)
 			{
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID certificato non valido");
@@ -70,8 +70,8 @@ public class DowloadCertificatiServlet extends HttpServlet
 		}
 		catch (MedicoException e)
 		{
-			request.setAttribute("errore", new ErrorInfo(e));
-			request.getRequestDispatcher("/WEB-INF/view/admin/dashboard.jsp").forward(request, response);
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Impossibile recuperare il certificato");
+			e.printStackTrace();
 		}
 	}
 

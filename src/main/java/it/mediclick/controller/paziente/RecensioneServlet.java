@@ -25,8 +25,8 @@ public class RecensioneServlet extends HttpServlet
 {
 	private static final long serialVersionUID = 1L;
 
-	PazienteService pazienteService;
-	RecensioneService recensioneService;
+	private PazienteService pazienteService;
+	private RecensioneService recensioneService;
 
 	@Override
 	public void init() throws ServletException
@@ -88,7 +88,7 @@ public class RecensioneServlet extends HttpServlet
 
 				if (voto < 1 || voto > 5)
 				{
-					throw new RecensioneException("Il voto puo essere compreso tra 1 e 5", "ILLEGAL_VOTO_FORMAT");
+					throw new RecensioneException("Il voto può essere compreso tra 1 e 5", "ILLEGAL_VOTO_FORMAT");
 				}
 
 				recensioneService.lasciaRecensione(prenotazioneId, voto, commento);

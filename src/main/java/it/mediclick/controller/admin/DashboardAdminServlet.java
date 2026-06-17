@@ -28,8 +28,8 @@ public class DashboardAdminServlet extends HttpServlet
 {
 	private static final long serialVersionUID = 1L;
 
-	AmministrazioneService amministrazioneService;
-	MedicoService medicoService;
+	private AmministrazioneService amministrazioneService;
+	private MedicoService medicoService;
 
 	public void init() throws ServletException
 	{
@@ -78,10 +78,4 @@ public class DashboardAdminServlet extends HttpServlet
 			request.getRequestDispatcher("/WEB-INF/view/admin/dashboard.jsp").forward(request, response);
 		}
 	}
-
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
-	{
-
-	}
-
 }

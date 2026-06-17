@@ -5,21 +5,16 @@ import java.sql.SQLException;
 import it.mediclick.exception.PazienteException;
 import it.mediclick.model.bean.Paziente;
 import it.mediclick.model.dao.PazienteDAO;
-import it.mediclick.model.dao.UtenteDAO;
 import it.mediclick.util.Contex;
 
 public class PazienteService
 {
 
-	PazienteDAO pazienteDAO;
-	UtenteDAO utenteDAO;
-	private Contex _contex;
+	private PazienteDAO pazienteDAO;
 
 	public PazienteService(Contex contex)
 	{
-		this._contex = contex;
 		pazienteDAO = new PazienteDAO(contex);
-		utenteDAO = new UtenteDAO(_contex);
 	}
 
 	public Paziente findById(int pazienteId) throws PazienteException

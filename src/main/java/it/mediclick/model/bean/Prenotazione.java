@@ -2,6 +2,7 @@ package it.mediclick.model.bean;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Prenotazione implements Serializable
 {
@@ -244,6 +245,14 @@ public class Prenotazione implements Serializable
 			return false;
 		}
 		return this.disponibilita.getDataOraInizio().isAfter(java.time.LocalDateTime.now());
+	}
+
+	public String dataPagamentoFormattata(String patter)
+	{
+		if (this.dataPagamento == null)
+			return "";
+		else
+			return this.dataPagamento.format(DateTimeFormatter.ofPattern(patter));
 	}
 
 	@Override

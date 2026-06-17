@@ -1,7 +1,6 @@
 package it.mediclick.controller;
 
 import java.io.IOException;
-import java.sql.SQLException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -12,7 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 import it.mediclick.exception.ErrorInfo;
 import it.mediclick.exception.RicercaException;
 import it.mediclick.model.DTO.ProfiloMedicoPubblicoDTO;
-import it.mediclick.service.AutenticazioneService;
 import it.mediclick.service.RicercaService;
 import it.mediclick.util.Contex;
 
@@ -21,7 +19,7 @@ public class ProfiloMedicoServlet extends HttpServlet
 {
 	private static final long serialVersionUID = 1L;
 
-	RicercaService ricercaservice;
+	private RicercaService ricercaservice;
 
 	@Override
 	public void init() throws ServletException
@@ -68,7 +66,6 @@ public class ProfiloMedicoServlet extends HttpServlet
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
-		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
 
