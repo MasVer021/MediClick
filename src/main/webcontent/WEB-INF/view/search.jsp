@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <jsp:include page="/WEB-INF/view/layout/header.jsp" />
 <main class="mc-container mc-p-lg">
 	<c:choose>
@@ -57,7 +58,11 @@
 									<div class="mc-card__highlight-box">
 										<c:choose>
 											<c:when test="${not empty m.primaDisponibilita}">
-												<p class="mc-text-bold">Prima disponibilit&agrave;: ${m.primaDisponibilita}</p>
+												<fmt:parseDate value="${m.primaDisponibilita}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDisp" type="both" />
+												<p class="mc-text-bold">
+													Prima disponibilit&agrave;:
+													<fmt:formatDate value="${parsedDisp}" pattern="dd/MM/yyyy HH:mm" />
+												</p>
 											</c:when>
 											<c:otherwise>
 												<p class="mc-text-muted">Nessuna disponibilit&agrave; imminente</p>
