@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <jsp:include page="/WEB-INF/view/layout/header.jsp" />
 <main class="mc-container mc-container-ver">
 	<div class="mc-kpi-grid">
@@ -41,7 +42,8 @@
 							<c:forEach var="p" items="${prenotazioni}">
 								<tr>
 									<td>${p.idTransazioneEsterno}</td>
-									<td>${p.disponibilita.dataOraInizio}</td>
+									<fmt:parseDate value="${p.disponibilita.dataOraInizio}" var="dataOraForm" pattern="yyyy-MM-dd'T'HH:mm" type="both" />
+									<td><fmt:formatDate value="${dataOraForm}" pattern="dd/MM/yyyy HH:mm" /></td>
 									<td>${p.erogazionePrestazione.catalogoPrestazioni.nome}</td>
 									<td><c:choose>
 											<c:when test="${p.stato.label == 'Confermata'}">
